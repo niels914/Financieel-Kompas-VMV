@@ -1,0 +1,3591 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VMV Financieel Vastgoedkompas – interactieve conceptverkenning</title>
+<meta name="description" content="Conceptprototype met vijf archetypen voor het VMV Financieel Vastgoedkompas.">
+<style>
+/* ============================================================
+   Ontwerptokens
+   ============================================================ */
+:root {
+  --vmv-teal: #4bb3b8;
+  --vmv-teal-dark: #168b94;
+  --vmv-teal-light: #dff3f4;
+  --vmv-cyan: #43b9c8;
+  --vmv-blue: #2478b8;
+  --vmv-blue-light: #e6f2f8;
+  --vmv-purple: #3b2943;
+  --vmv-purple-mid: #65506f;
+  --vmv-purple-light: #eee8f1;
+  --vmv-grey-50: #fafbfb;
+  --vmv-grey-100: #f2f4f4;
+  --vmv-grey-200: #dce1e2;
+  --vmv-grey-400: #9aa4a6;
+  --vmv-text: #303638;
+  --vmv-muted: #667174;
+  --vmv-white: #ffffff;
+  --vmv-warning: #d99a35;
+  --vmv-critical: #c75b59;
+  --vmv-success: #429876;
+
+  --vmv-mint: #ecf7f4;
+  --vmv-warning-light: #faf1e2;
+  --vmv-critical-light: #f8ebeb;
+  --vmv-success-light: #e8f4ee;
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --shadow-soft: 0 1px 2px rgba(48, 54, 56, .05), 0 2px 8px rgba(48, 54, 56, .04);
+  --shadow-panel: 0 2px 6px rgba(48, 54, 56, .06), 0 12px 32px rgba(48, 54, 56, .10);
+
+  --dur: 200ms;
+  --ease: cubic-bezier(.2, .6, .3, 1);
+
+  --font: Aptos, "Segoe UI", Arial, Helvetica, sans-serif;
+
+  --shell-max: 1560px;
+}
+
+/* ============================================================
+   Basis
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--vmv-text);
+  background: var(--vmv-grey-50);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -.01em; color: var(--vmv-purple); }
+h1 { font-size: 1.55rem; line-height: 1.2; }
+h2 { font-size: 1.15rem; }
+h3 { font-size: .98rem; }
+h4 { font-size: .86rem; }
+p { margin: 0 0 var(--space-3); max-width: 68ch; }
+p:last-child { margin-bottom: 0; }
+ul { margin: 0; padding-left: 1.1em; }
+a { color: var(--vmv-blue); }
+
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--vmv-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.muted { color: var(--vmv-muted); }
+.small { font-size: .82rem; }
+.tiny { font-size: .74rem; }
+
+/* ============================================================
+   Bovenbalk
+   ============================================================ */
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--vmv-white);
+  border-bottom: 1px solid var(--vmv-grey-200);
+}
+.topbar__inner {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+}
+.brand { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+.brand__mark { flex: none; color: var(--vmv-teal-dark); }
+.brand__name {
+  font-weight: 600; font-size: 1rem; color: var(--vmv-purple);
+  line-height: 1.15; letter-spacing: -.01em;
+}
+.brand__name span { display: block; font-weight: 400; font-size: .78rem; color: var(--vmv-muted); letter-spacing: 0; }
+.topbar__context {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 5px 12px;
+  background: var(--vmv-teal-light);
+  color: var(--vmv-teal-dark);
+  border-radius: var(--radius-pill);
+  font-size: .78rem; font-weight: 600;
+}
+.topbar__actions { display: flex; gap: var(--space-2); }
+
+/* Knoppen */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 38px; padding: 7px 14px;
+  border: 1px solid var(--vmv-grey-200);
+  background: var(--vmv-white);
+  color: var(--vmv-purple);
+  border-radius: var(--radius-s);
+  font-size: .85rem; font-weight: 600;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.btn:hover { background: var(--vmv-grey-100); border-color: var(--vmv-grey-400); }
+.btn--primary { background: var(--vmv-purple); border-color: var(--vmv-purple); color: var(--vmv-white); }
+.btn--primary:hover { background: var(--vmv-purple-mid); border-color: var(--vmv-purple-mid); }
+.btn--teal { background: var(--vmv-teal-dark); border-color: var(--vmv-teal-dark); color: var(--vmv-white); }
+.btn--teal:hover { background: var(--vmv-teal); border-color: var(--vmv-teal); }
+.btn--ghost { border-color: transparent; background: transparent; color: var(--vmv-blue); }
+.btn--ghost:hover { background: var(--vmv-blue-light); }
+.btn--small { min-height: 32px; padding: 4px 10px; font-size: .78rem; }
+.btn--block { width: 100%; }
+.btn__icon { flex: none; }
+
+/* ============================================================
+   Archetypenavigatie
+   ============================================================ */
+.archnav {
+  position: sticky; top: 63px; z-index: 30;
+  background: var(--vmv-white);
+  border-bottom: 1px solid var(--vmv-grey-200);
+}
+.archnav__inner {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: flex; gap: var(--space-1);
+  padding: 0 var(--space-5);
+  overflow-x: auto; scrollbar-width: thin;
+}
+.archnav__tab {
+  flex: none;
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 11px 14px 10px;
+  border: 0; border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--vmv-muted);
+  font-size: .86rem; font-weight: 600;
+  white-space: nowrap; cursor: pointer;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.archnav__tab:hover { color: var(--vmv-purple); }
+.archnav__tab[aria-selected="true"] { color: var(--vmv-purple); border-bottom-color: var(--vmv-teal); }
+.archnav__letter {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--vmv-grey-100); color: var(--vmv-purple-mid);
+  font-size: .72rem; font-weight: 700;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.archnav__tab[aria-selected="true"] .archnav__letter { background: var(--vmv-teal-dark); color: var(--vmv-white); }
+
+/* ============================================================
+   Weergaven
+   ============================================================ */
+.shell { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-5) var(--space-5) var(--space-7); }
+.view[hidden] { display: none !important; }
+.view { animation: fade var(--dur) var(--ease) both; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.viewhead { margin-bottom: var(--space-5); }
+.viewhead__eyebrow {
+  display: block; font-size: .8rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--vmv-muted);
+  margin-bottom: 6px;
+}
+.viewhead__title { font-size: 1.85rem; color: var(--vmv-teal-dark); line-height: 1.15; }
+.viewhead__sub { margin-top: 6px; font-size: 1.02rem; color: var(--vmv-purple-mid); max-width: 72ch; }
+.viewhead__row { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; }
+.viewhead__row > div:first-child { flex: 1 1 420px; }
+
+/* Kaarten en panelen */
+.card {
+  background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-soft);
+}
+.card__head {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--vmv-grey-100);
+}
+.card__head h2, .card__head h3 { font-size: .96rem; }
+.card__body { padding: var(--space-4); }
+.card__foot { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--vmv-grey-100); }
+
+.panel-title {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: .92rem; color: var(--vmv-purple); font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.divider { height: 1px; background: var(--vmv-grey-200); border: 0; margin: var(--space-4) 0; }
+
+/* Chips, labels, badges */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  background: var(--vmv-grey-100); color: var(--vmv-purple-mid);
+  font-size: .74rem; font-weight: 600; white-space: nowrap;
+}
+.chip--teal { background: var(--vmv-teal-light); color: var(--vmv-teal-dark); }
+.chip--blue { background: var(--vmv-blue-light); color: var(--vmv-blue); }
+.chip--purple { background: var(--vmv-purple-light); color: var(--vmv-purple-mid); }
+.chip--mint { background: var(--vmv-mint); color: var(--vmv-success); }
+.chip--warning { background: var(--vmv-warning-light); color: #a8721d; }
+.chip--critical { background: var(--vmv-critical-light); color: #a94240; }
+.chip--success { background: var(--vmv-success-light); color: var(--vmv-success); }
+.chip--demo { background: var(--vmv-grey-100); color: var(--vmv-muted); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; font-size: .66rem; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+button.chip { cursor: pointer; font-family: inherit; }
+button.chip:hover { filter: brightness(.97); }
+
+/* Kaarttitel binnen een klikbare kaart (geen kop in een button) */
+.cardtitle { display: block; font-weight: 600; color: var(--vmv-purple); letter-spacing: -.01em; }
+
+.label {
+  display: block; font-size: .72rem; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--vmv-muted); margin-bottom: 4px;
+}
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; display: inline-block; }
+.status-dot--goed { background: var(--vmv-success); }
+.status-dot--aandacht { background: var(--vmv-warning); }
+.status-dot--kritisch { background: var(--vmv-critical); }
+
+/* Conceptmelding */
+.conceptbar {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 8px var(--space-5);
+  background: var(--vmv-purple-light);
+  color: var(--vmv-purple-mid);
+  font-size: .78rem;
+  border-bottom: 1px solid var(--vmv-grey-200);
+}
+.conceptbar__inner { max-width: var(--shell-max); margin: 0 auto; width: 100%; display: flex; align-items: center; gap: var(--space-2); }
+
+/* Formulieren */
+input[type="text"], input[type="search"], textarea, select {
+  font: inherit; color: var(--vmv-text);
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-s);
+  background: var(--vmv-white);
+}
+input[type="search"] { -webkit-appearance: none; appearance: none; }
+textarea { resize: vertical; min-height: 74px; line-height: 1.45; }
+input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
+
+.check {
+  display: flex; align-items: flex-start; gap: var(--space-2);
+  padding: 5px 4px; border-radius: var(--radius-s);
+  font-size: .84rem; cursor: pointer;
+  min-height: 30px;
+}
+.check:hover { background: var(--vmv-grey-100); }
+.check input { margin: 3px 0 0; accent-color: var(--vmv-teal-dark); width: 15px; height: 15px; flex: none; }
+.check__count { margin-left: auto; color: var(--vmv-grey-400); font-size: .74rem; }
+
+/* Rasters */
+.grid { display: grid; gap: var(--space-4); }
+.layout { display: grid; gap: var(--space-4); align-items: start; }
+.layout > *, .stack > *, .grid > *, .arch-grid > *, .inst-grid > *, .obj-grid > *,
+.routecards > *, .kpi-row > *, .statstrip > *, .result__grid > *,
+.routedetail__grid > *, .explain-strip > *, .optiongrid > * { min-width: 0; }
+.routecard__steps span { overflow-wrap: anywhere; }
+.layout--3 { grid-template-columns: 268px minmax(0, 1fr) 300px; }
+.layout--2l { grid-template-columns: 268px minmax(0, 1fr); }
+.layout--2r { grid-template-columns: minmax(0, 1fr) 320px; }
+
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); align-content: start; }
+.stack--tight { gap: var(--space-3); }
+
+/* Definitielijstjes */
+.deflist { display: grid; gap: 10px; margin: 0; }
+.deflist > div { display: grid; grid-template-columns: 108px 1fr; gap: var(--space-2); align-items: baseline; }
+.deflist dt { font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; color: var(--vmv-muted); font-weight: 600; }
+.deflist dd { margin: 0; font-size: .88rem; }
+
+/* Lijst met pijlitems */
+.linklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+.linklist__btn {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center; column-gap: var(--space-2);
+  width: 100%; text-align: left;
+  padding: 9px 10px; min-height: 40px;
+  border: 1px solid transparent; border-radius: var(--radius-s);
+  background: transparent; cursor: pointer;
+  font-size: .86rem; font-weight: 500; color: var(--vmv-text);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.linklist__btn:hover { background: var(--vmv-grey-100); border-color: var(--vmv-grey-200); }
+.linklist__btn .arrow { color: var(--vmv-grey-400); grid-column: 2; grid-row: 1; justify-self: end; }
+.linklist__meta { grid-column: 1 / -1; }
+.linklist__btn:hover .arrow { color: var(--vmv-teal-dark); }
+.linklist__meta { display: block; font-size: .74rem; color: var(--vmv-muted); font-weight: 400; }
+
+/* Toast */
+.toasts {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  z-index: 90; display: grid; gap: var(--space-2); width: min(460px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: flex-start; gap: var(--space-2);
+  padding: 11px 14px;
+  background: var(--vmv-purple); color: var(--vmv-white);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-panel);
+  font-size: .85rem;
+  animation: toastin var(--dur) var(--ease) both;
+}
+@keyframes toastin { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.toast--leaving { animation: toastout var(--dur) var(--ease) both; }
+@keyframes toastout { to { opacity: 0; transform: translateY(6px); } }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 80;
+  background: rgba(59, 41, 67, .35);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-5);
+  animation: fadein var(--dur) var(--ease) both;
+}
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.modal-backdrop[hidden] { display: none; }
+.modal {
+  background: var(--vmv-white);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-panel);
+  width: min(720px, 100%);
+  max-height: min(84vh, 780px);
+  display: flex; flex-direction: column;
+  animation: modalin var(--dur) var(--ease) both;
+}
+@keyframes modalin { from { opacity: 0; transform: translateY(12px) scale(.99); } to { opacity: 1; transform: none; } }
+.modal__head {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--vmv-grey-100);
+}
+.modal__head h2 { font-size: 1.2rem; }
+.modal__body { padding: var(--space-5); overflow-y: auto; }
+.modal__foot {
+  display: flex; gap: var(--space-2); justify-content: flex-end;
+  padding: var(--space-3) var(--space-5) var(--space-5);
+}
+.iconbtn {
+  flex: none; margin-left: auto;
+  width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--vmv-grey-200); background: var(--vmv-white);
+  border-radius: var(--radius-s); cursor: pointer; color: var(--vmv-muted);
+}
+.iconbtn:hover { background: var(--vmv-grey-100); color: var(--vmv-purple); }
+
+/* Drawer */
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 85;
+  width: min(430px, 100%);
+  background: var(--vmv-white);
+  border-left: 1px solid var(--vmv-grey-200);
+  box-shadow: var(--shadow-panel);
+  display: flex; flex-direction: column;
+  animation: drawerin var(--dur) var(--ease) both;
+}
+@keyframes drawerin { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.drawer[hidden] { display: none; }
+.drawer__head { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-5) var(--space-5) var(--space-3); border-bottom: 1px solid var(--vmv-grey-100); }
+.drawer__body { padding: var(--space-5); overflow-y: auto; flex: 1; }
+.drawer__foot { padding: var(--space-4) var(--space-5); border-top: 1px solid var(--vmv-grey-100); display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+.notice {
+  display: flex; gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--vmv-teal-light);
+  border-radius: var(--radius-m);
+  font-size: .82rem; color: var(--vmv-teal-dark);
+}
+.notice--purple { background: var(--vmv-purple-light); color: var(--vmv-purple-mid); }
+.notice--neutral { background: var(--vmv-grey-100); color: var(--vmv-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Startoverzicht
+   ============================================================ */
+.hero {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: var(--space-6); align-items: center;
+  padding: var(--space-6);
+  background: linear-gradient(180deg, var(--vmv-white), var(--vmv-teal-light) 320%);
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l);
+  margin-bottom: var(--space-5);
+}
+.hero h1 { font-size: 2.05rem; color: var(--vmv-purple); }
+.hero .lead { font-size: 1.02rem; color: var(--vmv-purple-mid); margin-top: var(--space-3); }
+.hero__art { justify-self: center; }
+
+.arch-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); }
+.arch-card {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200);
+  border-top: 3px solid var(--accent, var(--vmv-teal));
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.arch-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-panel); }
+.arch-card__top { display: flex; align-items: center; gap: var(--space-2); }
+.arch-card__letter {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent, var(--vmv-teal)); color: var(--vmv-white);
+  font-weight: 700; font-size: .86rem; flex: none;
+}
+.arch-card__meta { font-size: .74rem; color: var(--vmv-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.arch-card h3 { font-size: 1.02rem; }
+.arch-card__thumb {
+  background: var(--vmv-grey-50);
+  border: 1px solid var(--vmv-grey-100);
+  border-radius: var(--radius-m);
+  padding: var(--space-2);
+}
+.arch-card__thumb svg { display: block; width: 100%; height: auto; }
+.arch-card__question {
+  font-size: .88rem; color: var(--vmv-purple); font-weight: 600;
+  padding-left: 10px; border-left: 3px solid var(--vmv-teal-light);
+}
+.arch-card__body { font-size: .84rem; color: var(--vmv-muted); flex: 1; }
+.arch-card .btn { margin-top: auto; }
+
+.explain-strip {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+.explain-strip__item { display: flex; gap: var(--space-3); align-items: flex-start; }
+.explain-strip__icon {
+  width: 36px; height: 36px; border-radius: var(--radius-m); flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--vmv-mint); color: var(--vmv-teal-dark);
+}
+
+/* ============================================================
+   Archetype A – Opgavekompas
+   ============================================================ */
+.opgave-card__art {
+  background: var(--vmv-teal-light);
+  border-radius: var(--radius-m);
+  padding: var(--space-3);
+  display: flex; justify-content: center;
+  margin-bottom: var(--space-3);
+}
+.domainlist { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.domainlist li { display: flex; align-items: center; gap: var(--space-2); font-size: .86rem; }
+.domainlist .dot { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+
+.systemmap { position: relative; }
+.systemmap > svg { display: block; width: 100%; height: auto; }
+.node { cursor: pointer; }
+.node__hit { fill: transparent; }
+.node circle.node__bg {
+  fill: var(--vmv-white); stroke: var(--vmv-grey-200); stroke-width: 1.5;
+  transition: stroke var(--dur) var(--ease), fill var(--dur) var(--ease), stroke-width var(--dur) var(--ease);
+}
+.node text { font-family: var(--font); font-size: 11.5px; font-weight: 600; fill: var(--vmv-purple); text-anchor: middle; }
+.node:hover circle.node__bg { stroke: var(--vmv-teal); }
+.node.is-selected circle.node__bg { stroke: var(--vmv-teal-dark); stroke-width: 3; fill: var(--vmv-teal-light); }
+.node.is-related circle.node__bg { stroke: var(--vmv-blue); stroke-width: 2; fill: var(--vmv-blue-light); }
+.node.is-dimmed { opacity: .38; }
+.node:focus { outline: none; }
+.node:focus-visible circle.node__bg { stroke: var(--vmv-blue); stroke-width: 3; }
+.node:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 3px; }
+.edge { fill: none; stroke: var(--vmv-grey-200); stroke-width: 1.4; transition: stroke var(--dur) var(--ease), stroke-width var(--dur) var(--ease), opacity var(--dur) var(--ease); }
+.edge.is-active { stroke: var(--vmv-teal); stroke-width: 2.4; }
+.edge.is-dimmed { opacity: .3; }
+.centernode circle { fill: var(--vmv-purple-light); stroke: var(--vmv-purple-mid); stroke-width: 2; }
+.centernode text { font-family: var(--font); fill: var(--vmv-purple); text-anchor: middle; font-weight: 600; font-size: 13px; }
+
+.map-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: .76rem; color: var(--vmv-muted); }
+.map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-line { width: 22px; height: 0; border-top: 2px solid var(--vmv-grey-400); display: inline-block; }
+.legend-line--solid { border-top-color: var(--vmv-teal-dark); }
+.legend-line--dashed { border-top-style: dashed; border-top-color: var(--vmv-blue); }
+
+.statstrip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
+.stat {
+  display: flex; gap: var(--space-3); align-items: center;
+  padding: var(--space-4);
+  background: var(--vmv-white); border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l);
+}
+.stat__icon { width: 40px; height: 40px; border-radius: var(--radius-m); flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--vmv-blue-light); color: var(--vmv-blue); }
+.stat__value { font-size: 1.5rem; font-weight: 600; color: var(--vmv-purple); line-height: 1.1; }
+.stat__label { font-size: .8rem; color: var(--vmv-muted); }
+
+/* ============================================================
+   Archetype B – Instrumentenbibliotheek
+   ============================================================ */
+.searchbar {
+  display: flex; gap: var(--space-2); align-items: center;
+  padding: var(--space-3);
+  background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-soft);
+}
+.searchbar__field { flex: 1; display: flex; align-items: center; gap: var(--space-2); padding-left: var(--space-2); }
+.searchbar__field input { border: 0; padding: 8px 0; font-size: 1rem; }
+.searchbar__field input:focus { outline: none; }
+.searchbar__field:focus-within { box-shadow: none; }
+
+.filterchips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-3); }
+.filterchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 6px 4px 10px; min-height: 28px;
+  border: 1px solid var(--vmv-teal); background: var(--vmv-teal-light);
+  color: var(--vmv-teal-dark);
+  border-radius: var(--radius-pill);
+  font-size: .76rem; font-weight: 600; cursor: pointer;
+}
+.filterchip:hover { background: var(--vmv-white); }
+.filterchip .x { display: inline-flex; }
+
+.filtergroup { border: 0; padding: 0; margin: 0 0 var(--space-4); }
+.filtergroup legend {
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  font-size: .74rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--vmv-muted); padding: 0 0 6px;
+}
+.filtergroup__count { margin-left: auto; }
+
+.results-head { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-3); }
+.results-head h2 { font-size: 1.05rem; }
+
+.inst-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: var(--space-4); }
+.inst-card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4);
+  text-align: left;
+  background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.inst-card:hover { border-color: var(--vmv-teal); transform: translateY(-2px); box-shadow: var(--shadow-panel); }
+.inst-card__top { display: flex; align-items: flex-start; gap: var(--space-3); }
+.inst-card__icon {
+  width: 40px; height: 40px; border-radius: var(--radius-m); flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--vmv-mint); color: var(--vmv-teal-dark);
+}
+.inst-card__badge { margin-left: auto; }
+.inst-card h3, .inst-card .cardtitle { font-size: .95rem; }
+.inst-card__desc { font-size: .83rem; color: var(--vmv-muted); flex: 1; }
+.inst-card__foot { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding-top: var(--space-2); border-top: 1px solid var(--vmv-grey-100); }
+
+.empty {
+  padding: var(--space-6); text-align: center;
+  border: 1px dashed var(--vmv-grey-200); border-radius: var(--radius-l);
+  color: var(--vmv-muted); background: var(--vmv-white);
+}
+
+/* ============================================================
+   Archetype C – Routeplanner
+   ============================================================ */
+.routeform {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  gap: var(--space-3); align-items: end;
+  padding: var(--space-4);
+  background: var(--vmv-white); border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l); box-shadow: var(--shadow-soft);
+}
+.routemap { position: relative; }
+.routemap > svg { display: block; width: 100%; height: auto; }
+.routepath { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; transition: opacity var(--dur) var(--ease), stroke-width var(--dur) var(--ease); }
+.routegroup { cursor: pointer; }
+.routegroup.is-dimmed { opacity: .25; }
+.routegroup.is-active .routepath { stroke-width: 5.5; }
+.routegroup:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 4px; }
+.stop circle { fill: var(--vmv-white); stroke-width: 2.5; transition: r var(--dur) var(--ease); }
+.stop text { font-family: var(--font); font-size: 10.5px; fill: var(--vmv-purple-mid); text-anchor: middle; font-weight: 600; }
+.stop--decision circle { stroke-width: 3; }
+.routemap__label { font-family: var(--font); font-size: 11px; font-weight: 700; }
+
+.routetable { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.routetable th, .routetable td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--vmv-grey-100); }
+.routetable th { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--vmv-muted); }
+.routetable tbody tr { cursor: pointer; transition: background var(--dur) var(--ease); }
+.routetable tbody tr:hover { background: var(--vmv-grey-50); }
+.routetable tbody tr[aria-selected="true"] { background: var(--vmv-teal-light); }
+.routetable td:first-child { font-weight: 600; color: var(--vmv-purple); }
+
+.meter { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 6px; }
+.meter i { width: 7px; height: 7px; border-radius: 50%; background: var(--vmv-grey-200); display: inline-block; }
+.meter i.on { background: var(--vmv-teal-dark); }
+
+.routecards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.routecard {
+  padding: var(--space-4);
+  background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200);
+  border-top: 4px solid var(--rc, var(--vmv-teal));
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-soft);
+  text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; gap: var(--space-3);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.routecard[aria-pressed="true"] { border-color: var(--rc); box-shadow: 0 0 0 2px var(--rc) inset, var(--shadow-soft); }
+.routecard__top { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.routecard__letter { width: 26px; height: 26px; border-radius: 50%; background: var(--rc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .78rem; flex: none; }
+.routecard__steps { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: .74rem; color: var(--vmv-muted); }
+.routecard__steps span { background: var(--vmv-grey-100); border-radius: var(--radius-s); padding: 3px 7px; }
+
+.routedetail__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+
+/* ============================================================
+   Archetype D – Persoonlijke adviseur
+   ============================================================ */
+.conversation { display: grid; gap: var(--space-3); }
+.msg { display: flex; gap: var(--space-3); align-items: flex-start; animation: fade var(--dur) var(--ease) both; }
+.msg__avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .74rem; font-weight: 700;
+}
+.msg--bot .msg__avatar { background: var(--vmv-teal-light); color: var(--vmv-teal-dark); }
+.msg--user { flex-direction: row-reverse; }
+.msg--user .msg__avatar { background: var(--vmv-purple-light); color: var(--vmv-purple-mid); }
+.msg__bubble {
+  max-width: 62ch; padding: 10px 14px;
+  border-radius: var(--radius-m);
+  background: var(--vmv-grey-100);
+  font-size: .9rem;
+}
+.msg--bot .msg__bubble { background: var(--vmv-grey-100); border-top-left-radius: 3px; }
+.msg--user .msg__bubble { background: var(--vmv-purple-light); border-top-right-radius: 3px; }
+.msg__time { display: block; font-size: .7rem; color: var(--vmv-muted); margin-top: 4px; }
+
+.qcard {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l);
+  background: var(--vmv-grey-50);
+}
+.qcard__head { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+.qcard__num {
+  width: 24px; height: 24px; border-radius: 50%; flex: none;
+  background: var(--vmv-purple); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .74rem; font-weight: 700;
+}
+.optiongrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: var(--space-2); }
+.option {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 10px 12px; min-height: 44px; text-align: left;
+  border: 1px solid var(--vmv-grey-200); border-radius: var(--radius-m);
+  background: var(--vmv-white); cursor: pointer; font-size: .85rem; font-weight: 500;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.option:hover { border-color: var(--vmv-teal); background: var(--vmv-teal-light); }
+.option[aria-pressed="true"] { border-color: var(--vmv-teal-dark); background: var(--vmv-teal-light); font-weight: 600; }
+.option__check { margin-left: auto; color: var(--vmv-teal-dark); }
+
+.progress-steps { display: flex; gap: 6px; margin-top: var(--space-3); }
+.progress-steps i { height: 4px; flex: 1; border-radius: 2px; background: var(--vmv-grey-200); transition: background var(--dur) var(--ease); }
+.progress-steps i.on { background: var(--vmv-teal-dark); }
+
+.result { animation: fade var(--dur) var(--ease) both; }
+.result__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.steplist { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); counter-reset: s; }
+.steplist li { display: flex; gap: var(--space-3); font-size: .86rem; align-items: flex-start; }
+.steplist li::before {
+  counter-increment: s; content: counter(s);
+  width: 22px; height: 22px; flex: none; border-radius: 50%;
+  background: var(--vmv-blue-light); color: var(--vmv-blue);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .74rem; font-weight: 700;
+}
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checklist li { display: flex; align-items: center; gap: var(--space-2); font-size: .85rem; }
+.checklist .mark { width: 18px; height: 18px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--vmv-grey-100); color: var(--vmv-grey-400); }
+.checklist li.done .mark { background: var(--vmv-success-light); color: var(--vmv-success); }
+.checklist li.done { color: var(--vmv-text); }
+.checklist li:not(.done) { color: var(--vmv-muted); }
+
+/* ============================================================
+   Archetype E – Financiële controlekamer
+   ============================================================ */
+.kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
+.kpi {
+  padding: var(--space-4);
+  background: var(--vmv-white); border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-l); box-shadow: var(--shadow-soft);
+  display: flex; gap: var(--space-3); align-items: flex-start;
+}
+.kpi__icon { width: 38px; height: 38px; border-radius: var(--radius-m); flex: none; display: inline-flex; align-items: center; justify-content: center; }
+.kpi__label { font-size: .8rem; color: var(--vmv-muted); font-weight: 600; }
+.kpi__value { font-size: 1.5rem; font-weight: 600; color: var(--vmv-purple); line-height: 1.15; }
+.kpi__sub { font-size: .74rem; color: var(--vmv-grey-400); }
+.kpi__spark { margin-left: auto; align-self: flex-end; }
+
+.obj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: var(--space-3); }
+.obj-card {
+  text-align: left; cursor: pointer;
+  background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.obj-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-panel); border-color: var(--vmv-teal); }
+.obj-card[aria-pressed="true"] { border-color: var(--vmv-teal-dark); box-shadow: 0 0 0 2px var(--vmv-teal-dark) inset; }
+.obj-card__art { display: block; position: relative; height: 74px; border-bottom: 1px solid var(--vmv-grey-100); }
+.obj-card__art svg { display: block; width: 100%; height: 100%; }
+.obj-card__status { position: absolute; left: 8px; top: 8px; }
+.obj-card__body { padding: 10px 12px 12px; display: grid; gap: 8px; }
+.obj-card h3, .obj-card .cardtitle { font-size: .88rem; }
+.obj-card__metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; border-top: 1px solid var(--vmv-grey-100); padding-top: 8px; }
+.obj-card__metric { font-size: .72rem; color: var(--vmv-muted); }
+.obj-card__metric b { display: block; font-size: .82rem; color: var(--vmv-purple); font-weight: 600; }
+
+.heatmap > svg { display: block; width: 100%; height: auto; }
+.hm-point { cursor: pointer; transition: opacity var(--dur) var(--ease); }
+.hm-point circle { stroke: var(--vmv-white); stroke-width: 2; }
+.hm-point.is-selected circle { stroke: var(--vmv-purple); stroke-width: 3; }
+.hm-point:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 2px; }
+.hm-axis { font-family: var(--font); font-size: 10px; fill: var(--vmv-muted); }
+
+.signal { display: flex; gap: var(--space-3); align-items: flex-start; width: 100%; text-align: left; padding: 9px 8px; border: 1px solid transparent; border-radius: var(--radius-s); background: transparent; cursor: pointer; }
+.signal:hover { background: var(--vmv-grey-100); border-color: var(--vmv-grey-200); }
+.signal__count { width: 26px; height: 26px; border-radius: 8px; flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 700; }
+.signal__text { font-size: .84rem; }
+
+.timeline { position: relative; padding-top: var(--space-3); overflow-x: auto; }
+.timeline__track { display: flex; align-items: flex-start; gap: 0; min-width: 720px; }
+.timeline__item { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; position: relative; padding: 0 6px; }
+.timeline__item::before {
+  content: ""; position: absolute; top: 17px; left: 50%; right: -50%;
+  border-top: 2px dashed var(--vmv-grey-200);
+}
+.timeline__item:last-child::before { display: none; }
+.timeline__dot {
+  width: 36px; height: 36px; border-radius: 50%; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--vmv-white); border: 2px solid var(--vmv-teal); color: var(--vmv-teal-dark);
+}
+.timeline__date { font-size: .74rem; font-weight: 700; color: var(--vmv-purple); }
+.timeline__label { font-size: .78rem; color: var(--vmv-muted); }
+
+.detailpanel { animation: fade var(--dur) var(--ease) both; }
+.detailpanel__empty { padding: var(--space-5); text-align: center; color: var(--vmv-muted); font-size: .85rem; }
+
+/* Accordion */
+.acc { border-top: 1px solid var(--vmv-grey-100); }
+.acc__btn {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%;
+  padding: 11px 2px; min-height: 44px;
+  background: transparent; border: 0; cursor: pointer;
+  font-size: .88rem; font-weight: 600; color: var(--vmv-purple); text-align: left;
+}
+.acc__btn .arrow { margin-left: auto; transition: transform var(--dur) var(--ease); color: var(--vmv-muted); }
+.acc__btn[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+.acc__panel { padding: 0 2px var(--space-3); font-size: .85rem; color: var(--vmv-muted); }
+.acc__panel[hidden] { display: none; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 1320px) {
+  .layout--3 { grid-template-columns: 240px minmax(0, 1fr) 268px; }
+  .arch-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1120px) {
+  .layout--3, .layout--2l, .layout--2r { grid-template-columns: minmax(0, 1fr); }
+  .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .statstrip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .routecards { grid-template-columns: minmax(0, 1fr); }
+  .result__grid { grid-template-columns: minmax(0, 1fr); }
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .hero__art { display: none; }
+  .explain-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .routedetail__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 780px) {
+  .shell { padding: var(--space-4) var(--space-3) var(--space-6); }
+  .topbar__inner { padding: var(--space-3); flex-wrap: wrap; }
+  .topbar__context { order: 3; margin-left: 0; }
+  .archnav__inner { padding: 0 var(--space-3); }
+  /* Op kleine schermen niet plakken: de bovenbalk zou te veel ruimte innemen */
+  .topbar, .archnav { position: static; }
+  .arch-grid { grid-template-columns: minmax(0, 1fr); }
+  .kpi-row, .statstrip, .explain-strip { grid-template-columns: minmax(0, 1fr); }
+  .viewhead__title { font-size: 1.45rem; }
+  .hero { padding: var(--space-4); }
+  .hero h1 { font-size: 1.55rem; }
+  .routeform { grid-template-columns: minmax(0, 1fr); }
+  .routeform .swap { justify-self: start; }
+  .deflist > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .modal-backdrop { padding: 0; align-items: flex-end; }
+  .modal { max-height: 92vh; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .filters-mobile-hidden { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     Icoonsprite (lijniconen, decoratief tenzij anders aangegeven)
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-compass"><circle cx="12" cy="12" r="9"/><path d="M15.6 8.4 13.8 13.8 8.4 15.6l1.8-5.4z"/></g>
+    <g id="i-info"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></g>
+    <g id="i-map"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 7z"/><path d="M9 4v13M15 7v12.5"/></g>
+    <g id="i-book"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H19v14H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 1 5.5 18H19v2H5.5A1.5 1.5 0 0 1 4 19.5z"/></g>
+    <g id="i-route"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H14a3.5 3.5 0 0 1 0 7h-4a3.5 3.5 0 0 0 0 5h5.5"/></g>
+    <g id="i-chat"><path d="M20 15a2 2 0 0 1-2 2H8l-4 3V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 12.5h5"/></g>
+    <g id="i-dashboard"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></g>
+    <g id="i-close"><path d="M6 6l12 12M18 6 6 18"/></g>
+    <g id="i-arrow-right"><path d="M4 12h15M13 6l6 6-6 6"/></g>
+    <g id="i-chevron-down"><path d="m6 9 6 6 6-6"/></g>
+    <g id="i-check"><path d="m5 12.5 4.5 4.5L19 7"/></g>
+    <g id="i-search"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4"/></g>
+    <g id="i-filter"><path d="M4 6h16M7 12h10M10 18h4"/></g>
+    <g id="i-building"><path d="M4 20V7l7-3 7 3v13"/><path d="M2 20h20M9 20v-4h4v4M8 9h.01M12 9h.01M16 9h.01M8 12.5h.01M12 12.5h.01M16 12.5h.01"/></g>
+    <g id="i-euro"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5a4 4 0 0 0-6.2 1.2 5 5 0 0 0 0 4.6 4 4 0 0 0 6.2 1.2M7.5 11h5M7.5 13.5h5"/></g>
+    <g id="i-leaf"><path d="M5 19c0-8 5-13 14-13 0 8-4.5 12-9 12-2.5 0-5 .5-5 1z"/><path d="M9 15c1.5-3 4-5.5 7-7"/></g>
+    <g id="i-chart"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></g>
+    <g id="i-calendar"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></g>
+    <g id="i-users"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17.5 19a5.6 5.6 0 0 0-2-4"/></g>
+    <g id="i-alert"><path d="M12 4.5 21 19.5H3z"/><path d="M12 10v4M12 16.8h.01"/></g>
+    <g id="i-flag"><path d="M6 21V4M6 4h11l-2 3.5L17 11H6"/></g>
+    <g id="i-target"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></g>
+    <g id="i-layers"><path d="M12 4 3.5 8.5 12 13l8.5-4.5z"/><path d="m3.5 13.5 8.5 4.5 8.5-4.5"/></g>
+    <g id="i-copy"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5A2 2 0 0 0 13.5 4h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 1.5 1.9"/></g>
+    <g id="i-trash"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l1 12.5h9L17.5 7"/></g>
+    <g id="i-external"><path d="M14 4h6v6M20 4l-8.5 8.5"/><path d="M18 14v5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5h5"/></g>
+    <g id="i-swap"><path d="M7 5 4 8l3 3M4 8h14M17 19l3-3-3-3M20 16H6"/></g>
+    <g id="i-refresh"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/></g>
+    <g id="i-doc"><path d="M6 3.5h7L18.5 9v11.5h-13z"/><path d="M13 3.5V9h5.5M8.5 13h7M8.5 16.5h5"/></g>
+    <g id="i-scale"><path d="M12 4v16M7 20h10M5 8h14M5 8l-2.5 5h5zM19 8l2.5 5h-5z"/><circle cx="12" cy="4.5" r="1"/></g>
+    <g id="i-bulb"><path d="M9 17h6M10 20h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V15h7v-1.1A6 6 0 0 0 12 3z"/></g>
+    <g id="i-grid"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></g>
+    <g id="i-pin"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></g>
+  </defs>
+</svg>
+
+<!-- ============================================================
+     App shell
+     ============================================================ -->
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="#overzicht">
+      <svg class="brand__mark" width="34" height="34" viewBox="0 0 40 40" role="img" aria-label="Abstract kompasicoon">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M20 4v4M20 32v4M4 20h4M32 20h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M27 13 22.4 22.4 13 27l4.6-9.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="20" cy="20" r="2" fill="currentColor"/>
+      </svg>
+      <span class="brand__name">VMV Financieel Vastgoedkompas
+        <span>Verduurzaming Maatschappelijk Vastgoed</span>
+      </span>
+    </a>
+
+    <p class="topbar__context">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-layers"/></svg>
+      Interactieve conceptverkenning
+    </p>
+
+    <div class="topbar__actions">
+      <button type="button" class="btn" data-action="open-about">
+        <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-info"/></svg>
+        Over dit prototype
+      </button>
+      <button type="button" class="btn btn--teal" data-action="open-reflection" aria-expanded="false" aria-controls="reflectiepaneel">
+        <svg class="btn__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-bulb"/></svg>
+        Reflectievragen
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="conceptbar">
+  <div class="conceptbar__inner">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-info"/></svg>
+    <strong style="font-weight:600">Conceptprototype</strong>
+    <span>– bedoeld voor dialoog, niet voor besluitvorming. Alle inhoud, cijfers en objecten zijn fictief en illustratief.</span>
+  </div>
+</div>
+
+<nav class="archnav" aria-label="Archetypen">
+  <div class="archnav__inner" role="tablist" aria-label="Kies een archetype">
+    <button type="button" class="archnav__tab" role="tab" id="tab-overzicht" data-view="overzicht" aria-selected="true" aria-controls="view-overzicht">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-grid"/></svg>
+      Overzicht
+    </button>
+    <button type="button" class="archnav__tab" role="tab" id="tab-archetype-a" data-view="archetype-a" aria-selected="false" aria-controls="view-archetype-a"><span class="archnav__letter" aria-hidden="true">A</span> Opgavekompas</button>
+    <button type="button" class="archnav__tab" role="tab" id="tab-archetype-b" data-view="archetype-b" aria-selected="false" aria-controls="view-archetype-b"><span class="archnav__letter" aria-hidden="true">B</span> Instrumentenbibliotheek</button>
+    <button type="button" class="archnav__tab" role="tab" id="tab-archetype-c" data-view="archetype-c" aria-selected="false" aria-controls="view-archetype-c"><span class="archnav__letter" aria-hidden="true">C</span> Routeplanner</button>
+    <button type="button" class="archnav__tab" role="tab" id="tab-archetype-d" data-view="archetype-d" aria-selected="false" aria-controls="view-archetype-d"><span class="archnav__letter" aria-hidden="true">D</span> Persoonlijke adviseur</button>
+    <button type="button" class="archnav__tab" role="tab" id="tab-archetype-e" data-view="archetype-e" aria-selected="false" aria-controls="view-archetype-e"><span class="archnav__letter" aria-hidden="true">E</span> Financiële controlekamer</button>
+  </div>
+</nav>
+
+<main class="shell" id="hoofdinhoud">
+
+<!-- ============================================================
+     Start overview
+     ============================================================ -->
+<section class="view" id="view-overzicht" role="tabpanel" aria-labelledby="tab-overzicht" tabindex="-1">
+  <div class="hero">
+    <div>
+      <span class="viewhead__eyebrow">Conceptverkenning · klankbordgroep</span>
+      <h1>Vijf mogelijke gezichten van het Financieel Vastgoedkompas</h1>
+      <p class="lead">De archetypen zijn bewust verschillend. Ze tonen geen definitieve keuze, maar vijf mogelijke manieren waarop gebruikers in de toekomst door financiële kennis, instrumenten en beslismomenten kunnen navigeren.</p>
+      <div class="chip-row" style="margin-top:16px">
+        <span class="chip chip--teal">Democasus: Sporthal De Veste</span>
+        <span class="chip chip--purple">Rol: vastgoedmanager</span>
+        <span class="chip chip--blue">Fase: planvorming</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px">
+        <button type="button" class="btn btn--primary" data-goto="archetype-a">Start bij archetype A</button>
+        <button type="button" class="btn" data-action="open-reflection">Reflectievragen openen</button>
+      </div>
+    </div>
+    <div class="hero__art" aria-hidden="true">
+      <svg width="300" height="240" viewBox="0 0 300 240" fill="none">
+        <circle cx="150" cy="120" r="96" stroke="var(--vmv-teal)" stroke-width="1.2" stroke-dasharray="3 5" opacity=".7"/>
+        <circle cx="150" cy="120" r="66" stroke="var(--vmv-grey-200)" stroke-width="1.2"/>
+        <path d="M150 54v-14M150 200v14M70 120H56M244 120h-14" stroke="var(--vmv-teal-dark)" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M186 84 156 126l-42 30 30-42z" fill="var(--vmv-purple-light)" stroke="var(--vmv-purple-mid)" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="150" cy="120" r="5" fill="var(--vmv-purple)"/>
+        <g stroke="var(--vmv-teal-dark)" stroke-width="1.4" fill="var(--vmv-white)">
+          <circle cx="150" cy="24" r="12"/><circle cx="256" cy="86" r="12"/><circle cx="232" cy="196" r="12"/><circle cx="68" cy="196" r="12"/><circle cx="44" cy="86" r="12"/>
+        </g>
+        <g font-family="Aptos, Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="var(--vmv-teal-dark)" text-anchor="middle">
+          <text x="150" y="28">A</text><text x="256" y="90">B</text><text x="232" y="200">C</text><text x="68" y="200">D</text><text x="44" y="90">E</text>
+        </g>
+        <g fill="var(--vmv-mint)" stroke="var(--vmv-teal)" stroke-width="1" opacity=".8">
+          <path d="M282 132l7 4v8l-7 4-7-4v-8z"/><path d="M18 152l7 4v8l-7 4-7-4v-8z"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="arch-grid" id="overzicht-kaarten"></div>
+
+  <div class="explain-strip" id="overzicht-uitleg"></div>
+
+  <div class="card" style="margin-top:24px">
+    <div class="card__body" style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <span class="explain-strip__icon" aria-hidden="true">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><use href="#i-users"/></svg>
+      </span>
+      <div style="flex:1 1 380px">
+        <h2>Gebruik in de klankbordsessie</h2>
+        <p class="small muted" style="margin-top:6px">Loop de archetypen in willekeurige volgorde door. De democasus <strong>Sporthal De Veste</strong> keert in alle vijf terug, zodat de verschillen in navigatielogica zichtbaar worden en niet de verschillen in inhoud. Noteer per archetype je reactie in het reflectiepaneel.</p>
+      </div>
+      <button type="button" class="btn btn--teal" data-action="open-reflection">Reflectievragen</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Archetype A – Opgavekompas
+     ============================================================ -->
+<section class="view" id="view-archetype-a" role="tabpanel" aria-labelledby="tab-archetype-a" tabindex="-1" hidden>
+  <div class="viewhead">
+    <div class="viewhead__row">
+      <div>
+        <span class="viewhead__eyebrow">Archetype A</span>
+        <h1 class="viewhead__title">Opgavekompas</h1>
+        <p class="viewhead__sub">Zie de samenhang achter jouw vastgoedvraagstuk.</p>
+      </div>
+      <p class="notice notice--purple small" style="flex:0 1 380px;margin:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-info"/></svg>
+        <span>Metafoor: een systeemkaart. Eerst begrijpen waar de opgave over gaat, daarna pas handelen.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="layout layout--3">
+    <!-- Linkerkolom -->
+    <div class="stack">
+      <section class="card" aria-labelledby="a-opgave-titel">
+        <div class="card__body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <h2 id="a-opgave-titel" style="font-size:.96rem">Mijn opgave</h2>
+            <button type="button" class="btn btn--ghost btn--small" style="margin-left:auto" data-demo="Het wijzigen van de opgave is in dit concept nog niet uitgewerkt.">Wijzig</button>
+          </div>
+          <div class="opgave-card__art" aria-hidden="true">
+            <svg width="180" height="76" viewBox="0 0 180 76" fill="none">
+              <path d="M18 62V34l30-16 30 16v28z" fill="var(--vmv-white)" stroke="var(--vmv-teal-dark)" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M18 34 48 18l30 16" stroke="var(--vmv-teal-dark)" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M84 62V40h44v22z" fill="var(--vmv-white)" stroke="var(--vmv-teal-dark)" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M92 47h8v8h-8zM112 47h8v8h-8z" fill="none" stroke="var(--vmv-teal)" stroke-width="1.3"/>
+              <path d="M8 62h164" stroke="var(--vmv-teal-dark)" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M140 62V48l14-8 14 8v14z" fill="var(--vmv-mint)" stroke="var(--vmv-teal-dark)" stroke-width="1.4" stroke-linejoin="round"/>
+              <circle cx="48" cy="30" r="4" fill="var(--vmv-teal-light)" stroke="var(--vmv-teal-dark)" stroke-width="1.3"/>
+            </svg>
+          </div>
+          <h3 style="color:var(--vmv-teal-dark);font-size:1.02rem;margin-bottom:10px">Verduurzaming Sporthal De Veste</h3>
+          <dl class="deflist">
+            <div><dt>Objecttype</dt><dd>Sportaccommodatie</dd></div>
+            <div><dt>Eigendom</dt><dd>Gemeente</dd></div>
+            <div><dt>Fase</dt><dd><span class="chip chip--blue">Planvorming</span></dd></div>
+            <div><dt>Rol</dt><dd><span class="chip chip--purple">Vastgoedmanager</span></dd></div>
+          </dl>
+          <hr class="divider">
+          <p class="tiny muted">Vraagstuk: de verduurzamingsambitie is duidelijk, maar de financiële onderbouwing en businesscase zijn nog onvoldoende.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="a-domeinen-titel">
+        <div class="card__body">
+          <h2 id="a-domeinen-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-layers"/></svg>
+            Betrokken domeinen
+          </h2>
+          <ul class="domainlist" id="a-domeinen"></ul>
+          <p class="tiny muted" style="margin-top:12px">Illustratieve indeling ten behoeve van het gesprek.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Midden: systeemkaart -->
+    <section class="card" aria-labelledby="a-kaart-titel">
+      <div class="card__head">
+        <h2 id="a-kaart-titel">De opgavekaart</h2>
+        <span class="chip chip--demo">illustratief</span>
+        <button type="button" class="btn btn--ghost btn--small" style="margin-left:auto" data-action="a-reset">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-refresh"/></svg>
+          Selectie wissen
+        </button>
+      </div>
+      <div class="card__body">
+        <p class="small muted" style="margin-bottom:12px">Klik op een thema om te zien wat het betekent, waarom het relevant is en welke thema's ermee samenhangen. Navigeer met Tab en bevestig met Enter of spatie.</p>
+        <div class="systemmap" id="a-systeemkaart"></div>
+        <div class="map-legend" style="margin-top:12px">
+          <span><i class="legend-line legend-line--solid" aria-hidden="true"></i> Directe samenhang</span>
+          <span><i class="legend-line legend-line--dashed" aria-hidden="true"></i> Mogelijke samenhang</span>
+          <span><i class="legend-line" aria-hidden="true"></i> Ondersteunend</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rechterkolom: detail -->
+    <div class="stack">
+      <section class="card detailpanel" aria-labelledby="a-detail-titel" aria-live="polite">
+        <div class="card__head">
+          <h2 id="a-detail-titel">Themadetail</h2>
+        </div>
+        <div class="card__body" id="a-detail"></div>
+      </section>
+
+      <section class="card" aria-labelledby="a-rollen-titel">
+        <div class="card__body">
+          <h2 id="a-rollen-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-users"/></svg>
+            Betrokken rollen
+          </h2>
+          <ul class="linklist" id="a-rollen"></ul>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="a-vervolg-titel">
+        <div class="card__body">
+          <h2 id="a-vervolg-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            Mogelijke vervolgstappen
+          </h2>
+          <ul class="linklist">
+            <li><button type="button" class="linklist__btn" data-goto="archetype-c">Bekijk de routeplanner<span class="linklist__meta">Vergelijk drie illustratieve routes</span><svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-arrow-right"/></svg></button></li>
+            <li><button type="button" class="linklist__btn" data-goto="archetype-b">Open de instrumentenbibliotheek<span class="linklist__meta">Vind een passend instrument</span><svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-arrow-right"/></svg></button></li>
+            <li><button type="button" class="linklist__btn" data-goto="archetype-d">Stel een vraag aan de adviseur<span class="linklist__meta">Begeleide intake in vier vragen</span><svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-arrow-right"/></svg></button></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="statstrip" id="a-statstrip" style="margin-top:16px"></div>
+  <p class="tiny muted" style="margin-top:8px">Aantallen zijn illustratieve demo-inhoud en geen weergave van een bestaande inventarisatie.</p>
+</section>
+
+<!-- ============================================================
+     Archetype B – Instrumentenbibliotheek
+     ============================================================ -->
+<section class="view" id="view-archetype-b" role="tabpanel" aria-labelledby="tab-archetype-b" tabindex="-1" hidden>
+  <div class="viewhead">
+    <div class="viewhead__row">
+      <div>
+        <span class="viewhead__eyebrow">Archetype B</span>
+        <h1 class="viewhead__title">Instrumentenbibliotheek</h1>
+        <p class="viewhead__sub">Vind het juiste financiële instrument voor het juiste vastgoedvraagstuk.</p>
+      </div>
+      <p class="notice small" style="flex:0 1 380px;margin:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-book"/></svg>
+        <span>Metafoor: een bibliotheek. De gebruiker zoekt en filtert zelf en bepaalt wat bruikbaar is.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="searchbar">
+    <label class="searchbar__field" for="b-zoek">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--vmv-muted)" stroke-width="1.8" aria-hidden="true"><use href="#i-search"/></svg>
+      <span class="visually-hidden">Zoek in de instrumentenbibliotheek</span>
+      <input type="search" id="b-zoek" placeholder="Waar ben je naar op zoek?" value="Verduurzaming sporthal" autocomplete="off">
+    </label>
+    <button type="button" class="btn btn--primary" data-action="b-zoek">Zoeken</button>
+  </div>
+
+  <div class="layout layout--3" style="margin-top:16px">
+    <!-- Filters -->
+    <section class="card" aria-labelledby="b-filters-titel">
+      <div class="card__head">
+        <h2 id="b-filters-titel">Filters</h2>
+        <button type="button" class="btn btn--ghost btn--small" style="margin-left:auto" data-action="b-wis">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-trash"/></svg>
+          Wis filters
+        </button>
+      </div>
+      <div class="card__body" id="b-filters"></div>
+    </section>
+
+    <!-- Resultaten -->
+    <div>
+      <div id="b-chips" class="filterchips" style="margin:0 0 12px"></div>
+      <div class="results-head">
+        <h2 id="b-aantal" aria-live="polite">Instrumenten</h2>
+        <span class="chip chip--demo">illustratieve selectie</span>
+      </div>
+      <div class="inst-grid" id="b-resultaten"></div>
+    </div>
+
+    <!-- Rechterkolom -->
+    <div class="stack">
+      <section class="card" aria-labelledby="b-comb-titel">
+        <div class="card__body">
+          <h2 id="b-comb-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-layers"/></svg>
+            Vaak gecombineerd met
+          </h2>
+          <ul class="linklist" id="b-combinaties"></ul>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="b-ook-titel">
+        <div class="card__body">
+          <h2 id="b-ook-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-target"/></svg>
+            Gebruikers bekeken ook
+          </h2>
+          <ul class="linklist" id="b-ook"></ul>
+          <p class="tiny muted" style="margin-top:10px">Suggesties zijn in dit concept vaste voorbeelden en niet gebaseerd op gebruiksdata.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="b-themas-titel">
+        <div class="card__body">
+          <h2 id="b-themas-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-euro"/></svg>
+            Financiële thema's
+          </h2>
+          <div class="chip-row" id="b-themachips"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Archetype C – Routeplanner
+     ============================================================ -->
+<section class="view" id="view-archetype-c" role="tabpanel" aria-labelledby="tab-archetype-c" tabindex="-1" hidden>
+  <div class="viewhead">
+    <div class="viewhead__row">
+      <div>
+        <span class="viewhead__eyebrow">Archetype C</span>
+        <h1 class="viewhead__title">Routeplanner</h1>
+        <p class="viewhead__sub">Kies de financiële route die past bij jouw vastgoedopgave.</p>
+      </div>
+      <p class="notice small" style="flex:0 1 380px;margin:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-route"/></svg>
+        <span>Metafoor: een reisplanner. Meerdere wegen naar hetzelfde doel, kwalitatief vergeleken.</span>
+      </p>
+    </div>
+  </div>
+
+  <form class="routeform" id="c-form" novalidate>
+    <div>
+      <label class="label" for="c-van">Huidige situatie</label>
+      <input type="text" id="c-van" value="Sporthal uit 1985">
+    </div>
+    <button type="button" class="btn swap" data-action="c-swap" aria-label="Wissel huidige en gewenste situatie">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-swap"/></svg>
+    </button>
+    <div>
+      <label class="label" for="c-naar">Gewenste situatie</label>
+      <input type="text" id="c-naar" value="Toekomstbestendige en energiezuinige sporthal">
+    </div>
+    <button type="submit" class="btn btn--primary">Vergelijk routes</button>
+  </form>
+
+  <div class="layout layout--2r" style="margin-top:16px">
+    <div class="stack">
+      <section class="card" aria-labelledby="c-kaart-titel">
+        <div class="card__head">
+          <h2 id="c-kaart-titel">Routekaart</h2>
+          <span class="chip chip--demo">illustratief</span>
+          <span class="small muted" style="margin-left:auto" id="c-status" aria-live="polite"></span>
+        </div>
+        <div class="card__body">
+          <div class="routemap" id="c-routemap"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="c-vergelijk-titel">
+        <div class="card__head"><h2 id="c-vergelijk-titel">Routes vergelijken</h2></div>
+        <div style="overflow-x:auto">
+          <table class="routetable">
+            <caption class="visually-hidden">Kwalitatieve vergelijking van drie illustratieve routes</caption>
+            <thead>
+              <tr><th scope="col">Route</th><th scope="col">Tijdshorizon</th><th scope="col">Complexiteit</th><th scope="col">Besluitvorming</th><th scope="col">Financiële focus</th></tr>
+            </thead>
+            <tbody id="c-tabel"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="routecards" id="c-routecards"></div>
+    </div>
+
+    <div class="stack">
+      <section class="card detailpanel" aria-labelledby="c-detail-titel" aria-live="polite">
+        <div class="card__head"><h2 id="c-detail-titel">Routedetail</h2></div>
+        <div class="card__body" id="c-detail"></div>
+      </section>
+
+      <section class="card" aria-labelledby="c-rollen-titel">
+        <div class="card__body">
+          <h2 id="c-rollen-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-users"/></svg>
+            Betrokken rollen
+          </h2>
+          <ul class="linklist" id="c-rollen"></ul>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="c-besluit-titel">
+        <div class="card__body">
+          <h2 id="c-besluit-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-calendar"/></svg>
+            Belangrijke beslismomenten
+          </h2>
+          <ul class="linklist" id="c-beslismomenten"></ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Archetype D – Persoonlijke adviseur
+     ============================================================ -->
+<section class="view" id="view-archetype-d" role="tabpanel" aria-labelledby="tab-archetype-d" tabindex="-1" hidden>
+  <div class="viewhead">
+    <div class="viewhead__row">
+      <div>
+        <span class="viewhead__eyebrow">Archetype D</span>
+        <h1 class="viewhead__title">Persoonlijke adviseur</h1>
+        <p class="viewhead__sub">Vertel waar je tegenaan loopt. Het kompas helpt je verder.</p>
+      </div>
+      <p class="notice notice--purple small" style="flex:0 1 380px;margin:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-chat"/></svg>
+        <span>Metafoor: een begeleide intake. Het kompas structureert de vraag, de gebruiker houdt de regie.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="layout layout--3">
+    <!-- Linkerkolom -->
+    <div class="stack">
+      <section class="card" aria-labelledby="d-opgave-titel">
+        <div class="card__body">
+          <h2 id="d-opgave-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-building"/></svg>
+            Mijn vastgoedopgave
+          </h2>
+          <dl class="deflist">
+            <div><dt>Project</dt><dd>Sporthal De Veste</dd></div>
+            <div><dt>Objecttype</dt><dd>Sportaccommodatie</dd></div>
+            <div><dt>Eigendom</dt><dd>Gemeente</dd></div>
+            <div><dt>Fase</dt><dd><span class="chip chip--blue">Planvorming</span></dd></div>
+          </dl>
+          <hr class="divider">
+          <h3 class="panel-title" style="margin-bottom:8px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-users"/></svg>
+            Mijn profiel
+          </h3>
+          <dl class="deflist">
+            <div><dt>Rol</dt><dd>Vastgoedmanager</dd></div>
+            <div><dt>Team</dt><dd>Maatschappelijk vastgoed</dd></div>
+            <div><dt>Gemeente</dt><dd>Voorbeeldstad (demo)</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="d-themas-titel">
+        <div class="card__body">
+          <h2 id="d-themas-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-euro"/></svg>
+            Financiële thema's in beeld
+          </h2>
+          <ul class="checklist" id="d-themas"></ul>
+          <p class="tiny muted" style="margin-top:10px">Thema's kleuren mee op basis van je antwoorden.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Gesprek -->
+    <section class="card" aria-labelledby="d-gesprek-titel">
+      <div class="card__head">
+        <h2 id="d-gesprek-titel">Gesprek met het kompas</h2>
+        <span class="chip chip--demo">conceptueel voorbeeld</span>
+        <button type="button" class="btn btn--ghost btn--small" style="margin-left:auto" data-action="d-reset">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-refresh"/></svg>
+          Opnieuw beginnen
+        </button>
+      </div>
+      <div class="card__body">
+        <div class="conversation" id="d-gesprek" aria-live="polite"></div>
+        <div id="d-vraag"></div>
+        <div id="d-resultaat"></div>
+      </div>
+    </section>
+
+    <!-- Rechterkolom -->
+    <div class="stack">
+      <section class="card" aria-labelledby="d-waarom-titel">
+        <div class="card__body">
+          <h2 id="d-waarom-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-info"/></svg>
+            Waarom deze vragen?
+          </h2>
+          <p class="small muted">Het Kompas verbindt rol, objecttype, procesfase en financieel vraagstuk. Zo blijft de informatie die je krijgt beperkt tot wat in jouw situatie relevant is om te onderzoeken.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="d-volledig-titel">
+        <div class="card__body">
+          <h2 id="d-volledig-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-check"/></svg>
+            Volledigheid van je vraag
+          </h2>
+          <div class="progress-steps" id="d-progress" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <p class="tiny muted" style="margin:8px 0 12px" id="d-progress-tekst" aria-live="polite">0 van 4 vragen beantwoord</p>
+          <ul class="checklist" id="d-volledigheid"></ul>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="d-collegas-titel">
+        <div class="card__body">
+          <h2 id="d-collegas-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-users"/></svg>
+            Betrokken collega's
+          </h2>
+          <ul class="linklist" id="d-collegas"></ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Archetype E – Financiële controlekamer
+     ============================================================ -->
+<section class="view" id="view-archetype-e" role="tabpanel" aria-labelledby="tab-archetype-e" tabindex="-1" hidden>
+  <div class="viewhead">
+    <div class="viewhead__row">
+      <div>
+        <span class="viewhead__eyebrow">Archetype E</span>
+        <h1 class="viewhead__title">Financiële controlekamer</h1>
+        <p class="viewhead__sub">Zie waar financiële risico's, kansen en beslissingen samenkomen.</p>
+      </div>
+      <p class="notice small" style="flex:0 1 380px;margin:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-dashboard"/></svg>
+        <span>Metafoor: een portefeuillecockpit. Niet één gebouw, maar sturen op de hele portefeuille.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="kpi-row" id="e-kpis"></div>
+
+  <div class="layout layout--3">
+    <!-- Linkerkolom -->
+    <div class="stack">
+      <section class="card" aria-labelledby="e-portefeuille-titel">
+        <div class="card__body">
+          <h2 id="e-portefeuille-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-building"/></svg>
+            Mijn portefeuille
+          </h2>
+          <p class="small muted" style="margin-bottom:12px">Gemeente Voorbeeldstad</p>
+          <dl class="deflist">
+            <div><dt>Gebouwen</dt><dd>48 <span class="chip chip--demo">demo</span></dd></div>
+            <div><dt>Oppervlak</dt><dd>126.000 m² <span class="chip chip--demo">demo</span></dd></div>
+            <div><dt>Clusters</dt><dd>4 <span class="chip chip--demo">demo</span></dd></div>
+          </dl>
+          <hr class="divider">
+          <span class="label">Clusters</span>
+          <div class="chip-row">
+            <span class="chip chip--mint">Sport</span>
+            <span class="chip chip--blue">Onderwijs</span>
+            <span class="chip chip--purple">Cultuur</span>
+            <span class="chip chip--warning">Maatschappelijk</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="e-filters-titel">
+        <div class="card__head">
+          <h2 id="e-filters-titel">Filters</h2>
+          <button type="button" class="btn btn--ghost btn--small" style="margin-left:auto" data-action="e-wis">Wis filters</button>
+        </div>
+        <div class="card__body" id="e-filters"></div>
+      </section>
+    </div>
+
+    <!-- Midden -->
+    <div class="stack">
+      <section class="card" aria-labelledby="e-kaart-titel">
+        <div class="card__head">
+          <h2 id="e-kaart-titel">Portefeuillekaart</h2>
+          <span class="chip chip--demo">fictieve objecten</span>
+          <span class="small muted" style="margin-left:auto" id="e-aantal" aria-live="polite"></span>
+        </div>
+        <div class="card__body">
+          <div class="obj-grid" id="e-objecten"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="e-heatmap-titel">
+        <div class="card__head">
+          <h2 id="e-heatmap-titel">Portefeuilleheatmap</h2>
+          <span class="chip chip--demo">illustratief</span>
+        </div>
+        <div class="card__body">
+          <p class="small muted" style="margin-bottom:10px">Klik op een punt om hetzelfde object in het detailpaneel te openen. Positie en grootte zijn fictief.</p>
+          <div class="heatmap" id="e-heatmap"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="e-kalender-titel">
+        <div class="card__head">
+          <h2 id="e-kalender-titel">Besluitvormingskalender</h2>
+          <span class="chip chip--demo">demo-planning</span>
+        </div>
+        <div class="card__body">
+          <div class="timeline"><div class="timeline__track" id="e-kalender"></div></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Rechterkolom -->
+    <div class="stack">
+      <section class="card detailpanel" aria-labelledby="e-detail-titel" aria-live="polite">
+        <div class="card__head"><h2 id="e-detail-titel">Objectdetail</h2></div>
+        <div class="card__body" id="e-detail"></div>
+      </section>
+
+      <section class="card" aria-labelledby="e-signalen-titel">
+        <div class="card__body">
+          <h2 id="e-signalen-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-alert"/></svg>
+            Belangrijke signalen
+          </h2>
+          <div id="e-signalen"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="e-acties-titel">
+        <div class="card__body">
+          <h2 id="e-acties-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-target"/></svg>
+            Aanbevolen acties
+          </h2>
+          <ul class="linklist" id="e-acties"></ul>
+          <p class="tiny muted" style="margin-top:10px">Suggesties zijn conceptueel en vervangen geen professionele afweging.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     Dialogs and drawers
+     ============================================================ -->
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titel" id="modal">
+    <div class="modal__head">
+      <div>
+        <span class="viewhead__eyebrow" id="modal-eyebrow"></span>
+        <h2 id="modal-titel"></h2>
+      </div>
+      <button type="button" class="iconbtn" data-action="close-modal" aria-label="Sluit venster">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+    <div class="modal__body" id="modal-body"></div>
+    <div class="modal__foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<aside class="drawer" id="reflectiepaneel" role="dialog" aria-modal="false" aria-labelledby="reflectie-titel" hidden>
+  <div class="drawer__head">
+    <div>
+      <span class="viewhead__eyebrow">Dialoog</span>
+      <h2 id="reflectie-titel">Reflectievragen</h2>
+    </div>
+    <button type="button" class="iconbtn" data-action="close-reflection" aria-label="Sluit reflectiepaneel">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-close"/></svg>
+    </button>
+  </div>
+  <div class="drawer__body">
+    <p class="notice notice--neutral small" style="margin-bottom:16px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-info"/></svg>
+      <span>Je aantekeningen blijven alleen in deze browser bewaard. Dit is geen formele onderzoeksregistratie; kopieer je tekst als je die wilt delen.</span>
+    </p>
+    <div class="stack stack--tight" id="reflectie-velden"></div>
+  </div>
+  <div class="drawer__foot">
+    <button type="button" class="btn btn--primary" data-action="reflectie-kopieer">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-copy"/></svg>
+      Kopieer reflecties
+    </button>
+    <button type="button" class="btn" data-action="reflectie-wis">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-trash"/></svg>
+      Wis reflecties
+    </button>
+    <span class="tiny muted" id="reflectie-status" aria-live="polite" style="flex-basis:100%"></span>
+  </div>
+</aside>
+
+<!-- ============================================================
+     Toasts
+     ============================================================ -->
+<div class="toasts" id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript data
+   ============================================================ */
+
+/* --- Democasus, gedeeld door alle archetypen --- */
+var CASUS = {
+  project: "Sporthal De Veste",
+  objecttype: "Sportaccommodatie",
+  eigendom: "Gemeente",
+  huidig: "Sporthal uit 1985",
+  gewenst: "Toekomstbestendige en energiezuinige sporthal",
+  fase: "Planvorming",
+  rol: "Vastgoedmanager"
+};
+
+/* --- Archetypen voor het startoverzicht --- */
+var archetypes = [
+  {
+    id: "archetype-a", letter: "A", naam: "Opgavekompas",
+    metafoor: "Systeemkaart",
+    vraag: "Waar gaat mijn opgave eigenlijk over?",
+    body: "Zet de vastgoedopgave centraal en maakt zichtbaar welke financiële, maatschappelijke en bestuurlijke thema's ermee samenhangen.",
+    accent: "var(--vmv-teal-dark)",
+    thumb: '<svg viewBox="0 0 200 92" fill="none" aria-hidden="true">' +
+      '<g stroke="var(--vmv-grey-200)" stroke-width="1.2"><path d="M100 46 46 24M100 46l54-22M100 46 40 62M100 46l60 16M100 46v30M100 46V16"/></g>' +
+      '<g fill="var(--vmv-white)" stroke="var(--vmv-teal)" stroke-width="1.4"><circle cx="46" cy="24" r="8"/><circle cx="154" cy="24" r="8"/><circle cx="40" cy="62" r="8"/><circle cx="160" cy="62" r="8"/><circle cx="100" cy="78" r="8"/><circle cx="100" cy="14" r="8"/></g>' +
+      '<circle cx="100" cy="46" r="15" fill="var(--vmv-purple-light)" stroke="var(--vmv-purple-mid)" stroke-width="1.6"/></svg>'
+  },
+  {
+    id: "archetype-b", letter: "B", naam: "Instrumentenbibliotheek",
+    metafoor: "Bibliotheek",
+    vraag: "Welk instrument past bij mijn vraag?",
+    body: "Een doorzoekbare collectie van handreikingen, rekenmodellen, regelingen en praktijkvoorbeelden met filters op rol, fase en thema.",
+    accent: "var(--vmv-blue)",
+    thumb: '<svg viewBox="0 0 200 92" fill="none" aria-hidden="true">' +
+      '<rect x="10" y="12" width="42" height="68" rx="4" fill="var(--vmv-grey-100)" stroke="var(--vmv-grey-200)"/>' +
+      '<g stroke="var(--vmv-blue)" stroke-width="1.4"><path d="M18 24h26M18 34h20M18 44h26M18 54h16"/></g>' +
+      '<g fill="var(--vmv-white)" stroke="var(--vmv-blue)" stroke-width="1.4">' +
+      '<rect x="62" y="12" width="60" height="30" rx="4"/><rect x="130" y="12" width="60" height="30" rx="4"/>' +
+      '<rect x="62" y="50" width="60" height="30" rx="4"/><rect x="130" y="50" width="60" height="30" rx="4"/></g>' +
+      '<g stroke="var(--vmv-grey-200)" stroke-width="1.2"><path d="M70 24h30M70 32h20M138 24h30M138 32h20M70 62h30M70 70h20M138 62h30M138 70h20"/></g></svg>'
+  },
+  {
+    id: "archetype-c", letter: "C", naam: "Routeplanner",
+    metafoor: "Reisplanner",
+    vraag: "Welke route kan ik volgen?",
+    body: "Vergelijkt drie illustratieve routes van huidige naar gewenste situatie, met stappen, beslismomenten en instrumenten onderweg.",
+    accent: "var(--vmv-purple-mid)",
+    thumb: '<svg viewBox="0 0 200 92" fill="none" aria-hidden="true">' +
+      '<path d="M24 46C60 10 100 12 130 22s40 12 48 4" stroke="var(--vmv-teal)" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<path d="M24 46h60c30 0 40 0 94 0" stroke="var(--vmv-blue)" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<path d="M24 46c30 34 66 30 96 22s40-6 58 0" stroke="var(--vmv-purple-mid)" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<g fill="var(--vmv-white)"><circle cx="24" cy="46" r="9" stroke="var(--vmv-purple)" stroke-width="2"/><circle cx="178" cy="46" r="9" stroke="var(--vmv-teal-dark)" stroke-width="2"/>' +
+      '<circle cx="86" cy="22" r="5" stroke="var(--vmv-teal)" stroke-width="1.8"/><circle cx="100" cy="46" r="5" stroke="var(--vmv-blue)" stroke-width="1.8"/><circle cx="94" cy="70" r="5" stroke="var(--vmv-purple-mid)" stroke-width="1.8"/></g></svg>'
+  },
+  {
+    id: "archetype-d", letter: "D", naam: "Persoonlijke adviseur",
+    metafoor: "Begeleide intake",
+    vraag: "Wat kan ik nu het beste onderzoeken?",
+    body: "Een korte vraagstroom over vastgoedtype, fase, rol en knelpunt, met daarna een eerste denkrichting en passende instrumenten.",
+    accent: "var(--vmv-cyan)",
+    thumb: '<svg viewBox="0 0 200 92" fill="none" aria-hidden="true">' +
+      '<rect x="14" y="14" width="104" height="26" rx="8" fill="var(--vmv-grey-100)" stroke="var(--vmv-grey-200)"/>' +
+      '<rect x="82" y="48" width="104" height="26" rx="8" fill="var(--vmv-purple-light)" stroke="var(--vmv-purple-mid)" stroke-width="1.2"/>' +
+      '<g stroke="var(--vmv-grey-400)" stroke-width="1.3"><path d="M26 24h74M26 32h48"/></g>' +
+      '<g stroke="var(--vmv-purple-mid)" stroke-width="1.3"><path d="M94 58h74M94 66h44"/></g>' +
+      '<circle cx="176" cy="27" r="11" fill="var(--vmv-teal-light)" stroke="var(--vmv-teal-dark)" stroke-width="1.4"/>' +
+      '<path d="M181 22l-3 8-8 3 3-8z" fill="var(--vmv-teal-dark)"/></svg>'
+  },
+  {
+    id: "archetype-e", letter: "E", naam: "Financiële controlekamer",
+    metafoor: "Portefeuillecockpit",
+    vraag: "Waar moet ik op portefeuilleniveau op sturen?",
+    body: "Overzicht van de hele portefeuille: signalen, risico's, kansen, een heatmap en de aankomende beslismomenten.",
+    accent: "var(--vmv-warning)",
+    thumb: '<svg viewBox="0 0 200 92" fill="none" aria-hidden="true">' +
+      '<g fill="var(--vmv-white)" stroke="var(--vmv-grey-200)"><rect x="10" y="10" width="42" height="26" rx="4"/><rect x="58" y="10" width="42" height="26" rx="4"/><rect x="106" y="10" width="42" height="26" rx="4"/><rect x="154" y="10" width="36" height="26" rx="4"/></g>' +
+      '<g fill="none" stroke="var(--vmv-teal-dark)" stroke-width="1.4"><path d="M16 30l8-8 8 6 8-10"/></g>' +
+      '<rect x="10" y="44" width="90" height="38" rx="4" fill="var(--vmv-grey-50)" stroke="var(--vmv-grey-200)"/>' +
+      '<g><circle cx="30" cy="58" r="5" fill="var(--vmv-critical)"/><circle cx="52" cy="70" r="6" fill="var(--vmv-warning)"/><circle cx="76" cy="60" r="5" fill="var(--vmv-success)"/><circle cx="86" cy="74" r="4" fill="var(--vmv-success)"/></g>' +
+      '<rect x="106" y="44" width="84" height="38" rx="4" fill="var(--vmv-white)" stroke="var(--vmv-grey-200)"/>' +
+      '<g stroke="var(--vmv-blue)" stroke-width="1.4"><path d="M114 74h68M114 62h44M114 52h56"/></g></svg>'
+  }
+];
+
+var overzichtUitleg = [
+  { icon: "i-target", titel: "Zelfde casus", tekst: "Alle archetypen gebruiken Sporthal De Veste, zodat je navigatie vergelijkt en niet inhoud." },
+  { icon: "i-layers", titel: "Zelfde familie", tekst: "Eén visuele taal, vijf duidelijk verschillende manieren van navigeren." },
+  { icon: "i-info", titel: "Bewust onvolledig", tekst: "Niet alles is uitgewerkt. Ontbrekende onderdelen zijn juist gespreksstof." },
+  { icon: "i-bulb", titel: "Combineren mag", tekst: "Waarschijnlijk ligt de uiteindelijke oplossing in een combinatie van elementen." }
+];
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript data – archetype A
+   ============================================================ */
+var opgaveThemas = [
+  {
+    id: "subsidies", naam: "Subsidies", label: ["Subsidies"], hoek: -90,
+    betekenis: "Externe middelen die een deel van de investering kunnen dekken, met eigen voorwaarden en termijnen.",
+    waarom: "Subsidies bepalen mede of de businesscase rond komt en welk investeringsmoment logisch is.",
+    rollen: ["Vastgoedmanager", "Financieel adviseur", "Projectleider"],
+    fasen: ["Verkenning", "Planvorming", "Financiering"],
+    instrumenten: ["Subsidiewijzer maatschappelijk vastgoed", "Praktijkvoorbeeld verduurzaming sporthal", "Aanvraagformat verduurzaming"]
+  },
+  {
+    id: "tco", naam: "TCO", label: ["TCO"], hoek: -45,
+    betekenis: "Investering, onderhoud, beheer en energielasten in samenhang bekijken over de levensduur.",
+    waarom: "Een lagere investering kan later tot hogere exploitatielasten leiden. TCO maakt die ruil zichtbaar.",
+    rollen: ["Vastgoedmanager", "Controller"],
+    fasen: ["Planvorming", "Besluitvorming"],
+    instrumenten: ["TCO-rekenmodel maatschappelijk vastgoed", "Methodiek circulaire restwaarde", "Handreiking levensduurkosten"]
+  },
+  {
+    id: "exploitatie", naam: "Exploitatie", label: ["Exploitatie"], hoek: 0,
+    betekenis: "De jaarlijkse baten en lasten van het gebouw: huur, beheer, onderhoud en energie.",
+    waarom: "Verduurzaming verandert de exploitatie. Zonder herijking blijft het effect op het saldo onzichtbaar.",
+    rollen: ["Vastgoedmanager", "Controller", "Beleidsadviseur sport"],
+    fasen: ["Planvorming", "Exploitatie"],
+    instrumenten: ["Exploitatiemodel sportaccommodaties", "Kostprijsdekkende huur (KPD)", "Benchmark energielasten"]
+  },
+  {
+    id: "begroting", naam: "Gemeentebegroting", label: ["Gemeente-", "begroting"], hoek: 45,
+    betekenis: "De meerjarige gemeentelijke begroting waarin kapitaallasten en exploitatiebijdragen landen.",
+    waarom: "De dekking van kapitaallasten bepaalt of en wanneer een investering haalbaar is.",
+    rollen: ["Controller", "Financieel adviseur", "Wethouder"],
+    fasen: ["Besluitvorming", "Financiering"],
+    instrumenten: ["Begrotingskader investeringen", "MIP-handreiking", "Kredietformat"]
+  },
+  {
+    id: "besluitvorming", naam: "Besluitvorming", label: ["Besluit-", "vorming"], hoek: 90,
+    betekenis: "De ambtelijke en bestuurlijke momenten waarop over de opgave wordt besloten.",
+    waarom: "Informatie moet op het juiste moment in de juiste vorm beschikbaar zijn, anders schuift het besluit door.",
+    rollen: ["Vastgoedmanager", "Wethouder", "Gemeenteraadslid"],
+    fasen: ["Besluitvorming"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Format collegevoorstel", "Routekaart besluitvorming"]
+  },
+  {
+    id: "mkba", naam: "MKBA", label: ["MKBA"], hoek: 135,
+    betekenis: "Een afweging waarin ook maatschappelijke effecten van de investering worden meegewogen.",
+    waarom: "Bij maatschappelijk vastgoed is het financiële saldo zelden het hele verhaal.",
+    rollen: ["Beleidsadviseur", "Financieel adviseur", "Wethouder"],
+    fasen: ["Verkenning", "Besluitvorming"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Exploitatiemodel sportaccommodaties", "Effectenkaart sport"]
+  },
+  {
+    id: "circulair", naam: "Circulaire restwaarde", label: ["Circulaire", "restwaarde"], hoek: 180,
+    betekenis: "De waarde van materialen en constructie aan het einde van de gebruiksperiode.",
+    waarom: "Restwaarde beïnvloedt afschrijving, sloopkosten en de afweging renoveren of vervangen.",
+    rollen: ["Vastgoedmanager", "Financieel adviseur"],
+    fasen: ["Planvorming", "Exploitatie"],
+    instrumenten: ["Methodiek circulaire restwaarde", "TCO-rekenmodel maatschappelijk vastgoed", "Materialenpaspoort"]
+  },
+  {
+    id: "voorzieningen", naam: "Voorzieningenbeleid", label: ["Voorzieningen-", "beleid"], hoek: 225,
+    betekenis: "Het beleid over spreiding, kwaliteit en toekomstbestendigheid van voorzieningen in de gemeente.",
+    waarom: "De vraag of deze sporthal blijft, bepaalt of investeren in dit gebouw logisch is.",
+    rollen: ["Beleidsadviseur", "Wethouder", "Vastgoedmanager"],
+    fasen: ["Verkenning", "Planvorming"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Kader voorzieningenbeleid", "Spreidingsanalyse"]
+  }
+];
+
+var opgaveRelaties = [
+  { van: "subsidies", naar: "tco", type: "direct", tekst: "Subsidies verlagen de investering en daarmee de TCO" },
+  { van: "tco", naar: "exploitatie", type: "direct", tekst: "Levensduurkosten landen in de exploitatie" },
+  { van: "exploitatie", naar: "begroting", type: "direct", tekst: "Exploitatiesaldo raakt de gemeentebegroting" },
+  { van: "begroting", naar: "besluitvorming", type: "direct", tekst: "Dekking is voorwaarde voor besluitvorming" },
+  { van: "mkba", naar: "besluitvorming", type: "direct", tekst: "Maatschappelijke effecten voeden de bestuurlijke afweging" },
+  { van: "voorzieningen", naar: "besluitvorming", type: "mogelijk", tekst: "Voorzieningenbeleid stuurt portefeuillekeuzes" },
+  { van: "voorzieningen", naar: "mkba", type: "mogelijk", tekst: "Beleidsdoelen bepalen welke effecten meetellen" },
+  { van: "circulair", naar: "tco", type: "mogelijk", tekst: "Restwaarde beïnvloedt de levensduurkosten" },
+  { van: "circulair", naar: "exploitatie", type: "ondersteunend", tekst: "Materiaalkeuzes werken door in onderhoud" },
+  { van: "subsidies", naar: "begroting", type: "ondersteunend", tekst: "Beschikkingen beïnvloeden het investeringsritme" },
+  { van: "exploitatie", naar: "mkba", type: "ondersteunend", tekst: "Gebruik en bezetting raken maatschappelijke waarde" }
+];
+
+var opgaveDomeinen = [
+  { naam: "Vastgoed", kleur: "var(--vmv-teal-light)", icon: "i-building", tint: "var(--vmv-teal-dark)" },
+  { naam: "Financiën", kleur: "var(--vmv-blue-light)", icon: "i-euro", tint: "var(--vmv-blue)" },
+  { naam: "Beleid", kleur: "var(--vmv-purple-light)", icon: "i-doc", tint: "var(--vmv-purple-mid)" },
+  { naam: "Exploitatie", kleur: "var(--vmv-mint)", icon: "i-chart", tint: "var(--vmv-success)" },
+  { naam: "Bestuur", kleur: "var(--vmv-warning-light)", icon: "i-scale", tint: "#a8721d" }
+];
+
+var opgaveRollen = [
+  { naam: "Vastgoedmanager", meta: "Trekker van de opgave" },
+  { naam: "Controller", meta: "Bewaakt kapitaallasten en dekking" },
+  { naam: "Financieel adviseur", meta: "Onderbouwt de businesscase" },
+  { naam: "Beleidsadviseur sport", meta: "Bewaakt gebruik en doelgroepen" },
+  { naam: "Wethouder vastgoed", meta: "Bestuurlijk opdrachtgever" }
+];
+
+var opgaveStats = [
+  { waarde: "8", label: "Relevante thema's", icon: "i-layers" },
+  { waarde: "5", label: "Betrokken rollen", icon: "i-users" },
+  { waarde: "7", label: "Mogelijke instrumenten", icon: "i-book" },
+  { waarde: "3", label: "Mogelijke routes", icon: "i-route" }
+];
+
+/* ============================================================
+   JavaScript data – archetype B
+   ============================================================ */
+var bFilterGroepen = [
+  { id: "rol", titel: "Rol", opties: ["Vastgoedmanager", "Projectleider", "Controller", "Financieel adviseur", "Beleidsadviseur", "Wethouder"] },
+  { id: "objecttype", titel: "Objecttype", opties: ["Sportaccommodatie", "School", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"] },
+  { id: "fase", titel: "Procesfase", opties: ["Verkenning", "Planvorming", "Besluitvorming", "Financiering", "Uitvoering", "Exploitatie"] },
+  { id: "thema", titel: "Financieel thema", opties: ["Subsidies", "TCO", "Exploitatie", "MIP", "MKBA", "Begroting", "BTW en fiscaliteit", "Kostprijsdekkende huur"] },
+  { id: "type", titel: "Type instrument", opties: ["Handreiking", "Tool", "Rekenmodel", "Subsidie", "Lening", "Praktijkvoorbeeld", "Beslisboom"] }
+];
+
+var instrumenten = [
+  {
+    id: "tco", titel: "TCO-rekenmodel maatschappelijk vastgoed", type: "Rekenmodel", status: "Veel gebruikt", icon: "i-chart",
+    kort: "Bereken investering, onderhoud, beheer en energie in samenhang over de levensduur.",
+    rol: ["Vastgoedmanager", "Controller", "Financieel adviseur"],
+    objecttype: ["Sportaccommodatie", "School", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"],
+    fase: ["Verkenning", "Planvorming", "Besluitvorming"],
+    thema: ["TCO", "Exploitatie"],
+    waarvoor: "Om zichtbaar te maken wat een investeringsvariant over de hele levensduur kost, niet alleen bij oplevering.",
+    voorwie: "Vastgoedmanagers en controllers die varianten willen vergelijken.",
+    wanneer: "Zodra er twee of meer serieuze varianten op tafel liggen, meestal in de planvormingsfase.",
+    nodig: ["Meerjarenonderhoudsplan", "Energieverbruik van de afgelopen jaren", "Indicatie investeringsbedrag per variant"],
+    gerelateerd: ["Exploitatiemodel sportaccommodaties", "MIP-handreiking", "Methodiek circulaire restwaarde"]
+  },
+  {
+    id: "subsidiewijzer", titel: "Subsidiewijzer maatschappelijk vastgoed", type: "Subsidie", status: "Nieuw", icon: "i-leaf",
+    kort: "Overzicht van landelijke, provinciale en fondsgebonden regelingen voor verduurzaming en renovatie.",
+    rol: ["Vastgoedmanager", "Projectleider", "Beleidsadviseur"],
+    objecttype: ["Sportaccommodatie", "School", "Zwembad", "Buurthuis", "Cultuurgebouw"],
+    fase: ["Verkenning", "Planvorming", "Financiering"],
+    thema: ["Subsidies"],
+    waarvoor: "Om te verkennen welke regelingen mogelijk passen bij het object en de geplande maatregelen.",
+    voorwie: "Iedereen die een investering deels extern wil dekken.",
+    wanneer: "Vroeg in de planvorming, omdat aanvraagtermijnen het projectritme bepalen.",
+    nodig: ["Objectgegevens en energielabel", "Globale maatregelenlijst", "Beoogd investeringsjaar"],
+    gerelateerd: ["TCO-rekenmodel maatschappelijk vastgoed", "Begrotingskader investeringen", "Praktijkvoorbeeld verduurzaming sporthal"]
+  },
+  {
+    id: "mip", titel: "MIP-handreiking", type: "Handreiking", status: "Aanbevolen", icon: "i-doc",
+    kort: "Praktische gids voor het opstellen en gebruiken van een meerjarig investeringsprogramma.",
+    rol: ["Vastgoedmanager", "Controller", "Financieel adviseur"],
+    objecttype: ["Sportaccommodatie", "School", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"],
+    fase: ["Besluitvorming", "Financiering"],
+    thema: ["MIP", "Begroting"],
+    waarvoor: "Om investeringen over meerdere jaren te programmeren en kapitaallasten te spreiden.",
+    voorwie: "Vastgoedmanagers en controllers die de portefeuille meerjarig plannen.",
+    wanneer: "Bij het opstellen van de begroting en bij herijking van het investeringsprogramma.",
+    nodig: ["Objectenlijst met conditiescores", "Vervangings- en verduurzamingsopgave", "Afschrijvingstermijnen"],
+    gerelateerd: ["Begrotingskader investeringen", "TCO-rekenmodel maatschappelijk vastgoed", "Kostprijsdekkende huur (KPD)"]
+  },
+  {
+    id: "mkba", titel: "MKBA-light maatschappelijk vastgoed", type: "Tool", status: "Aanbevolen", icon: "i-scale",
+    kort: "Verkennende afweging waarin maatschappelijke effecten naast de financiële uitkomsten staan.",
+    rol: ["Beleidsadviseur", "Financieel adviseur", "Wethouder"],
+    objecttype: ["Sportaccommodatie", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"],
+    fase: ["Verkenning", "Besluitvorming"],
+    thema: ["MKBA"],
+    waarvoor: "Om het gesprek te voeren over waarde die niet in het exploitatiesaldo zichtbaar wordt.",
+    voorwie: "Beleid en bestuur, samen met de financiële kolom.",
+    wanneer: "Wanneer een investering financieel lastig is, maar maatschappelijk gewenst.",
+    nodig: ["Doelgroepen en gebruiksgegevens", "Beleidsdoelen sport of cultuur", "Varianten om te vergelijken"],
+    gerelateerd: ["Kader voorzieningenbeleid", "Exploitatiemodel sportaccommodaties", "Praktijkvoorbeeld verduurzaming sporthal"]
+  },
+  {
+    id: "kpd", titel: "Kostprijsdekkende huur (KPD)", type: "Handreiking", status: "Veel gebruikt", icon: "i-euro",
+    kort: "Uitleg over kostprijsdekkende huur, varianten en de gevolgen voor exploitatie en bekostiging.",
+    rol: ["Vastgoedmanager", "Controller", "Financieel adviseur"],
+    objecttype: ["Sportaccommodatie", "School", "Bibliotheek", "Buurthuis", "Cultuurgebouw"],
+    fase: ["Planvorming", "Exploitatie"],
+    thema: ["Kostprijsdekkende huur", "Exploitatie"],
+    waarvoor: "Om te bepalen welke huur past bij de werkelijke kosten en welk deel subsidie is.",
+    voorwie: "Vastgoed en financiën, in gesprek met huurders en beleid.",
+    wanneer: "Bij nieuwe huurovereenkomsten en na een grote investering.",
+    nodig: ["Kapitaallasten", "Onderhouds- en beheerlasten", "Huidige huurafspraken"],
+    gerelateerd: ["Exploitatiemodel sportaccommodaties", "TCO-rekenmodel maatschappelijk vastgoed", "BTW-beslisboom vastgoed"]
+  },
+  {
+    id: "exploitatie", titel: "Exploitatiemodel sportaccommodaties", type: "Rekenmodel", status: "Veel gebruikt", icon: "i-chart",
+    kort: "Model voor baten en lasten van sportaccommodaties, inclusief bezetting en energielasten.",
+    rol: ["Vastgoedmanager", "Controller", "Beleidsadviseur"],
+    objecttype: ["Sportaccommodatie", "Zwembad"],
+    fase: ["Planvorming", "Exploitatie"],
+    thema: ["Exploitatie", "TCO"],
+    waarvoor: "Om te zien hoe verduurzaming en gebruik het jaarlijkse saldo veranderen.",
+    voorwie: "Vastgoedmanagers en beleidsadviseurs sport.",
+    wanneer: "Bij herijking van exploitatie-uitgangspunten of na een investeringsbesluit.",
+    nodig: ["Bezettingsgegevens", "Tarieven en huurinkomsten", "Energie- en onderhoudslasten"],
+    gerelateerd: ["Kostprijsdekkende huur (KPD)", "TCO-rekenmodel maatschappelijk vastgoed", "MKBA-light maatschappelijk vastgoed"]
+  },
+  {
+    id: "circulair", titel: "Methodiek circulaire restwaarde", type: "Handreiking", status: "Nieuw", icon: "i-refresh",
+    kort: "Aanpak voor het bepalen van rest- en materiaalwaarde bij renovatie, sloop of vervanging.",
+    rol: ["Vastgoedmanager", "Financieel adviseur", "Projectleider"],
+    objecttype: ["Sportaccommodatie", "School", "Bibliotheek", "Cultuurgebouw"],
+    fase: ["Planvorming", "Exploitatie"],
+    thema: ["TCO"],
+    waarvoor: "Om restwaarde mee te wegen in de keuze tussen renoveren en vervangen.",
+    voorwie: "Vastgoed en financiën, bij voorkeur samen met de technisch adviseur.",
+    wanneer: "Bij einde levensduur of een ingrijpende renovatie.",
+    nodig: ["Bouwjaar en constructiegegevens", "Materialenoverzicht", "Verwachte resterende levensduur"],
+    gerelateerd: ["TCO-rekenmodel maatschappelijk vastgoed", "MIP-handreiking", "Kader voorzieningenbeleid"]
+  },
+  {
+    id: "btw", titel: "BTW-beslisboom vastgoed", type: "Beslisboom", status: "Veel gebruikt", icon: "i-scale",
+    kort: "Stapsgewijze beslisboom over de btw-behandeling bij investeringen en exploitatie.",
+    rol: ["Controller", "Financieel adviseur"],
+    objecttype: ["Sportaccommodatie", "Zwembad", "Cultuurgebouw", "Buurthuis"],
+    fase: ["Planvorming", "Exploitatie"],
+    thema: ["BTW en fiscaliteit"],
+    waarvoor: "Om vroeg te zien welke fiscale positie geldt en wat dat betekent voor het investeringsbedrag.",
+    voorwie: "De financiële kolom, in afstemming met een fiscalist.",
+    wanneer: "Voordat huur- en beheerafspraken definitief worden.",
+    nodig: ["Gebruiksafspraken en huurders", "Investeringsopzet", "Huidige btw-positie"],
+    gerelateerd: ["Kostprijsdekkende huur (KPD)", "Exploitatiemodel sportaccommodaties", "Begrotingskader investeringen"]
+  },
+  {
+    id: "praktijk", titel: "Praktijkvoorbeeld verduurzaming sporthal", type: "Praktijkvoorbeeld", status: "Praktijkvoorbeeld", icon: "i-bulb",
+    kort: "Beschrijving van een vergelijkbare gemeentelijke sporthal en de gemaakte financiële keuzes.",
+    rol: ["Vastgoedmanager", "Projectleider", "Beleidsadviseur"],
+    objecttype: ["Sportaccommodatie"],
+    fase: ["Verkenning", "Planvorming"],
+    thema: ["Subsidies", "TCO", "Exploitatie"],
+    waarvoor: "Om te leren van de afwegingen en valkuilen van een andere gemeente.",
+    voorwie: "Iedereen die aan het begin van een vergelijkbare opgave staat.",
+    wanneer: "In de verkenning, voordat varianten worden vastgezet.",
+    nodig: ["Niets. Dit is leesmateriaal."],
+    gerelateerd: ["Subsidiewijzer maatschappelijk vastgoed", "TCO-rekenmodel maatschappelijk vastgoed", "MKBA-light maatschappelijk vastgoed"]
+  },
+  {
+    id: "begrotingskader", titel: "Begrotingskader investeringen", type: "Handreiking", status: "Aanbevolen", icon: "i-doc",
+    kort: "Kader voor de vertaling van investeringen naar kapitaallasten en dekking in de begroting.",
+    rol: ["Controller", "Financieel adviseur", "Wethouder"],
+    objecttype: ["Sportaccommodatie", "School", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"],
+    fase: ["Besluitvorming", "Financiering"],
+    thema: ["Begroting", "MIP"],
+    waarvoor: "Om te bepalen wat een investering betekent voor de meerjarenbegroting.",
+    voorwie: "Controllers en financieel adviseurs, samen met vastgoed.",
+    wanneer: "Bij het opstellen van een krediet- of investeringsvoorstel.",
+    nodig: ["Investeringsbedrag en fasering", "Afschrijvingstermijn", "Beoogde dekking"],
+    gerelateerd: ["MIP-handreiking", "TCO-rekenmodel maatschappelijk vastgoed", "BTW-beslisboom vastgoed"]
+  }
+];
+
+var bCombinaties = [
+  { naam: "TCO-rekenmodel maatschappelijk vastgoed", meta: "Basis voor de businesscase" },
+  { naam: "Subsidiewijzer maatschappelijk vastgoed", meta: "Externe dekking verkennen" },
+  { naam: "MKBA-light maatschappelijk vastgoed", meta: "Maatschappelijke waarde meewegen" },
+  { naam: "Begrotingskader investeringen", meta: "Vertaling naar kapitaallasten" }
+];
+
+var bOok = [
+  { naam: "Methodiek circulaire restwaarde", meta: "Renoveren of vervangen" },
+  { naam: "Kader voorzieningenbeleid", meta: "Blijft deze voorziening?" },
+  { naam: "Exploitatiemodel sportaccommodaties", meta: "Effect op het jaarsaldo" }
+];
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript data – archetype C
+   ============================================================ */
+var routes = [
+  {
+    id: "a", letter: "A", naam: "Subsidieroute", kleur: "var(--vmv-teal-dark)", y: 92,
+    kenmerk: "Meest subsidiegericht",
+    focus: "Subsidies en externe middelen",
+    tijdshorizon: "Middellang", tijdswaarde: 2,
+    complexiteit: "Gemiddeld", complexwaarde: 2,
+    besluitvorming: "Meerdere formele momenten",
+    stappen: [
+      { naam: "Businesscase", label: ["Businesscase"] },
+      { naam: "Subsidieverkenning", label: ["Subsidie-", "verkenning"] },
+      { naam: "Aanvraag", label: ["Aanvraag"] },
+      { naam: "Beschikking", label: ["Beschikking"], besluit: true },
+      { naam: "Investering", label: ["Investering"] },
+      { naam: "Monitoring", label: ["Monitoring"] }
+    ],
+    rollen: ["Vastgoedmanager", "Projectleider", "Financieel adviseur", "Beleidsadviseur"],
+    beslismomenten: ["Ambtelijke afweging", "Subsidieaanvraag", "Investeringsbesluit", "Monitoring resultaten"],
+    instrumenten: ["Subsidiewijzer maatschappelijk vastgoed", "Businesscase-format", "Monitoringsmodel"],
+    aandachtspunt: "Aanvraagtermijnen bepalen het projectritme. Het besluit over de investering hangt aan het moment van beschikking.",
+    samenvatting: "Deze illustratieve route zoekt eerst externe dekking en past het investeringsmoment daarop aan."
+  },
+  {
+    id: "b", letter: "B", naam: "Financieringsroute", kleur: "var(--vmv-blue)", y: 190,
+    kenmerk: "Meest begrotingsgericht",
+    focus: "Financiering en begroting",
+    tijdshorizon: "Korter", tijdswaarde: 1,
+    complexiteit: "Gemiddeld", complexwaarde: 2,
+    besluitvorming: "Minder stappen, wel formele momenten",
+    stappen: [
+      { naam: "TCO-berekening", label: ["TCO-", "berekening"] },
+      { naam: "Financieel kader", label: ["Financieel", "kader"] },
+      { naam: "Kredietaanvraag", label: ["Krediet-", "aanvraag"], besluit: true },
+      { naam: "Meerjarenprogrammering", label: ["Meerjaren-", "programmering"] },
+      { naam: "Investering", label: ["Investering"] }
+    ],
+    rollen: ["Vastgoedmanager", "Controller", "Financieel adviseur", "Wethouder"],
+    beslismomenten: ["Financiële onderbouwing", "Kredietvoorstel", "Bestuurlijke afweging", "Investeringsbesluit"],
+    instrumenten: ["TCO-rekenmodel maatschappelijk vastgoed", "MIP-handreiking", "Begrotingskader investeringen"],
+    aandachtspunt: "De dekking van kapitaallasten is bepalend. Zonder ruimte in de meerjarenbegroting schuift de investering door.",
+    samenvatting: "Deze illustratieve route werkt vanuit de begroting: eerst de lasten in beeld, dan het krediet."
+  },
+  {
+    id: "c", letter: "C", naam: "Integrale ontwikkelroute", kleur: "var(--vmv-purple-mid)", y: 288,
+    kenmerk: "Meest integraal",
+    focus: "Integrale businesscase en maatschappelijke waarde",
+    tijdshorizon: "Langer", tijdswaarde: 3,
+    complexiteit: "Hoog", complexwaarde: 4,
+    besluitvorming: "Meerdere en integrale besluitvorming",
+    stappen: [
+      { naam: "Scenarioanalyse", label: ["Scenario-", "analyse"] },
+      { naam: "Multifunctioneel gebruik", label: ["Multifunctioneel", "gebruik"] },
+      { naam: "Integrale businesscase", label: ["Integrale", "businesscase"] },
+      { naam: "Bestuurlijke afweging", label: ["Bestuurlijke", "afweging"], besluit: true },
+      { naam: "Realisatie", label: ["Realisatie"] }
+    ],
+    rollen: ["Vastgoedmanager", "Beleidsadviseur", "Controller", "Wethouder"],
+    beslismomenten: ["Scenariokeuze", "Beleidsmatige afweging", "Integrale businesscase", "Realisatiebesluit"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Exploitatiemodel sportaccommodaties", "Methodiek circulaire restwaarde"],
+    aandachtspunt: "Meer partijen betekent meer draagvlak, maar ook een langere doorlooptijd en meer afstemming.",
+    samenvatting: "Deze illustratieve route verbindt de sporthal aan bredere voorzieningen- en gebiedskeuzes."
+  }
+];
+
+var cRollen = [
+  { naam: "Vastgoedmanager", meta: "Coördineert de opgave" },
+  { naam: "Controller", meta: "Toetst dekking en kaders" },
+  { naam: "Beleidsadviseur", meta: "Bewaakt maatschappelijk doel" },
+  { naam: "Wethouder", meta: "Bestuurlijke besluitvorming" }
+];
+
+var cBeslismomenten = [
+  { naam: "Ambtelijke afweging", meta: "Intern voorstel en variantkeuze" },
+  { naam: "Portefeuilleoverleg", meta: "Afstemming binnen de portefeuille" },
+  { naam: "Collegebesluit", meta: "Formeel besluit van het college" },
+  { naam: "Raadsbesluit", meta: "Krediet en kaderstelling" }
+];
+
+/* ============================================================
+   JavaScript data – archetype D
+   ============================================================ */
+var advisorQuestions = [
+  {
+    id: "objecttype", vraag: "Wat voor vastgoed betreft het?", kort: "Vastgoedtype bekend",
+    opties: ["School", "Sportaccommodatie", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"],
+    standaard: "Sportaccommodatie"
+  },
+  {
+    id: "fase", vraag: "In welke fase zit je?", kort: "Fase bekend",
+    opties: ["Verkenning", "Planvorming", "Besluitvorming", "Financiering", "Uitvoering", "Exploitatie"],
+    standaard: "Planvorming"
+  },
+  {
+    id: "rol", vraag: "Wat is jouw rol?", kort: "Rol bekend",
+    opties: ["Vastgoedmanager", "Controller", "Financieel adviseur", "Beleidsadviseur", "Wethouder", "Gemeenteraad"],
+    standaard: "Vastgoedmanager"
+  },
+  {
+    id: "knelpunt", vraag: "Waar loop je vooral tegenaan?", kort: "Vraagstuk bekend",
+    opties: ["Businesscase onder druk", "Onvoldoende zicht op subsidies", "Hoge kapitaallasten", "Exploitatietekort", "Onvoldoende bestuurlijk draagvlak", "Onvoldoende inzicht in financiële effecten"],
+    standaard: "Businesscase onder druk"
+  }
+];
+
+var advisorStappen = [
+  "Maak de levensduurkosten inzichtelijk met een TCO-analyse.",
+  "Onderzoek passende subsidiemogelijkheden en hun termijnen.",
+  "Herijk de exploitatie-uitgangspunten van de accommodatie.",
+  "Verken of maatschappelijke effecten onderdeel moeten zijn van de afweging."
+];
+
+var advisorInstrumenten = [
+  "TCO-rekenmodel maatschappelijk vastgoed",
+  "Subsidiewijzer maatschappelijk vastgoed",
+  "MKBA-light maatschappelijk vastgoed",
+  "Exploitatiemodel sportaccommodaties"
+];
+
+var advisorRollen = [
+  { naam: "Controller", meta: "Kapitaallasten en dekking" },
+  { naam: "Financieel adviseur", meta: "Onderbouwing businesscase" },
+  { naam: "Beleidsadviseur sport", meta: "Gebruik en doelgroepen" },
+  { naam: "Bestuurlijk opdrachtgever", meta: "Bestuurlijke afweging" }
+];
+
+var advisorThemas = [
+  { naam: "Subsidies", bij: ["objecttype", "knelpunt"] },
+  { naam: "TCO", bij: ["objecttype", "fase"] },
+  { naam: "Exploitatie", bij: ["fase", "knelpunt"] },
+  { naam: "MKBA", bij: ["knelpunt"] },
+  { naam: "MIP", bij: ["rol"] },
+  { naam: "Begroting", bij: ["rol"] },
+  { naam: "Kostprijsdekkende huur", bij: [] },
+  { naam: "BTW en fiscaliteit", bij: [] },
+  { naam: "Voorzieningenbeleid", bij: [] },
+  { naam: "Circulaire restwaarde", bij: [] }
+];
+
+/* ============================================================
+   JavaScript data – archetype E
+   ============================================================ */
+var eKpis = [
+  { label: "Investeringsopgave portefeuille", waarde: "€ 215 mln", sub: "Totaal 2026 – 2035 · demo", icon: "i-building", kleur: "var(--vmv-purple-light)", tint: "var(--vmv-purple-mid)", spark: [8, 12, 10, 16, 14, 20, 24, 22] },
+  { label: "Subsidiekansen", waarde: "€ 38 mln", sub: "Indicatief beschikbaar · demo", icon: "i-leaf", kleur: "var(--vmv-success-light)", tint: "var(--vmv-success)", spark: [6, 10, 8, 14, 18, 15, 20, 19] },
+  { label: "Objecten met verhoogd risico", waarde: "9", sub: "18% van de portefeuille · demo", icon: "i-alert", kleur: "var(--vmv-critical-light)", tint: "var(--vmv-critical)", spark: [20, 18, 19, 16, 14, 15, 12, 11] },
+  { label: "Komende beslismomenten", waarde: "4", sub: "Binnen 3 maanden · demo", icon: "i-calendar", kleur: "var(--vmv-blue-light)", tint: "var(--vmv-blue)", spark: [4, 6, 5, 9, 8, 12, 10, 14] }
+];
+
+var eFilterGroepen = [
+  { id: "objecttype", titel: "Objecttype", opties: ["Sportaccommodatie", "School", "Zwembad", "Bibliotheek", "Buurthuis", "Cultuurgebouw"] },
+  { id: "status", titel: "Status", opties: ["Goed", "Aandacht nodig", "Kritisch"] },
+  { id: "thema", titel: "Financieel thema", opties: ["Subsidies", "Exploitatie", "TCO", "MKBA", "MIP", "Begroting"] }
+];
+
+var portfolioObjects = [
+  {
+    id: "veste", naam: "Sporthal De Veste", objecttype: "Sportaccommodatie", cluster: "Sport",
+    status: "Aandacht nodig", energielabel: "C", investering: "Hoog", exploitatierisico: "Verhoogd",
+    beslismoment: "Collegebesluit · 8 okt (demo)", thema: ["Subsidies", "TCO", "Exploitatie"],
+    hx: 0.68, hy: 0.62, hr: 15,
+    signalen: ["Businesscase nog niet sluitend", "Subsidievenster sluit binnen twee kwartalen", "Energielasten boven het portefeuillegemiddelde"],
+    verduurzaming: "Label C, ambitie is Paris Proof. Installaties en schil zijn beide aan vervanging toe.",
+    rollen: ["Vastgoedmanager", "Controller", "Beleidsadviseur sport"],
+    instrumenten: ["TCO-rekenmodel maatschappelijk vastgoed", "Subsidiewijzer maatschappelijk vastgoed", "Exploitatiemodel sportaccommodaties"],
+    vervolg: "Actualiseer de TCO-berekening vóór het collegebesluit."
+  },
+  {
+    id: "wave", naam: "Zwembad De Wave", objecttype: "Zwembad", cluster: "Sport",
+    status: "Kritisch", energielabel: "D", investering: "Zeer hoog", exploitatierisico: "Hoog",
+    beslismoment: "Raadsbesluit · 5 nov (demo)", thema: ["Exploitatie", "TCO", "MKBA"],
+    hx: 0.72, hy: 0.86, hr: 20,
+    signalen: ["Structureel exploitatietekort", "Installaties einde levensduur", "Vervangingsvraag speelt binnen vijf jaar"],
+    verduurzaming: "Zwembaden hebben een hoog verbruik. Renovatie of vervanging vraagt een integrale afweging.",
+    rollen: ["Vastgoedmanager", "Controller", "Wethouder"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Exploitatiemodel sportaccommodaties", "MIP-handreiking"],
+    vervolg: "Start een scenarioanalyse renoveren versus vervangen."
+  },
+  {
+    id: "horizon", naam: "Basisschool De Horizon", objecttype: "School", cluster: "Onderwijs",
+    status: "Aandacht nodig", energielabel: "B", investering: "Gemiddeld", exploitatierisico: "Beperkt",
+    beslismoment: "Portefeuilleoverleg · 24 sep (demo)", thema: ["MIP", "Begroting", "Subsidies"],
+    hx: 0.78, hy: 0.42, hr: 13,
+    signalen: ["Onderwijshuisvestingsprogramma vraagt afstemming", "Subsidiekans voor ventilatie"],
+    verduurzaming: "Label B. Aandacht vooral voor binnenklimaat en ventilatie.",
+    rollen: ["Vastgoedmanager", "Beleidsadviseur onderwijs", "Controller"],
+    instrumenten: ["MIP-handreiking", "Subsidiewijzer maatschappelijk vastgoed", "Begrotingskader investeringen"],
+    vervolg: "Stem het investeringsmoment af met het huisvestingsprogramma."
+  },
+  {
+    id: "bibliotheek", naam: "Bibliotheek Centrum", objecttype: "Bibliotheek", cluster: "Cultuur",
+    status: "Goed", energielabel: "A", investering: "Laag", exploitatierisico: "Laag",
+    beslismoment: "Geen op korte termijn (demo)", thema: ["Exploitatie", "Begroting"],
+    hx: 0.84, hy: 0.18, hr: 10,
+    signalen: ["Subsidie loopt af in 2027", "Exploitatie is sluitend"],
+    verduurzaming: "Recent verduurzaamd. Aandacht vooral voor beheer en monitoring.",
+    rollen: ["Vastgoedmanager", "Financieel adviseur"],
+    instrumenten: ["Exploitatiemodel sportaccommodaties", "Begrotingskader investeringen"],
+    vervolg: "Monitor of de besparing zich in de praktijk voordoet."
+  },
+  {
+    id: "schakel", naam: "Buurthuis De Schakel", objecttype: "Buurthuis", cluster: "Maatschappelijk",
+    status: "Goed", energielabel: "B", investering: "Laag", exploitatierisico: "Beperkt",
+    beslismoment: "Ambtelijke afweging · 11 sep (demo)", thema: ["MKBA", "Exploitatie"],
+    hx: 0.62, hy: 0.24, hr: 9,
+    signalen: ["Hoge maatschappelijke waardering", "Beperkte financiële opgave"],
+    verduurzaming: "Kleine maatregelen volstaan voorlopig. Vervangingsvraag speelt na 2032.",
+    rollen: ["Vastgoedmanager", "Beleidsadviseur"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Kostprijsdekkende huur (KPD)"],
+    vervolg: "Neem mee in de herijking van het voorzieningenbeleid."
+  },
+  {
+    id: "brug", naam: "Cultuurhuis De Brug", objecttype: "Cultuurgebouw", cluster: "Cultuur",
+    status: "Aandacht nodig", energielabel: "C", investering: "Gemiddeld", exploitatierisico: "Verhoogd",
+    beslismoment: "Portefeuilleoverleg · 24 sep (demo)", thema: ["Exploitatie", "Subsidies", "MKBA"],
+    hx: 0.46, hy: 0.58, hr: 12,
+    signalen: ["Exploitatietekort loopt op", "Huurafspraken verouderd"],
+    verduurzaming: "Label C. Verduurzaming is technisch mogelijk, maar drukt op de exploitatie.",
+    rollen: ["Vastgoedmanager", "Financieel adviseur", "Beleidsadviseur cultuur"],
+    instrumenten: ["Kostprijsdekkende huur (KPD)", "Exploitatiemodel sportaccommodaties", "BTW-beslisboom vastgoed"],
+    vervolg: "Herijk de huur- en beheerafspraken."
+  },
+  {
+    id: "noord", naam: "Sportcomplex Noord", objecttype: "Sportaccommodatie", cluster: "Sport",
+    status: "Kritisch", energielabel: "E", investering: "Hoog", exploitatierisico: "Hoog",
+    beslismoment: "Collegebesluit · 8 okt (demo)", thema: ["TCO", "Exploitatie", "MIP"],
+    hx: 0.30, hy: 0.80, hr: 16,
+    signalen: ["Laagste energielabel van de portefeuille", "Bezetting daalt", "Onderhoudsachterstand"],
+    verduurzaming: "Label E. Zonder ingreep stijgen de energielasten verder.",
+    rollen: ["Vastgoedmanager", "Controller", "Beleidsadviseur sport"],
+    instrumenten: ["TCO-rekenmodel maatschappelijk vastgoed", "MIP-handreiking", "Methodiek circulaire restwaarde"],
+    vervolg: "Breng renovatie- en afstootvarianten naast elkaar."
+  },
+  {
+    id: "west", naam: "VO-school West", objecttype: "School", cluster: "Onderwijs",
+    status: "Goed", energielabel: "B", investering: "Gemiddeld", exploitatierisico: "Laag",
+    beslismoment: "Investeringsmoment · dec 2026 (demo)", thema: ["MIP", "Begroting", "TCO"],
+    hx: 0.88, hy: 0.34, hr: 12,
+    signalen: ["Investering opgenomen in het MIP", "Geen bijzonderheden in de exploitatie"],
+    verduurzaming: "Verduurzaming is geprogrammeerd voor 2027.",
+    rollen: ["Vastgoedmanager", "Controller"],
+    instrumenten: ["MIP-handreiking", "Begrotingskader investeringen"],
+    vervolg: "Bewaak de aansluiting op het meerjarenprogramma."
+  }
+];
+
+var eSignalen = [
+  { aantal: 4, tekst: "Objecten vragen besluitvorming", type: "critical", filter: null },
+  { aantal: 6, tekst: "Objecten met verduurzamingsopgave", type: "warning", filter: null },
+  { aantal: 3, tekst: "Objecten met exploitatierisico", type: "warning", filter: null },
+  { aantal: 2, tekst: "Subsidies lopen binnenkort af", type: "blue", filter: null }
+];
+
+var eActies = [
+  { naam: "Bekijk subsidiekansen", meta: "Verken regelingen per cluster", ga: "archetype-b" },
+  { naam: "Start scenarioanalyse", meta: "Vergelijk routes voor één object", ga: "archetype-c" },
+  { naam: "Actualiseer TCO-berekening", meta: "Levensduurkosten opnieuw doorrekenen", ga: null },
+  { naam: "Herijk exploitatiemodel", meta: "Uitgangspunten tegen het licht houden", ga: null }
+];
+
+var eKalender = [
+  { datum: "11 sep", label: "Ambtelijke afweging", sub: "2 dossiers", icon: "i-users" },
+  { datum: "24 sep", label: "Portefeuilleoverleg", sub: "5 dossiers", icon: "i-layers" },
+  { datum: "8 okt", label: "Collegebesluit", sub: "3 dossiers", icon: "i-doc" },
+  { datum: "5 nov", label: "Raadsbesluit", sub: "2 dossiers", icon: "i-scale" },
+  { datum: "dec 2026", label: "Investeringsmoment", sub: "Meerdere projecten", icon: "i-building" },
+  { datum: "Q1 2027", label: "Monitoring", sub: "Voortgang meten", icon: "i-chart" }
+];
+
+/* ============================================================
+   JavaScript data – reflectievragen
+   ============================================================ */
+var reflectieVragen = [
+  "Waar zou jij in dit archetype beginnen?",
+  "Welke informatie verwacht je als eerste?",
+  "Wat helpt je om een financiële keuze te maken?",
+  "Wat voelt onnodig of te complex?",
+  "Welke rol of welk perspectief ontbreekt?",
+  "Welke elementen wil je meenemen naar een volgend ontwerp?"
+];
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript navigation en hulpfuncties
+   ============================================================ */
+var $ = function (sel, root) { return (root || document).querySelector(sel); };
+var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+function esc(str) {
+  return String(str).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+/* Lijnicoon uit de sprite */
+function icon(name, size, stroke) {
+  var s = size || 16;
+  return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="' + (stroke || 1.7) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#' + name + '"/></svg>';
+}
+
+/* --- Toastmeldingen --- */
+var toastHost = $("#toasts");
+function toast(bericht) {
+  var t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = icon("i-info", 16) + "<span>" + esc(bericht) + "</span>";
+  toastHost.appendChild(t);
+  window.setTimeout(function () {
+    t.classList.add("toast--leaving");
+    window.setTimeout(function () { if (t.parentNode) { t.parentNode.removeChild(t); } }, 220);
+  }, 3600);
+}
+var DEMO_MELDING = "Dit onderdeel is in het concept nog niet verder uitgewerkt.";
+
+/* --- Modal --- */
+var modalBackdrop = $("#modal-backdrop");
+var laatsteFocus = null;
+
+function openModal(opts) {
+  laatsteFocus = document.activeElement;
+  $("#modal-eyebrow").textContent = opts.eyebrow || "";
+  $("#modal-titel").textContent = opts.titel || "";
+  $("#modal-body").innerHTML = opts.body || "";
+  $("#modal-foot").innerHTML = opts.foot || '<button type="button" class="btn" data-action="close-modal">Sluiten</button>';
+  modalBackdrop.hidden = false;
+  document.body.style.overflow = "hidden";
+  $("#modal-body").scrollTop = 0;
+  var eerste = $("#modal-body button, #modal-body a, #modal-foot button");
+  (eerste || $("#modal")).focus();
+}
+function closeModal() {
+  modalBackdrop.hidden = true;
+  document.body.style.overflow = "";
+  if (laatsteFocus && laatsteFocus.focus) { laatsteFocus.focus(); }
+  laatsteFocus = null;
+}
+$("#modal").setAttribute("tabindex", "-1");
+modalBackdrop.addEventListener("mousedown", function (e) { if (e.target === modalBackdrop) { closeModal(); } });
+
+/* --- Reflectiepaneel (drawer) --- */
+var drawer = $("#reflectiepaneel");
+function openDrawer() {
+  drawer.hidden = false;
+  $$('[data-action="open-reflection"]').forEach(function (b) { b.setAttribute("aria-expanded", "true"); });
+  var eerste = $("#reflectie-velden textarea");
+  if (eerste) { eerste.focus(); }
+}
+function closeDrawer() {
+  drawer.hidden = true;
+  $$('[data-action="open-reflection"]').forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    if (!modalBackdrop.hidden) { closeModal(); return; }
+    if (!drawer.hidden) { closeDrawer(); }
+    return;
+  }
+  /* Eenvoudige focusval binnen het geopende venster */
+  if (e.key !== "Tab" || modalBackdrop.hidden) { return; }
+  var focusbaar = $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', $("#modal"))
+    .filter(function (el) { return el.offsetParent !== null; });
+  if (!focusbaar.length) { return; }
+  var eerste = focusbaar[0], laatste = focusbaar[focusbaar.length - 1];
+  if (e.shiftKey && document.activeElement === eerste) { e.preventDefault(); laatste.focus(); }
+  else if (!e.shiftKey && document.activeElement === laatste) { e.preventDefault(); eerste.focus(); }
+});
+
+/* --- Weergavenavigatie --- */
+var geldigeViews = ["overzicht", "archetype-a", "archetype-b", "archetype-c", "archetype-d", "archetype-e"];
+var huidigeView = "overzicht";
+
+function toonView(naam, viaHash) {
+  if (geldigeViews.indexOf(naam) === -1) { naam = "overzicht"; }
+  huidigeView = naam;
+  geldigeViews.forEach(function (v) {
+    var sectie = document.getElementById("view-" + v);
+    var tab = document.getElementById("tab-" + v);
+    var actief = v === naam;
+    if (sectie) { sectie.hidden = !actief; }
+    if (tab) {
+      tab.setAttribute("aria-selected", actief ? "true" : "false");
+      tab.tabIndex = actief ? 0 : -1;
+    }
+  });
+  if (!viaHash) {
+    if (window.location.hash !== "#" + naam) { window.location.hash = naam; }
+  }
+  var tab = document.getElementById("tab-" + naam);
+  if (tab && tab.scrollIntoView) { tab.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+$$(".archnav__tab").forEach(function (tab) {
+  tab.addEventListener("click", function () { toonView(tab.dataset.view); tab.focus(); });
+});
+
+$(".archnav__inner").addEventListener("keydown", function (e) {
+  var tabs = $$(".archnav__tab");
+  var i = tabs.indexOf(document.activeElement);
+  if (i === -1) { return; }
+  var n = null;
+  if (e.key === "ArrowRight") { n = (i + 1) % tabs.length; }
+  if (e.key === "ArrowLeft") { n = (i - 1 + tabs.length) % tabs.length; }
+  if (e.key === "Home") { n = 0; }
+  if (e.key === "End") { n = tabs.length - 1; }
+  if (n === null) { return; }
+  e.preventDefault();
+  tabs[n].focus();
+  toonView(tabs[n].dataset.view);
+});
+
+window.addEventListener("hashchange", function () {
+  toonView(window.location.hash.replace("#", ""), true);
+});
+
+/* --- Globale klikafhandeling --- */
+document.addEventListener("click", function (e) {
+  var ga = e.target.closest("[data-goto]");
+  if (ga) {
+    if (!modalBackdrop.hidden) { closeModal(); }
+    toonView(ga.dataset.goto);
+    return;
+  }
+
+  var demo = e.target.closest("[data-demo]");
+  if (demo) { toast(demo.dataset.demo || DEMO_MELDING); return; }
+
+  var actieEl = e.target.closest("[data-action]");
+  if (!actieEl) { return; }
+  var actie = actieEl.dataset.action;
+
+  if (actie === "close-modal") { closeModal(); }
+  else if (actie === "open-about") { toonOver(); }
+  else if (actie === "open-reflection") { openDrawer(); }
+  else if (actie === "close-reflection") { closeDrawer(); }
+});
+
+/* --- Over dit prototype --- */
+function toonOver() {
+  openModal({
+    eyebrow: "Conceptprototype",
+    titel: "Over dit prototype",
+    body:
+      "<p>Dit prototype maakt vijf mogelijke archetypen van het Financieel Vastgoedkompas tastbaar. Het doel is <strong>gesprek en vergelijking</strong>, niet het presenteren van een definitief ontwerp.</p>" +
+      "<h3 style=\"margin:18px 0 8px\">Wat het Kompas wil zijn</h3>" +
+      "<ul style=\"margin-bottom:14px\"><li>Helpt financiële informatie vinden bij rol, opgave en fase</li><li>Maakt samenhang tussen financiële thema's zichtbaar</li><li>Ondersteunt vergelijking van mogelijke routes</li><li>Maakt relevante beslismomenten zichtbaar</li></ul>" +
+      "<h3 style=\"margin:18px 0 8px\">Wat het Kompas niet is</h3>" +
+      "<ul style=\"margin-bottom:14px\"><li>Geen financieel rekensysteem</li><li>Geen gemeentelijke vastgoedadministratie</li><li>Geen formeel advies en geen vervanging van professionele expertise</li><li>Geen garantie op financiering of subsidie</li></ul>" +
+      "<h3 style=\"margin:18px 0 8px\">Over de inhoud</h3>" +
+      "<p>Alle objecten, bedragen, labels en planningen zijn fictief en illustratief. De democasus <em>Sporthal De Veste</em> keert in alle archetypen terug, zodat het gesprek over de navigatielogica gaat en niet over de inhoud.</p>" +
+      "<p class=\"tiny muted\">Conceptprototype – bedoeld voor dialoog, niet voor besluitvorming.</p>",
+    foot: '<button type="button" class="btn" data-action="close-modal">Sluiten</button>' +
+      '<button type="button" class="btn btn--teal" data-action="open-reflection">Reflectievragen openen</button>'
+  });
+}
+
+/* ============================================================
+   JavaScript interactions – startoverzicht
+   ============================================================ */
+function renderOverzicht() {
+  $("#overzicht-kaarten").innerHTML = archetypes.map(function (a) {
+    return '<article class="arch-card" style="--accent:' + a.accent + '">' +
+      '<div class="arch-card__top"><span class="arch-card__letter" aria-hidden="true">' + a.letter + '</span>' +
+      '<span class="arch-card__meta">' + esc(a.metafoor) + '</span></div>' +
+      '<h3><span class="visually-hidden">Archetype ' + a.letter + ' – </span>' + esc(a.naam) + '</h3>' +
+      '<div class="arch-card__thumb">' + a.thumb + '</div>' +
+      '<p class="arch-card__question">&bdquo;' + esc(a.vraag) + '&rdquo;</p>' +
+      '<p class="arch-card__body">' + esc(a.body) + '</p>' +
+      '<button type="button" class="btn btn--primary btn--block" data-goto="' + a.id + '">Bekijk concept ' + a.letter + '</button>' +
+      '</article>';
+  }).join("");
+
+  $("#overzicht-uitleg").innerHTML = overzichtUitleg.map(function (u) {
+    return '<div class="explain-strip__item"><span class="explain-strip__icon" aria-hidden="true">' + icon(u.icon, 19) + '</span>' +
+      '<div><h3 style="font-size:.9rem">' + esc(u.titel) + '</h3><p class="small muted" style="margin:2px 0 0">' + esc(u.tekst) + '</p></div></div>';
+  }).join("");
+}
+
+/* ============================================================
+   JavaScript interactions – archetype A (Opgavekompas)
+   ============================================================ */
+var aGeselecteerd = null;
+
+function renderDomeinen() {
+  $("#a-domeinen").innerHTML = opgaveDomeinen.map(function (d) {
+    return '<li><span class="dot" style="background:' + d.kleur + ';color:' + d.tint + '" aria-hidden="true">' + icon(d.icon, 15) + '</span>' + esc(d.naam) + '</li>';
+  }).join("");
+
+  $("#a-rollen").innerHTML = opgaveRollen.map(function (r) {
+    return '<li><button type="button" class="linklist__btn" data-demo="Rolprofielen zijn in dit concept nog niet uitgewerkt.">' +
+      esc(r.naam) + '<span class="linklist__meta">' + esc(r.meta) + '</span>' +
+      '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+  }).join("");
+
+  $("#a-statstrip").innerHTML = opgaveStats.map(function (s) {
+    return '<div class="stat"><span class="stat__icon" aria-hidden="true">' + icon(s.icon, 19) + '</span>' +
+      '<div><div class="stat__value">' + esc(s.waarde) + '</div><div class="stat__label">' + esc(s.label) + ' <span class="chip chip--demo">demo</span></div></div></div>';
+  }).join("");
+}
+
+function nodePositie(thema) {
+  var cx = 330, cy = 258, r = 205;
+  var rad = thema.hoek * Math.PI / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function renderSysteemkaart() {
+  var cx = 330, cy = 258, nodeR = 46;
+  var posities = {};
+  opgaveThemas.forEach(function (t) { posities[t.id] = nodePositie(t); });
+
+  var edges = opgaveRelaties.map(function (rel, i) {
+    var a = posities[rel.van], b = posities[rel.naar];
+    var mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    var qx = mx + (cx - mx) * 0.45, qy = my + (cy - my) * 0.45;
+    var dash = rel.type === "mogelijk" ? ' stroke-dasharray="6 5"' : (rel.type === "ondersteunend" ? ' stroke-dasharray="2 6"' : "");
+    return '<path class="edge" data-van="' + rel.van + '" data-naar="' + rel.naar + '" data-i="' + i + '"' + dash +
+      ' d="M' + a.x.toFixed(1) + ' ' + a.y.toFixed(1) + ' Q' + qx.toFixed(1) + ' ' + qy.toFixed(1) + ' ' + b.x.toFixed(1) + ' ' + b.y.toFixed(1) + '"/>';
+  }).join("");
+
+  var spokes = opgaveThemas.map(function (t) {
+    var p = posities[t.id];
+    return '<path class="edge edge--spoke" data-spoke="' + t.id + '" stroke-dasharray="3 6" d="M' + cx + ' ' + cy + ' L' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) + '"/>';
+  }).join("");
+
+  var nodes = opgaveThemas.map(function (t) {
+    var p = posities[t.id];
+    var regels = t.label.map(function (regel, i) {
+      var dy = t.label.length === 1 ? 4 : (i === 0 ? -3 : 12);
+      return '<text x="' + p.x.toFixed(1) + '" y="' + (p.y + dy).toFixed(1) + '" font-size="11">' + esc(regel) + '</text>';
+    }).join("");
+    return '<g class="node" data-id="' + t.id + '" role="button" tabindex="0" aria-pressed="false" aria-label="Thema ' + esc(t.label.join("")) + '">' +
+      '<circle class="node__bg" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + nodeR + '"/>' + regels + '</g>';
+  }).join("");
+
+  var svg = '<svg viewBox="0 0 660 520" role="img" aria-label="Systeemkaart met de opgave Verduurzaming Sporthal De Veste in het midden en acht samenhangende financiële thema\'s eromheen">' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="205" fill="none" stroke="var(--vmv-grey-100)" stroke-width="1"/>' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="140" fill="none" stroke="var(--vmv-grey-100)" stroke-width="1" stroke-dasharray="3 6"/>' +
+    spokes + edges + nodes +
+    '<g class="centernode"><circle cx="' + cx + '" cy="' + cy + '" r="64"/>' +
+    '<text x="' + cx + '" y="' + (cy - 8) + '">Verduurzaming</text>' +
+    '<text x="' + cx + '" y="' + (cy + 8) + '">Sporthal</text>' +
+    '<text x="' + cx + '" y="' + (cy + 24) + '">De Veste</text></g>' +
+    '</svg>';
+
+  $("#a-systeemkaart").innerHTML = svg;
+
+  $$("#a-systeemkaart .node").forEach(function (n) {
+    n.addEventListener("click", function () { selecteerThema(n.dataset.id); });
+    n.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        selecteerThema(n.dataset.id);
+      }
+    });
+  });
+}
+
+function verwanteThemas(id) {
+  var lijst = [];
+  opgaveRelaties.forEach(function (r) {
+    if (r.van === id) { lijst.push({ id: r.naar, tekst: r.tekst, type: r.type }); }
+    if (r.naar === id) { lijst.push({ id: r.van, tekst: r.tekst, type: r.type }); }
+  });
+  return lijst;
+}
+
+function themaNaam(id) {
+  var t = opgaveThemas.filter(function (x) { return x.id === id; })[0];
+  return t ? t.naam : id;
+}
+
+function selecteerThema(id) {
+  aGeselecteerd = (aGeselecteerd === id) ? null : id;
+  var verwant = aGeselecteerd ? verwanteThemas(aGeselecteerd) : [];
+  var verwantIds = verwant.map(function (v) { return v.id; });
+
+  $$("#a-systeemkaart .node").forEach(function (n) {
+    var nid = n.dataset.id;
+    n.classList.toggle("is-selected", nid === aGeselecteerd);
+    n.classList.toggle("is-related", aGeselecteerd !== null && verwantIds.indexOf(nid) !== -1);
+    n.classList.toggle("is-dimmed", aGeselecteerd !== null && nid !== aGeselecteerd && verwantIds.indexOf(nid) === -1);
+    n.setAttribute("aria-pressed", nid === aGeselecteerd ? "true" : "false");
+  });
+  $$("#a-systeemkaart .edge").forEach(function (p) {
+    if (p.dataset.spoke) {
+      p.classList.toggle("is-dimmed", aGeselecteerd !== null && p.dataset.spoke !== aGeselecteerd);
+      return;
+    }
+    var raakt = aGeselecteerd !== null && (p.dataset.van === aGeselecteerd || p.dataset.naar === aGeselecteerd);
+    p.classList.toggle("is-active", raakt);
+    p.classList.toggle("is-dimmed", aGeselecteerd !== null && !raakt);
+  });
+
+  renderThemaDetail(aGeselecteerd, verwant);
+}
+
+function renderThemaDetail(id, verwant) {
+  var host = $("#a-detail");
+  if (!id) {
+    host.innerHTML = '<p class="small muted">Nog geen thema gekozen. Klik in de opgavekaart op een thema om te zien wat het betekent en waarmee het samenhangt.</p>' +
+      '<div class="chip-row" style="margin-top:12px">' + opgaveThemas.slice(0, 4).map(function (t) {
+        return '<button type="button" class="chip chip--teal" data-thema="' + t.id + '">' + esc(t.naam) + '</button>';
+      }).join("") + '</div>';
+    $$("#a-detail [data-thema]").forEach(function (b) {
+      b.addEventListener("click", function () { selecteerThema(b.dataset.thema); });
+    });
+    return;
+  }
+  var t = opgaveThemas.filter(function (x) { return x.id === id; })[0];
+  host.innerHTML =
+    '<h3 style="color:var(--vmv-teal-dark);font-size:1.05rem;margin-bottom:8px">' + esc(themaNaam(id)) + '</h3>' +
+    '<p class="small"><strong>Betekenis.</strong> ' + esc(t.betekenis) + '</p>' +
+    '<p class="small"><strong>Waarom relevant.</strong> ' + esc(t.waarom) + '</p>' +
+    '<hr class="divider">' +
+    '<span class="label">Betrokken rollen</span><div class="chip-row" style="margin-bottom:12px">' +
+    t.rollen.map(function (r) { return '<span class="chip chip--purple">' + esc(r) + '</span>'; }).join("") + '</div>' +
+    '<span class="label">Relevante fasen</span><div class="chip-row" style="margin-bottom:12px">' +
+    t.fasen.map(function (f) { return '<span class="chip chip--blue">' + esc(f) + '</span>'; }).join("") + '</div>' +
+    '<span class="label">Mogelijke instrumenten</span><ul class="linklist" style="margin-bottom:12px">' +
+    t.instrumenten.map(function (i) {
+      return '<li><button type="button" class="linklist__btn" data-instrument="' + esc(i) + '">' + esc(i) +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+    }).join("") + '</ul>' +
+    '<span class="label">Samenhang met</span><ul class="linklist" style="margin-bottom:14px">' +
+    verwant.map(function (v) {
+      return '<li><button type="button" class="linklist__btn" data-thema="' + v.id + '">' + esc(themaNaam(v.id)) +
+        '<span class="linklist__meta">' + esc(v.tekst) + '</span>' +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+    }).join("") + '</ul>' +
+    '<button type="button" class="btn btn--teal btn--block" data-vervolg="' + id + '">Bekijk vervolgstap</button>';
+
+  $$("#a-detail [data-thema]").forEach(function (b) {
+    b.addEventListener("click", function () { selecteerThema(b.dataset.thema); });
+  });
+  $$("#a-detail [data-instrument]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.instrument); });
+  });
+  $("#a-detail [data-vervolg]").addEventListener("click", function () {
+    openModal({
+      eyebrow: "Mogelijke vervolgstap",
+      titel: themaNaam(id),
+      body: '<p>' + esc(t.waarom) + '</p>' +
+        '<p class="small muted">Een mogelijke vervolgstap is om dit thema verder te verkennen via de instrumentenbibliotheek of via een van de illustratieve routes.</p>' +
+        '<p class="tiny muted">Conceptueel voorbeeld. Het Kompas doet geen uitspraak over de juiste volgorde in jouw situatie.</p>',
+      foot: '<button type="button" class="btn" data-action="close-modal">Sluiten</button>' +
+        '<button type="button" class="btn" data-goto="archetype-b" data-action="close-modal">Naar de bibliotheek</button>' +
+        '<button type="button" class="btn btn--primary" data-goto="archetype-c" data-action="close-modal">Naar de routeplanner</button>'
+    });
+  });
+}
+
+$('[data-action="a-reset"]').addEventListener("click", function () {
+  selecteerThema(null);
+});
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript interactions – archetype B (Instrumentenbibliotheek)
+   ============================================================ */
+var bFilters = { rol: ["Vastgoedmanager"], objecttype: ["Sportaccommodatie"], fase: [], thema: [], type: [] };
+
+var zoekAliassen = {
+  sporthal: "sportaccommodatie sport",
+  sport: "sportaccommodatie",
+  verduurzaming: "verduurzaming subsidies energie tco",
+  verduurzamen: "verduurzaming subsidies energie",
+  businesscase: "tco begroting exploitatie",
+  subsidie: "subsidies",
+  huur: "kostprijsdekkende huur exploitatie"
+};
+
+function instrumentHooiberg(inst) {
+  return [inst.titel, inst.kort, inst.type, inst.waarvoor, inst.status]
+    .concat(inst.rol, inst.objecttype, inst.fase, inst.thema).join(" ").toLowerCase();
+}
+
+function zoekScore(inst, tekst) {
+  var tokens = tekst.toLowerCase().split(/[^a-z0-9À-ſ]+/).filter(function (t) { return t.length >= 3; });
+  if (!tokens.length) { return 1; }
+  var hooi = instrumentHooiberg(inst);
+  var score = 0;
+  tokens.forEach(function (t) {
+    var varianten = [t].concat((zoekAliassen[t] || "").split(" ").filter(Boolean));
+    var raak = varianten.some(function (v) { return hooi.indexOf(v) !== -1; });
+    if (raak) { score += 1; }
+  });
+  return score;
+}
+
+function bMatchtFilters(inst, negeerGroep) {
+  return bFilterGroepen.every(function (g) {
+    if (g.id === negeerGroep) { return true; }
+    var gekozen = bFilters[g.id];
+    if (!gekozen.length) { return true; }
+    var waarden = (g.id === "type") ? [inst.type] : inst[g.id];
+    return gekozen.some(function (k) { return waarden.indexOf(k) !== -1; });
+  });
+}
+
+function bResultaten() {
+  var tekst = $("#b-zoek").value || "";
+  return instrumenten
+    .map(function (i) { return { inst: i, score: zoekScore(i, tekst) }; })
+    .filter(function (r) { return r.score > 0 && bMatchtFilters(r.inst); })
+    .sort(function (a, b) { return b.score - a.score; })
+    .map(function (r) { return r.inst; })
+    .slice(0, 8);
+}
+
+function renderBFilters() {
+  $("#b-filters").innerHTML = bFilterGroepen.map(function (g) {
+    var opties = g.opties.map(function (o) {
+      var aantal = instrumenten.filter(function (i) {
+        var waarden = (g.id === "type") ? [i.type] : i[g.id];
+        return waarden.indexOf(o) !== -1 && bMatchtFilters(i, g.id) && zoekScore(i, $("#b-zoek").value || "") > 0;
+      }).length;
+      var aan = bFilters[g.id].indexOf(o) !== -1;
+      return '<label class="check"><input type="checkbox" data-groep="' + g.id + '" value="' + esc(o) + '"' + (aan ? " checked" : "") + '>' +
+        '<span>' + esc(o) + '</span><span class="check__count">' + aantal + '</span></label>';
+    }).join("");
+    var actief = bFilters[g.id].length;
+    return '<fieldset class="filtergroup"><legend>' + esc(g.titel) +
+      (actief ? '<span class="filtergroup__count chip chip--teal">' + actief + '</span>' : "") + '</legend>' + opties + '</fieldset>';
+  }).join("");
+
+  $$("#b-filters input[type=checkbox]").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      var lijst = bFilters[cb.dataset.groep];
+      var i = lijst.indexOf(cb.value);
+      if (cb.checked && i === -1) { lijst.push(cb.value); }
+      if (!cb.checked && i !== -1) { lijst.splice(i, 1); }
+      renderB();
+    });
+  });
+}
+
+function renderBChips() {
+  var chips = [];
+  bFilterGroepen.forEach(function (g) {
+    bFilters[g.id].forEach(function (o) {
+      chips.push('<button type="button" class="filterchip" data-groep="' + g.id + '" data-waarde="' + esc(o) + '" ' +
+        'aria-label="Verwijder filter ' + esc(g.titel) + ': ' + esc(o) + '">' + esc(g.titel) + ': ' + esc(o) +
+        '<span class="x" aria-hidden="true">' + icon("i-close", 13, 2) + '</span></button>');
+    });
+  });
+  var host = $("#b-chips");
+  if (!chips.length) {
+    host.innerHTML = '<span class="small muted">Geen actieve filters. Kies links een rol, objecttype, fase of thema.</span>';
+    return;
+  }
+  host.innerHTML = '<span class="small muted" style="margin-right:4px">Actieve filters:</span>' + chips.join("") +
+    '<button type="button" class="btn btn--ghost btn--small" data-action="b-wis">Wis alle filters</button>';
+  $$("#b-chips .filterchip").forEach(function (c) {
+    c.addEventListener("click", function () {
+      var lijst = bFilters[c.dataset.groep];
+      var i = lijst.indexOf(c.dataset.waarde);
+      if (i !== -1) { lijst.splice(i, 1); }
+      renderB();
+    });
+  });
+}
+
+function statusChip(status) {
+  var klasse = { "Aanbevolen": "chip--success", "Veel gebruikt": "chip--blue", "Nieuw": "chip--teal", "Praktijkvoorbeeld": "chip--warning" }[status] || "";
+  return '<span class="chip ' + klasse + '">' + esc(status) + '</span>';
+}
+
+function renderBResultaten() {
+  var lijst = bResultaten();
+  $("#b-aantal").textContent = lijst.length + (lijst.length === 1 ? " instrument gevonden" : " instrumenten gevonden");
+  var host = $("#b-resultaten");
+  if (!lijst.length) {
+    host.innerHTML = '<div class="empty" style="grid-column:1/-1"><p><strong>Geen instrumenten gevonden.</strong></p>' +
+      '<p class="small">Pas de zoekterm aan of verwijder een filter.</p>' +
+      '<button type="button" class="btn" data-action="b-wis">Wis filters</button></div>';
+    return;
+  }
+  host.innerHTML = lijst.map(function (i) {
+    return '<article class="inst-card" role="button" tabindex="0" data-inst="' + i.id + '" aria-label="Open instrument ' + esc(i.titel) + '">' +
+      '<div class="inst-card__top"><span class="inst-card__icon" aria-hidden="true">' + icon(i.icon, 19) + '</span>' +
+      '<span class="inst-card__badge">' + statusChip(i.status) + '</span></div>' +
+      '<span class="cardtitle">' + esc(i.titel) + '</span>' +
+      '<div class="chip-row"><span class="chip chip--purple">' + esc(i.type) + '</span></div>' +
+      '<p class="inst-card__desc">' + esc(i.kort) + '</p>' +
+      '<div class="inst-card__foot"><span class="tiny muted">Fase</span>' +
+      i.fase.slice(0, 2).map(function (f) { return '<span class="chip">' + esc(f) + '</span>'; }).join("") +
+      '<span class="arrow" style="margin-left:auto;color:var(--vmv-grey-400)">' + icon("i-arrow-right", 16, 1.8) + '</span></div>' +
+      '</article>';
+  }).join("");
+
+  $$("#b-resultaten .inst-card").forEach(function (c) {
+    c.addEventListener("click", function () { openInstrument(c.dataset.inst); });
+    c.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); openInstrument(c.dataset.inst); }
+    });
+  });
+}
+
+function openInstrument(id) {
+  var i = instrumenten.filter(function (x) { return x.id === id; })[0];
+  if (!i) { toast(DEMO_MELDING); return; }
+  openModal({
+    eyebrow: i.type + " · " + i.status,
+    titel: i.titel,
+    body:
+      '<p>' + esc(i.kort) + '</p>' +
+      '<div class="chip-row" style="margin:14px 0">' +
+      i.thema.map(function (t) { return '<span class="chip chip--teal">' + esc(t) + '</span>'; }).join("") + '</div>' +
+      '<h3 style="margin:16px 0 6px">Waarvoor gebruik je dit?</h3><p class="small">' + esc(i.waarvoor) + '</p>' +
+      '<h3 style="margin:16px 0 6px">Voor wie is het relevant?</h3><p class="small">' + esc(i.voorwie) + '</p>' +
+      '<div class="chip-row" style="margin-bottom:12px">' + i.rol.map(function (r) { return '<span class="chip chip--purple">' + esc(r) + '</span>'; }).join("") + '</div>' +
+      '<h3 style="margin:16px 0 6px">Wanneer gebruik je het?</h3><p class="small">' + esc(i.wanneer) + '</p>' +
+      '<div class="chip-row" style="margin-bottom:12px">' + i.fase.map(function (f) { return '<span class="chip chip--blue">' + esc(f) + '</span>'; }).join("") + '</div>' +
+      '<h3 style="margin:16px 0 6px">Wat heb je nodig?</h3><ul class="small">' + i.nodig.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + '</ul>' +
+      '<h3 style="margin:16px 0 6px">Gerelateerde instrumenten</h3>' +
+      '<ul class="linklist">' + i.gerelateerd.map(function (g) {
+        return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(g) + '">' + esc(g) +
+          '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+      }).join("") + '</ul>' +
+      '<p class="tiny muted" style="margin-top:14px">Instrumentbeschrijving is illustratief en niet volledig uitgewerkt.</p>',
+    foot: '<button type="button" class="btn" data-action="close-modal">Sluiten</button>' +
+      '<button type="button" class="btn btn--primary" data-demo="Het openen van het instrument is in dit concept nog niet uitgewerkt.">' +
+      icon("i-external", 15, 1.8) + ' Open instrument</button>'
+  });
+  $$("#modal-body [data-relatie]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+  });
+}
+
+function openInstrumentOpNaam(naam) {
+  var i = instrumenten.filter(function (x) { return x.titel === naam; })[0];
+  if (i) { openInstrument(i.id); return; }
+  toast("“" + naam + "” is in dit concept nog niet uitgewerkt.");
+}
+
+function renderBZijkolom() {
+  function lijst(items) {
+    return items.map(function (x) {
+      return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(x.naam) + '">' + esc(x.naam) +
+        '<span class="linklist__meta">' + esc(x.meta) + '</span>' +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+    }).join("");
+  }
+  $("#b-combinaties").innerHTML = lijst(bCombinaties);
+  $("#b-ook").innerHTML = lijst(bOok);
+  $$("#b-combinaties [data-relatie], #b-ook [data-relatie]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+  });
+
+  $("#b-themachips").innerHTML = bFilterGroepen[3].opties.map(function (t) {
+    return '<button type="button" class="chip chip--teal" data-thema-filter="' + esc(t) + '">' + esc(t) + '</button>';
+  }).join("");
+  $$("#b-themachips [data-thema-filter]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.dataset.themaFilter;
+      var lijst = bFilters.thema;
+      var i = lijst.indexOf(t);
+      if (i === -1) { lijst.push(t); } else { lijst.splice(i, 1); }
+      renderB();
+    });
+  });
+}
+
+function renderB() {
+  renderBFilters();
+  renderBChips();
+  renderBResultaten();
+}
+
+$("#b-zoek").addEventListener("input", renderB);
+$("#b-zoek").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); renderB(); } });
+document.addEventListener("click", function (e) {
+  var el = e.target.closest('[data-action="b-wis"]');
+  if (!el) { return; }
+  bFilterGroepen.forEach(function (g) { bFilters[g.id] = []; });
+  renderB();
+  toast("Alle filters zijn gewist.");
+});
+$('[data-action="b-zoek"]').addEventListener("click", function () {
+  renderB();
+  toast("Zoekopdracht bijgewerkt: " + ($("#b-zoek").value.trim() || "alle instrumenten"));
+});
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript interactions – archetype C (Routeplanner)
+   ============================================================ */
+var cActief = "b";
+
+function wrapTekst(tekst, maxTekens) {
+  var woorden = String(tekst).split(/\s+/);
+  var regels = [], huidig = "";
+  woorden.forEach(function (w) {
+    if (!huidig.length) { huidig = w; }
+    else if ((huidig + " " + w).length <= maxTekens) { huidig += " " + w; }
+    else { regels.push(huidig); huidig = w; }
+  });
+  if (huidig.length) { regels.push(huidig); }
+  return regels.slice(0, 3);
+}
+
+function renderRoutekaart() {
+  var startX = 66, eindX = 834, midY = 190;
+  var vanTekst = $("#c-van").value.trim() || CASUS.huidig;
+  var naarTekst = $("#c-naar").value.trim() || CASUS.gewenst;
+
+  var groepen = routes.map(function (r) {
+    var n = r.stappen.length;
+    var eersteX = 176, laatsteX = 724;
+    var stap = n > 1 ? (laatsteX - eersteX) / (n - 1) : 0;
+    var punten = r.stappen.map(function (s, i) { return { x: eersteX + stap * i, y: r.y, s: s }; });
+
+    var d = "M" + startX + " " + midY +
+      " C" + (startX + 60) + " " + midY + ", " + (eersteX - 70) + " " + r.y + ", " + eersteX + " " + r.y +
+      " L" + laatsteX + " " + r.y +
+      " C" + (laatsteX + 70) + " " + r.y + ", " + (eindX - 60) + " " + midY + ", " + eindX + " " + midY;
+
+    var stops = punten.map(function (p) {
+      var besluit = !!p.s.besluit;
+      var r0 = besluit ? 13 : 9;
+      var regels = p.s.label;
+      var labels = regels.map(function (regel, i) {
+        var dy;
+        if (r.y > midY) { dy = 32 + i * 12; }
+        else { dy = -(24 + (regels.length - 1 - i) * 12); }
+        return '<text x="' + p.x.toFixed(0) + '" y="' + (p.y + dy).toFixed(0) + '">' + esc(regel) + '</text>';
+      }).join("");
+      return '<g class="stop' + (besluit ? " stop--decision" : "") + '">' +
+        '<circle cx="' + p.x.toFixed(0) + '" cy="' + p.y + '" r="' + r0 + '" stroke="' + r.kleur + '"/>' +
+        (besluit ? '<circle cx="' + p.x.toFixed(0) + '" cy="' + p.y + '" r="5" fill="' + r.kleur + '" stroke="none"/>' : "") +
+        labels + '</g>';
+    }).join("");
+
+    return '<g class="routegroup" data-route="' + r.id + '" role="button" tabindex="0" aria-pressed="' + (cActief === r.id) + '" ' +
+      'aria-label="Route ' + r.letter + ': ' + esc(r.naam) + '">' +
+      '<path class="routehit" d="' + d + '" fill="none" stroke="transparent" stroke-width="30"/>' +
+      '<path class="routepath" d="' + d + '" stroke="' + r.kleur + '"/>' + stops +
+      '<circle class="routebadge" cx="128" cy="' + (r.y + (r.y < midY ? 8 : (r.y > midY ? -8 : 0))) + '" r="13" fill="' + r.kleur + '"/>' +
+      '<text class="routemap__label" x="128" y="' + (r.y + (r.y < midY ? 12 : (r.y > midY ? -4 : 4))) + '" fill="#fff" text-anchor="middle">' + r.letter + '</text>' +
+      '</g>';
+  }).join("");
+
+  function eindpunt(x, tekst, kleur, isStart) {
+    var regels = wrapTekst(tekst, 18);
+    var labels = regels.map(function (regel, i) {
+      return '<text x="' + x + '" y="' + (midY + 48 + i * 13) + '" text-anchor="middle" font-size="11" font-weight="600" fill="var(--vmv-purple)" font-family="Aptos, Segoe UI, Arial, sans-serif">' + esc(regel) + '</text>';
+    }).join("");
+    return '<g><circle cx="' + x + '" cy="' + midY + '" r="27" fill="var(--vmv-white)" stroke="' + kleur + '" stroke-width="2.5"/>' +
+      '<g transform="translate(' + (x - 12) + ',' + (midY - 12) + ')" stroke="' + kleur + '" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+      '<use href="#' + (isStart ? "i-pin" : "i-flag") + '"/></g>' + labels + '</g>';
+  }
+
+  var svg = '<svg viewBox="0 0 900 380" role="img" aria-label="Routekaart met drie illustratieve routes van de huidige naar de gewenste situatie">' +
+    '<rect x="0" y="0" width="900" height="380" fill="var(--vmv-grey-50)" rx="10"/>' +
+    '<g fill="none" stroke="var(--vmv-grey-200)" stroke-width="1" stroke-dasharray="2 8" opacity=".8">' +
+    '<path d="M0 60h900M0 130h900M0 250h900M0 320h900"/></g>' +
+    groepen +
+    eindpunt(startX, vanTekst, "var(--vmv-purple)", true) +
+    eindpunt(eindX, naarTekst, "var(--vmv-teal-dark)", false) +
+    '</svg>';
+
+  $("#c-routemap").innerHTML = svg;
+
+  $$("#c-routemap .routegroup").forEach(function (g) {
+    g.addEventListener("click", function () { kiesRoute(g.dataset.route); });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); kiesRoute(g.dataset.route); }
+    });
+  });
+  markeerRoute();
+}
+
+function meter(waarde, max) {
+  var out = '<span class="meter" aria-hidden="true">';
+  for (var i = 1; i <= (max || 4); i++) { out += '<i class="' + (i <= waarde ? "on" : "") + '"></i>'; }
+  return out + "</span>";
+}
+
+function renderRouteTabel() {
+  $("#c-tabel").innerHTML = routes.map(function (r) {
+    return '<tr data-route="' + r.id + '" aria-selected="' + (cActief === r.id) + '" tabindex="0">' +
+      '<td><span class="chip" style="background:' + r.kleur + ';color:#fff">' + r.letter + '</span> ' + esc(r.naam) + '</td>' +
+      '<td>' + esc(r.tijdshorizon) + meter(r.tijdswaarde, 3) + '</td>' +
+      '<td>' + esc(r.complexiteit) + meter(r.complexwaarde, 4) + '</td>' +
+      '<td>' + esc(r.besluitvorming) + '</td>' +
+      '<td>' + esc(r.focus) + '</td></tr>';
+  }).join("");
+  $$("#c-tabel tr").forEach(function (tr) {
+    tr.addEventListener("click", function () { kiesRoute(tr.dataset.route); });
+    tr.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); kiesRoute(tr.dataset.route); }
+    });
+  });
+}
+
+function renderRouteKaarten() {
+  $("#c-routecards").innerHTML = routes.map(function (r) {
+    return '<button type="button" class="routecard" data-route="' + r.id + '" style="--rc:' + r.kleur + '" aria-pressed="' + (cActief === r.id) + '">' +
+      '<span class="routecard__top"><span class="routecard__letter" aria-hidden="true">' + r.letter + '</span>' +
+      '<span class="cardtitle" style="font-size:.95rem">' + esc(r.naam) + '</span>' +
+      '<span class="chip chip--demo" style="margin-left:auto">' + esc(r.kenmerk) + '</span></span>' +
+      '<span class="routecard__steps">' + r.stappen.map(function (s) {
+        return '<span>' + esc(s.naam) + '</span>';
+      }).join('<span aria-hidden="true" style="background:none;padding:0">' + icon("i-arrow-right", 12, 2) + '</span>') + '</span>' +
+      '<span class="small muted" style="display:block">' + esc(r.samenvatting) + '</span>' +
+      '<span class="btn btn--ghost btn--small" style="align-self:flex-start;padding-left:0">Bekijk route ' + r.letter + ' ' + icon("i-arrow-right", 14, 2) + '</span>' +
+      '</button>';
+  }).join("");
+  $$("#c-routecards .routecard").forEach(function (b) {
+    b.addEventListener("click", function () { kiesRoute(b.dataset.route); });
+  });
+}
+
+function renderRouteDetail() {
+  var r = routes.filter(function (x) { return x.id === cActief; })[0];
+  $("#c-detail").innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">' +
+    '<span class="routecard__letter" style="--rc:' + r.kleur + '" aria-hidden="true">' + r.letter + '</span>' +
+    '<h3 style="font-size:1.02rem;color:' + r.kleur + '">' + esc(r.naam) + '</h3></div>' +
+    '<p class="small muted">' + esc(r.samenvatting) + '</p>' +
+    '<hr class="divider">' +
+    '<div class="routedetail__grid">' +
+    '<div><span class="label">Financiële focus</span><p class="small" style="margin:0">' + esc(r.focus) + '</p></div>' +
+    '<div><span class="label">Tijdshorizon</span><p class="small" style="margin:0">' + esc(r.tijdshorizon) + ' ' + meter(r.tijdswaarde, 3) + '</p></div>' +
+    '<div><span class="label">Complexiteit</span><p class="small" style="margin:0">' + esc(r.complexiteit) + ' ' + meter(r.complexwaarde, 4) + '</p></div>' +
+    '<div><span class="label">Besluitvorming</span><p class="small" style="margin:0">' + esc(r.besluitvorming) + '</p></div>' +
+    '</div><hr class="divider">' +
+    '<span class="label">Betrokken rollen</span><div class="chip-row" style="margin-bottom:12px">' +
+    r.rollen.map(function (x) { return '<span class="chip chip--purple">' + esc(x) + '</span>'; }).join("") + '</div>' +
+    '<span class="label">Beslismomenten</span><ul class="small" style="margin:0 0 12px">' +
+    r.beslismomenten.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + '</ul>' +
+    '<span class="label">Instrumenten onderweg</span><ul class="linklist" style="margin-bottom:12px">' +
+    r.instrumenten.map(function (x) {
+      return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(x) + '">' + esc(x) +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+    }).join("") + '</ul>' +
+    '<div class="notice notice--purple small"><span style="flex:none">' + icon("i-alert", 16) + '</span>' +
+    '<span><strong>Aandachtspunt.</strong> ' + esc(r.aandachtspunt) + '</span></div>' +
+    '<p class="tiny muted" style="margin-top:12px">Illustratieve route. Tijdshorizon en complexiteit zijn kwalitatieve indicaties.</p>';
+
+  $$("#c-detail [data-relatie]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+  });
+}
+
+function markeerRoute() {
+  $$("#c-routemap .routegroup").forEach(function (g) {
+    var actief = g.dataset.route === cActief;
+    g.classList.toggle("is-active", actief);
+    g.classList.toggle("is-dimmed", !actief);
+    g.setAttribute("aria-pressed", actief ? "true" : "false");
+  });
+  $$("#c-tabel tr").forEach(function (tr) { tr.setAttribute("aria-selected", tr.dataset.route === cActief ? "true" : "false"); });
+  $$("#c-routecards .routecard").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.route === cActief ? "true" : "false"); });
+}
+
+function kiesRoute(id) {
+  cActief = id;
+  markeerRoute();
+  renderRouteDetail();
+}
+
+function renderCZijkolom() {
+  $("#c-rollen").innerHTML = cRollen.map(function (r) {
+    return '<li><button type="button" class="linklist__btn" data-demo="Rolprofielen zijn in dit concept nog niet uitgewerkt.">' + esc(r.naam) +
+      '<span class="linklist__meta">' + esc(r.meta) + '</span><span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+  }).join("");
+  $("#c-beslismomenten").innerHTML = cBeslismomenten.map(function (r) {
+    return '<li><button type="button" class="linklist__btn" data-demo="De uitwerking van beslismomenten volgt in een volgende ontwerpstap.">' + esc(r.naam) +
+      '<span class="linklist__meta">' + esc(r.meta) + '</span><span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+  }).join("");
+}
+
+function cStatusTekst() {
+  $("#c-status").textContent = "3 illustratieve routes vergeleken";
+}
+
+$("#c-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  renderRoutekaart();
+  cStatusTekst();
+  toast("Drie illustratieve routes opnieuw vergeleken.");
+});
+$('[data-action="c-swap"]').addEventListener("click", function () {
+  var a = $("#c-van").value;
+  $("#c-van").value = $("#c-naar").value;
+  $("#c-naar").value = a;
+  renderRoutekaart();
+  toast("Huidige en gewenste situatie zijn gewisseld.");
+});
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript interactions – archetype D (Persoonlijke adviseur)
+   ============================================================ */
+var dAntwoorden = {};
+var dIndex = 0;
+
+var dOpening = [
+  { van: "bot", tekst: "Welkom bij het Financieel Vastgoedkompas. Ik help je om jouw financiële vraagstuk te structureren en relevante vervolgstappen te vinden.", tijd: "10:20" },
+  { van: "user", tekst: "Ik wil onze sporthal verduurzamen, maar krijg de businesscase nog niet rond.", tijd: "10:21" },
+  { van: "bot", tekst: "Dat gebeurt vaker bij maatschappelijk vastgoed. Ik stel een paar korte vragen, zodat ik alleen laat zien wat in jouw situatie relevant is om te onderzoeken.", tijd: "10:22" }
+];
+
+function dBericht(m) {
+  var isBot = m.van === "bot";
+  return '<div class="msg msg--' + (isBot ? "bot" : "user") + '">' +
+    '<span class="msg__avatar" aria-hidden="true">' + (isBot ? icon("i-compass", 18) : "JV") + '</span>' +
+    '<div class="msg__bubble"><span class="visually-hidden">' + (isBot ? "Kompas" : "Jij") + ': </span>' + esc(m.tekst) +
+    '<span class="msg__time">' + esc(m.tijd) + '</span></div></div>';
+}
+
+function renderAdviseur() {
+  var berichten = dOpening.slice();
+  advisorQuestions.forEach(function (q, i) {
+    if (i < dIndex) {
+      berichten.push({ van: "bot", tekst: q.vraag, tijd: "10:" + (23 + i * 2) });
+      berichten.push({ van: "user", tekst: dAntwoorden[q.id], tijd: "10:" + (24 + i * 2) });
+    }
+  });
+  $("#d-gesprek").innerHTML = berichten.map(dBericht).join("");
+
+  var vraagHost = $("#d-vraag");
+  var resultaatHost = $("#d-resultaat");
+
+  if (dIndex < advisorQuestions.length) {
+    var q = advisorQuestions[dIndex];
+    vraagHost.innerHTML =
+      '<div class="qcard">' +
+      '<div class="qcard__head"><span class="qcard__num" aria-hidden="true">' + (dIndex + 1) + '</span>' +
+      '<h3 style="font-size:.95rem">' + esc(q.vraag) + '</h3>' +
+      '<span class="chip chip--demo" style="margin-left:auto">vraag ' + (dIndex + 1) + ' van 4</span></div>' +
+      '<div class="optiongrid">' + q.opties.map(function (o) {
+        return '<button type="button" class="option" data-antwoord="' + esc(o) + '" aria-pressed="false">' + esc(o) + '</button>';
+      }).join("") + '</div>' +
+      '<p class="tiny muted" style="margin:12px 0 0">Je antwoord verschijnt in het gesprek. Je kunt altijd opnieuw beginnen.</p>' +
+      '</div>';
+    resultaatHost.innerHTML = "";
+    $$("#d-vraag .option").forEach(function (b) {
+      b.addEventListener("click", function () {
+        b.setAttribute("aria-pressed", "true");
+        b.innerHTML = esc(b.dataset.antwoord) + '<span class="option__check" aria-hidden="true">' + icon("i-check", 15, 2.2) + "</span>";
+        dAntwoorden[advisorQuestions[dIndex].id] = b.dataset.antwoord;
+        dIndex += 1;
+        window.setTimeout(renderAdviseur, 180);
+      });
+    });
+  } else {
+    vraagHost.innerHTML = "";
+    resultaatHost.innerHTML = renderAdviesResultaat();
+    $$("#d-resultaat [data-relatie]").forEach(function (b) {
+      b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+    });
+  }
+
+  renderDVoortgang();
+  renderDThemas();
+}
+
+function adviesStappen() {
+  var knelpunt = dAntwoorden.knelpunt || "";
+  var stappen = advisorStappen.slice();
+  if (knelpunt === "Onvoldoende zicht op subsidies") { stappen.unshift(stappen.splice(1, 1)[0]); }
+  if (knelpunt === "Exploitatietekort") { stappen.unshift(stappen.splice(2, 1)[0]); }
+  if (knelpunt === "Onvoldoende bestuurlijk draagvlak") { stappen.unshift(stappen.splice(3, 1)[0]); }
+  return stappen;
+}
+
+function renderAdviesResultaat() {
+  var vastgesteld = advisorQuestions.map(function (q) { return dAntwoorden[q.id]; });
+  return '<div class="result card" style="margin-top:16px">' +
+    '<div class="card__head"><h3>Eerste denkrichting voor jouw situatie</h3>' +
+    '<span class="chip chip--success" style="margin-left:auto">' + icon("i-check", 13, 2.2) + ' Analyse compleet</span></div>' +
+    '<div class="card__body">' +
+    '<div class="result__grid">' +
+    '<div><span class="label">Vastgesteld</span><ul class="checklist">' +
+    vastgesteld.map(function (v) {
+      return '<li class="done"><span class="mark" aria-hidden="true">' + icon("i-check", 12, 2.4) + "</span>" + esc(v) + "</li>";
+    }).join("") + "</ul></div>" +
+    '<div><span class="label">Mogelijke vervolgstappen</span><ol class="steplist">' +
+    adviesStappen().map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ol></div>" +
+    '<div><span class="label">Relevante instrumenten</span><ul class="linklist">' +
+    advisorInstrumenten.map(function (i) {
+      return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(i) + '">' + esc(i) +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+    }).join("") + "</ul></div>" +
+    "</div>" +
+    '<hr class="divider">' +
+    '<div class="notice notice--purple small"><span style="flex:none">' + icon("i-info", 16) + "</span>" +
+    "<span>Dit is een eerste navigatievoorstel, geen formeel financieel advies. Toets de uitkomst met je collega's uit de financiële kolom.</span></div>" +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">' +
+    '<button type="button" class="btn btn--primary" data-goto="archetype-c">Bekijk mogelijke routes</button>' +
+    '<button type="button" class="btn" data-goto="archetype-b">Zoek in de bibliotheek</button>' +
+    '<button type="button" class="btn btn--ghost" data-action="d-reset">Opnieuw beginnen</button>' +
+    "</div></div></div>";
+}
+
+function renderDVoortgang() {
+  var aantal = advisorQuestions.filter(function (q) { return dAntwoorden[q.id]; }).length;
+  $$("#d-progress i").forEach(function (i, idx) { i.classList.toggle("on", idx < aantal); });
+  $("#d-progress-tekst").textContent = aantal + " van 4 vragen beantwoord" + (aantal === 4 ? " · denkrichting beschikbaar" : "");
+  $("#d-volledigheid").innerHTML = advisorQuestions.map(function (q) {
+    var klaar = !!dAntwoorden[q.id];
+    return '<li class="' + (klaar ? "done" : "") + '"><span class="mark" aria-hidden="true">' +
+      icon(klaar ? "i-check" : "i-info", 12, 2.2) + "</span>" + esc(q.kort) +
+      (klaar ? ' <span class="chip chip--teal" style="margin-left:auto">' + esc(dAntwoorden[q.id]) + "</span>" : "") + "</li>";
+  }).join("");
+}
+
+function renderDThemas() {
+  $("#d-themas").innerHTML = advisorThemas.map(function (t) {
+    var actief = t.bij.some(function (b) { return !!dAntwoorden[b]; });
+    return '<li class="' + (actief ? "done" : "") + '"><span class="mark" aria-hidden="true">' +
+      icon(actief ? "i-check" : "i-info", 12, 2.2) + "</span>" + esc(t.naam) + "</li>";
+  }).join("");
+}
+
+function renderDCollegas() {
+  $("#d-collegas").innerHTML = advisorRollen.map(function (r) {
+    return '<li><button type="button" class="linklist__btn" data-demo="Het delen van je vraag met een collega is nog niet uitgewerkt.">' + esc(r.naam) +
+      '<span class="linklist__meta">' + esc(r.meta) + '</span><span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+  }).join("");
+}
+
+document.addEventListener("click", function (e) {
+  if (!e.target.closest('[data-action="d-reset"]')) { return; }
+  dAntwoorden = {};
+  dIndex = 0;
+  renderAdviseur();
+  toast("Het gesprek is opnieuw gestart.");
+});
+
+/* ============================================================
+   JavaScript interactions – archetype E (Financiële controlekamer)
+   ============================================================ */
+var eFilters = { objecttype: [], status: [], thema: [] };
+var eGeselecteerd = "veste";
+
+var statusKlasse = { "Goed": "goed", "Aandacht nodig": "aandacht", "Kritisch": "kritisch" };
+var statusChipKlasse = { "Goed": "chip--success", "Aandacht nodig": "chip--warning", "Kritisch": "chip--critical" };
+var statusKleur = { "Goed": "var(--vmv-success)", "Aandacht nodig": "var(--vmv-warning)", "Kritisch": "var(--vmv-critical)" };
+
+function sparkline(waarden, kleur) {
+  var w = 62, h = 24;
+  var max = Math.max.apply(null, waarden), min = Math.min.apply(null, waarden);
+  var span = (max - min) || 1;
+  var punten = waarden.map(function (v, i) {
+    return (i * (w / (waarden.length - 1))).toFixed(1) + "," + (h - ((v - min) / span) * (h - 4) - 2).toFixed(1);
+  }).join(" ");
+  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true">' +
+    '<polyline points="' + punten + '" fill="none" stroke="' + kleur + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function renderEKpis() {
+  $("#e-kpis").innerHTML = eKpis.map(function (k) {
+    return '<div class="kpi"><span class="kpi__icon" style="background:' + k.kleur + ';color:' + k.tint + '" aria-hidden="true">' + icon(k.icon, 19) + "</span>" +
+      '<div style="min-width:0"><div class="kpi__label">' + esc(k.label) + "</div>" +
+      '<div class="kpi__value">' + esc(k.waarde) + " <span class=\"chip chip--demo\">demo</span></div>" +
+      '<div class="kpi__sub">' + esc(k.sub) + "</div></div>" +
+      '<span class="kpi__spark">' + sparkline(k.spark, k.tint) + "</span></div>";
+  }).join("");
+}
+
+function eMatcht(o, negeerGroep) {
+  return eFilterGroepen.every(function (g) {
+    if (g.id === negeerGroep) { return true; }
+    var gekozen = eFilters[g.id];
+    if (!gekozen.length) { return true; }
+    var waarden = g.id === "status" ? [o.status] : (g.id === "objecttype" ? [o.objecttype] : o.thema);
+    return gekozen.some(function (k) { return waarden.indexOf(k) !== -1; });
+  });
+}
+
+function eZichtbaar() { return portfolioObjects.filter(function (o) { return eMatcht(o); }); }
+
+function renderEFilters() {
+  $("#e-filters").innerHTML = eFilterGroepen.map(function (g) {
+    var opties = g.opties.map(function (o) {
+      var aantal = portfolioObjects.filter(function (x) {
+        var waarden = g.id === "status" ? [x.status] : (g.id === "objecttype" ? [x.objecttype] : x.thema);
+        return waarden.indexOf(o) !== -1 && eMatcht(x, g.id);
+      }).length;
+      var aan = eFilters[g.id].indexOf(o) !== -1;
+      return '<label class="check"><input type="checkbox" data-egroep="' + g.id + '" value="' + esc(o) + '"' + (aan ? " checked" : "") + ">" +
+        "<span>" + esc(o) + '</span><span class="check__count">' + aantal + "</span></label>";
+    }).join("");
+    var actief = eFilters[g.id].length;
+    return '<fieldset class="filtergroup"><legend>' + esc(g.titel) +
+      (actief ? '<span class="filtergroup__count chip chip--teal">' + actief + "</span>" : "") + "</legend>" + opties + "</fieldset>";
+  }).join("");
+
+  $$("#e-filters input[type=checkbox]").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      var lijst = eFilters[cb.dataset.egroep];
+      var i = lijst.indexOf(cb.value);
+      if (cb.checked && i === -1) { lijst.push(cb.value); }
+      if (!cb.checked && i !== -1) { lijst.splice(i, 1); }
+      renderE();
+    });
+  });
+}
+
+function objectKunst(o) {
+  var kleur = statusKleur[o.status];
+  return '<svg viewBox="0 0 220 74" preserveAspectRatio="none" aria-hidden="true">' +
+    '<rect width="220" height="74" fill="var(--vmv-grey-50)"/>' +
+    '<circle cx="182" cy="20" r="12" fill="' + kleur + '" opacity=".14"/>' +
+    '<path d="M0 60h220" stroke="var(--vmv-grey-200)" stroke-width="1"/>' +
+    '<path d="M24 60V34l30-14 30 14v26z" fill="var(--vmv-white)" stroke="' + kleur + '" stroke-width="1.6" stroke-linejoin="round"/>' +
+    '<path d="M96 60V38h46v22z" fill="var(--vmv-white)" stroke="var(--vmv-grey-400)" stroke-width="1.3"/>' +
+    '<path d="M152 60V44l16-9 16 9v16z" fill="var(--vmv-grey-100)" stroke="var(--vmv-grey-400)" stroke-width="1.3" stroke-linejoin="round"/>' +
+    '<g fill="none" stroke="' + kleur + '" stroke-width="1.1" opacity=".7"><path d="M40 44h10v8H40zM60 44h10v8H60zM104 46h10v8h-10zM124 46h10v8h-10z"/></g>' +
+    "</svg>";
+}
+
+function renderEObjecten() {
+  var lijst = eZichtbaar();
+  $("#e-aantal").textContent = lijst.length + " van " + portfolioObjects.length + " getoonde objecten (demo)";
+  var host = $("#e-objecten");
+  if (!lijst.length) {
+    host.innerHTML = '<div class="empty" style="grid-column:1/-1"><p><strong>Geen objecten binnen deze filters.</strong></p>' +
+      '<button type="button" class="btn" data-action="e-wis">Wis filters</button></div>';
+    return;
+  }
+  host.innerHTML = lijst.map(function (o) {
+    return '<button type="button" class="obj-card" data-object="' + o.id + '" aria-pressed="' + (eGeselecteerd === o.id) + '">' +
+      '<span class="obj-card__art">' + objectKunst(o) +
+      '<span class="obj-card__status chip ' + statusChipKlasse[o.status] + '"><span class="status-dot status-dot--' + statusKlasse[o.status] + '"></span>' + esc(o.status) + "</span></span>" +
+      '<span class="obj-card__body"><span class="cardtitle">' + esc(o.naam) + "</span>" +
+      '<span class="tiny muted">' + esc(o.objecttype) + " · cluster " + esc(o.cluster) + "</span>" +
+      '<span class="obj-card__metrics">' +
+      '<span class="obj-card__metric">Inv.opgave<b>' + esc(o.investering) + "</b></span>" +
+      '<span class="obj-card__metric">Energielabel<b>' + esc(o.energielabel) + "</b></span>" +
+      '<span class="obj-card__metric">Exploitatie<b>' + esc(o.exploitatierisico) + "</b></span>" +
+      "</span>" +
+      '<span class="tiny muted">' + icon("i-calendar", 12) + " " + esc(o.beslismoment) + "</span>" +
+      "</span></button>";
+  }).join("");
+  $$("#e-objecten .obj-card").forEach(function (b) {
+    b.addEventListener("click", function () { kiesObject(b.dataset.object); });
+  });
+}
+
+function renderHeatmap() {
+  var w = 560, h = 340, pl = 54, pb = 44, pt = 14, pr = 14;
+  var vlakB = w - pl - pr, vlakH = h - pt - pb;
+  var zichtbaar = eZichtbaar();
+  var punten = portfolioObjects.map(function (o) {
+    var x = pl + o.hx * vlakB;
+    var y = pt + (1 - o.hy) * vlakH;
+    var actief = zichtbaar.indexOf(o) !== -1;
+    return '<g class="hm-point' + (eGeselecteerd === o.id ? " is-selected" : "") + '" data-object="' + o.id + '" role="button" tabindex="' + (actief ? "0" : "-1") + '" ' +
+      'opacity="' + (actief ? 1 : 0.18) + '" aria-label="' + esc(o.naam) + ", " + esc(o.status) + '">' +
+      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + o.hr + '" fill="' + statusKleur[o.status] + '" fill-opacity=".85"/>' +
+      '<title>' + esc(o.naam) + " – " + esc(o.status) + "</title></g>";
+  }).join("");
+
+  $("#e-heatmap").innerHTML =
+    '<svg viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="Heatmap met maatschappelijke waarde op de horizontale as en financieel risico op de verticale as">' +
+    '<rect x="' + pl + '" y="' + pt + '" width="' + vlakB / 2 + '" height="' + vlakH / 2 + '" fill="var(--vmv-critical-light)"/>' +
+    '<rect x="' + (pl + vlakB / 2) + '" y="' + pt + '" width="' + vlakB / 2 + '" height="' + vlakH / 2 + '" fill="var(--vmv-warning-light)"/>' +
+    '<rect x="' + pl + '" y="' + (pt + vlakH / 2) + '" width="' + vlakB / 2 + '" height="' + vlakH / 2 + '" fill="var(--vmv-grey-100)"/>' +
+    '<rect x="' + (pl + vlakB / 2) + '" y="' + (pt + vlakH / 2) + '" width="' + vlakB / 2 + '" height="' + vlakH / 2 + '" fill="var(--vmv-success-light)"/>' +
+    '<g fill="none" stroke="var(--vmv-white)" stroke-width="2"><path d="M' + (pl + vlakB / 2) + " " + pt + "V" + (pt + vlakH) + "M" + pl + " " + (pt + vlakH / 2) + "H" + (pl + vlakB) + '"/></g>' +
+    '<g fill="none" stroke="var(--vmv-grey-400)" stroke-width="1.2"><path d="M' + pl + " " + pt + "V" + (pt + vlakH) + "H" + (pl + vlakB) + '"/></g>' +
+    '<g class="hm-axis" font-family="Aptos, Segoe UI, Arial, sans-serif">' +
+    '<text x="' + (pl + vlakB / 2) + '" y="' + (h - 8) + '" text-anchor="middle" font-weight="600">Maatschappelijke waarde &#8594;</text>' +
+    '<text transform="rotate(-90 14 ' + (pt + vlakH / 2) + ')" x="14" y="' + (pt + vlakH / 2) + '" text-anchor="middle" font-weight="600">Financieel risico &#8594;</text>' +
+    '<text x="' + (pl + 6) + '" y="' + (pt + 16) + '">hoog risico / lage waarde</text>' +
+    '<text x="' + (pl + vlakB - 6) + '" y="' + (pt + 16) + '" text-anchor="end">hoog risico / hoge waarde</text>' +
+    '<text x="' + (pl + 6) + '" y="' + (pt + vlakH - 8) + '">laag risico / lage waarde</text>' +
+    '<text x="' + (pl + vlakB - 6) + '" y="' + (pt + vlakH - 8) + '" text-anchor="end">laag risico / hoge waarde</text>' +
+    "</g>" + punten + "</svg>";
+
+  $$("#e-heatmap .hm-point").forEach(function (g) {
+    g.addEventListener("click", function () { kiesObject(g.dataset.object); });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); kiesObject(g.dataset.object); }
+    });
+  });
+}
+
+function renderEDetail() {
+  var o = portfolioObjects.filter(function (x) { return x.id === eGeselecteerd; })[0];
+  var host = $("#e-detail");
+  if (!o) {
+    host.innerHTML = '<p class="detailpanel__empty">Kies een object in de portefeuillekaart of in de heatmap.</p>';
+    return;
+  }
+  host.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+    '<h3 style="font-size:1.02rem">' + esc(o.naam) + "</h3>" +
+    '<span class="chip ' + statusChipKlasse[o.status] + '" style="margin-left:auto"><span class="status-dot status-dot--' + statusKlasse[o.status] + '"></span>' + esc(o.status) + "</span></div>" +
+    '<p class="tiny muted" style="margin-bottom:12px">' + esc(o.objecttype) + " · cluster " + esc(o.cluster) + ' · energielabel ' + esc(o.energielabel) + ' <span class="chip chip--demo">demo</span></p>' +
+    '<span class="label">Financiële signalen</span><ul class="small" style="margin:0 0 12px">' +
+    o.signalen.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" +
+    '<span class="label">Verduurzamingsopgave</span><p class="small">' + esc(o.verduurzaming) + "</p>" +
+    '<span class="label">Betrokken rollen</span><div class="chip-row" style="margin-bottom:12px">' +
+    o.rollen.map(function (r) { return '<span class="chip chip--purple">' + esc(r) + "</span>"; }).join("") + "</div>" +
+    '<span class="label">Eerstvolgend beslismoment</span><p class="small">' + icon("i-calendar", 14) + " " + esc(o.beslismoment) + "</p>" +
+    '<span class="label">Relevante instrumenten</span><ul class="linklist" style="margin-bottom:12px">' +
+    o.instrumenten.map(function (i) {
+      return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(i) + '">' + esc(i) +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+    }).join("") + "</ul>" +
+    '<div class="notice small"><span style="flex:none">' + icon("i-arrow-right", 16) + "</span>" +
+    "<span><strong>Mogelijke vervolgstap.</strong> " + esc(o.vervolg) + "</span></div>" +
+    '<button type="button" class="btn btn--teal btn--block" style="margin-top:12px" data-goto="archetype-c">Bekijk routes voor dit object</button>';
+
+  $$("#e-detail [data-relatie]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+  });
+}
+
+function kiesObject(id) {
+  eGeselecteerd = id;
+  $$("#e-objecten .obj-card").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.object === id ? "true" : "false"); });
+  $$("#e-heatmap .hm-point").forEach(function (g) { g.classList.toggle("is-selected", g.dataset.object === id); });
+  renderEDetail();
+}
+
+function renderESignalen() {
+  var tint = { critical: ["var(--vmv-critical-light)", "var(--vmv-critical)"], warning: ["var(--vmv-warning-light)", "#a8721d"], blue: ["var(--vmv-blue-light)", "var(--vmv-blue)"] };
+  $("#e-signalen").innerHTML = eSignalen.map(function (s) {
+    var k = tint[s.type];
+    return '<button type="button" class="signal" data-demo="Signaaldetails zijn in dit concept nog niet uitgewerkt.">' +
+      '<span class="signal__count" style="background:' + k[0] + ";color:" + k[1] + '">' + s.aantal + "</span>" +
+      '<span class="signal__text">' + esc(s.tekst) + "</span>" +
+      '<span class="arrow" style="margin-left:auto;color:var(--vmv-grey-400)">' + icon("i-arrow-right", 15, 1.8) + "</span></button>";
+  }).join("");
+
+  $("#e-acties").innerHTML = eActies.map(function (a) {
+    var attr = a.ga ? 'data-goto="' + a.ga + '"' : 'data-demo="Deze actie is in het concept nog niet verder uitgewerkt."';
+    return '<li><button type="button" class="linklist__btn" ' + attr + ">" + esc(a.naam) +
+      '<span class="linklist__meta">' + esc(a.meta) + "</span>" +
+      '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+  }).join("");
+
+  $("#e-kalender").innerHTML = eKalender.map(function (k) {
+    return '<div class="timeline__item"><span class="timeline__dot" aria-hidden="true">' + icon(k.icon, 17) + "</span>" +
+      '<span class="timeline__date">' + esc(k.datum) + "</span>" +
+      '<span class="timeline__label">' + esc(k.label) + "<br><span class=\"tiny muted\">" + esc(k.sub) + "</span></span></div>";
+  }).join("");
+}
+
+function renderE() {
+  renderEFilters();
+  renderEObjecten();
+  renderHeatmap();
+  renderEDetail();
+}
+
+document.addEventListener("click", function (e) {
+  if (!e.target.closest('[data-action="e-wis"]')) { return; }
+  eFilterGroepen.forEach(function (g) { eFilters[g.id] = []; });
+  renderE();
+  toast("Portefeuillefilters zijn gewist.");
+});
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript interactions – reflectiepaneel
+   ============================================================ */
+var REFLECTIE_KEY = "vmv-kompas-reflecties";
+
+function laadReflecties() {
+  try {
+    var ruw = window.localStorage.getItem(REFLECTIE_KEY);
+    return ruw ? JSON.parse(ruw) : {};
+  } catch (err) {
+    return {};
+  }
+}
+
+function bewaarReflecties(data) {
+  try {
+    window.localStorage.setItem(REFLECTIE_KEY, JSON.stringify(data));
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function renderReflecties() {
+  var data = laadReflecties();
+  $("#reflectie-velden").innerHTML = reflectieVragen.map(function (v, i) {
+    return '<div><label class="label" for="refl-' + i + '" style="text-transform:none;font-size:.84rem;letter-spacing:0;color:var(--vmv-purple);font-weight:600">' +
+      (i + 1) + ". " + esc(v) + "</label>" +
+      '<textarea id="refl-' + i + '" data-refl="' + i + '" placeholder="Jouw notitie…">' + esc(data["v" + i] || "") + "</textarea></div>";
+  }).join("");
+
+  $$("#reflectie-velden textarea").forEach(function (ta) {
+    ta.addEventListener("input", function () {
+      var d = laadReflecties();
+      d["v" + ta.dataset.refl] = ta.value;
+      var ok = bewaarReflecties(d);
+      $("#reflectie-status").textContent = ok ? "Automatisch bewaard in deze browser." : "Bewaren lukt niet in deze browser. Kopieer je tekst zelf.";
+    });
+  });
+}
+
+function reflectieTekst() {
+  var data = laadReflecties();
+  var regels = ["Reflectie op het VMV Financieel Vastgoedkompas (conceptprototype)", ""];
+  reflectieVragen.forEach(function (v, i) {
+    regels.push((i + 1) + ". " + v);
+    regels.push((data["v" + i] || "").trim() || "—");
+    regels.push("");
+  });
+  return regels.join("\n");
+}
+
+document.addEventListener("click", function (e) {
+  var kop = e.target.closest('[data-action="reflectie-kopieer"]');
+  var wis = e.target.closest('[data-action="reflectie-wis"]');
+
+  if (kop) {
+    var tekst = reflectieTekst();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(tekst).then(function () {
+        $("#reflectie-status").textContent = "Reflecties gekopieerd naar het klembord.";
+        toast("Reflecties gekopieerd naar het klembord.");
+      }).catch(function () { kopieerFallback(tekst); });
+    } else {
+      kopieerFallback(tekst);
+    }
+  }
+
+  if (wis) {
+    reflectieVragen.forEach(function (v, i) {
+      var ta = document.getElementById("refl-" + i);
+      if (ta) { ta.value = ""; }
+    });
+    bewaarReflecties({});
+    $("#reflectie-status").textContent = "Alle reflecties zijn gewist.";
+    toast("Alle reflecties zijn gewist.");
+  }
+});
+
+function kopieerFallback(tekst) {
+  var ta = document.createElement("textarea");
+  ta.value = tekst;
+  ta.setAttribute("readonly", "readonly");
+  ta.style.position = "fixed";
+  ta.style.top = "50%";
+  ta.style.left = "50%";
+  ta.style.width = "1px";
+  ta.style.height = "1px";
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, tekst.length);
+  $("#reflectie-status").textContent = "Kopiëren via het klembord is hier niet beschikbaar. De tekst is geselecteerd: gebruik Ctrl+C of Cmd+C.";
+  toast("Klembord niet beschikbaar. De tekst is geselecteerd, kopieer met Ctrl+C of Cmd+C.");
+  window.setTimeout(function () { if (ta.parentNode) { ta.parentNode.removeChild(ta); } }, 6000);
+}
+
+/* ============================================================
+   Initialisatie
+   ============================================================ */
+function init() {
+  renderOverzicht();
+
+  /* Archetype A */
+  renderDomeinen();
+  renderSysteemkaart();
+  renderThemaDetail(null, []);
+
+  /* Archetype B */
+  renderBZijkolom();
+  renderB();
+
+  /* Archetype C */
+  renderRoutekaart();
+  renderRouteTabel();
+  renderRouteKaarten();
+  renderRouteDetail();
+  renderCZijkolom();
+  cStatusTekst();
+
+  /* Archetype D */
+  renderAdviseur();
+  renderDCollegas();
+
+  /* Archetype E */
+  renderEKpis();
+  renderESignalen();
+  renderE();
+
+  /* Reflectie */
+  renderReflecties();
+
+  var start = window.location.hash.replace("#", "");
+  toonView(geldigeViews.indexOf(start) !== -1 ? start : "overzicht", true);
+}
+
+init();
+</script>
+</body>
+</html>
