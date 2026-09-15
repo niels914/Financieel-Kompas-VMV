@@ -221,7 +221,7 @@ button { font: inherit; color: inherit; }
   box-shadow: var(--shadow-soft);
 }
 .card__head {
-  display: flex; align-items: center; gap: var(--space-2);
+  display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;
   padding: var(--space-4) var(--space-4) var(--space-3);
   border-bottom: 1px solid var(--vmv-grey-100);
 }
@@ -451,7 +451,7 @@ input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
 .hero .lead { font-size: 1.02rem; color: var(--vmv-purple-mid); margin-top: var(--space-3); }
 .hero__art { justify-self: center; }
 
-.arch-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); }
+.arch-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
 .arch-card {
   display: flex; flex-direction: column; gap: var(--space-3);
   padding: var(--space-4);
@@ -826,6 +826,95 @@ input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
 .acc__panel[hidden] { display: none; }
 
 /* ============================================================
+   Archetype C2 – Routeplanner door rollen
+   ============================================================ */
+.c2 {
+  --c2-violet: #5760a6;
+  --c2-purple: #9462a6;
+  --c2-blue: #007db5;
+}
+.c2 .viewhead__title { color: var(--c2-violet); }
+
+.c2-rollen { display: grid; gap: 10px; }
+.c2-rol {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px;
+  align-items: start; width: 100%; text-align: left;
+  padding: 11px 12px; min-height: 44px;
+  border: 1px solid var(--vmv-grey-200); border-radius: var(--radius-m);
+  background: var(--vmv-white); cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.c2-rol:hover { border-color: var(--rol); background: var(--vmv-grey-50); }
+.c2-rol[aria-pressed="true"] { border-color: var(--rol); box-shadow: 0 0 0 1px var(--rol) inset; background: var(--vmv-grey-50); }
+.c2-rol__dot { width: 13px; height: 13px; border-radius: 50%; background: var(--rol); margin-top: 4px; }
+.c2-rol__naam { display: block; font-size: .88rem; font-weight: 600; color: var(--vmv-purple); }
+.c2-rol__vraag { display: block; font-size: .77rem; color: var(--vmv-muted); margin-top: 2px; }
+
+.c2-map > svg { display: block; width: 100%; height: auto; }
+.c2-map text {
+  font-family: var(--font);
+  paint-order: stroke; stroke: var(--vmv-white); stroke-width: 3.5px; stroke-linejoin: round;
+}
+.c2-lijn { fill: none; stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; }
+.c2-lijngroep { transition: opacity var(--dur) var(--ease); }
+.c2-lijngroep.is-dimmed { opacity: .14; }
+
+.c2-halte { cursor: pointer; }
+.c2-halte__punt { fill: var(--vmv-white); stroke-width: 3; transition: stroke-width var(--dur) var(--ease); }
+.c2-halte:hover .c2-halte__punt { stroke-width: 5; }
+.c2-halte.is-selected .c2-halte__punt { fill: var(--vmv-purple); stroke: var(--vmv-purple); }
+.c2-halte text { font-size: 12px; font-weight: 600; fill: var(--vmv-purple-mid); text-anchor: middle; }
+.c2-halte:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 3px; }
+
+.c2-knoop { cursor: pointer; }
+.c2-knoop__ring { fill: var(--vmv-white); stroke: var(--c2-violet); stroke-width: 4.5; transition: stroke-width var(--dur) var(--ease); }
+.c2-knoop__kern { fill: var(--c2-violet); }
+.c2-knoop:hover .c2-knoop__ring { stroke-width: 7; }
+.c2-knoop.is-selected .c2-knoop__ring { stroke-width: 8; stroke: var(--vmv-purple); }
+.c2-knoop.is-selected .c2-knoop__kern { fill: var(--vmv-purple); }
+.c2-knoop text { font-size: 14px; font-weight: 700; fill: var(--vmv-purple); text-anchor: middle; }
+.c2-knoop:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 3px; }
+
+.c2-kaartje { cursor: pointer; transition: opacity var(--dur) var(--ease); }
+.c2-kaartje.is-dimmed { opacity: .22; }
+.c2-kaartje__vlak { fill: var(--vmv-white); stroke: var(--vmv-grey-200); transition: stroke var(--dur) var(--ease); }
+.c2-kaartje:hover .c2-kaartje__vlak { stroke: var(--kk); }
+.c2-kaartje__titel { font-size: 13.5px; font-weight: 700; fill: var(--kk); }
+.c2-kaartje__sub { font-size: 11px; font-weight: 500; fill: var(--vmv-muted); }
+.c2-kaartje:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 3px; }
+.c2-draad { fill: none; stroke: var(--vmv-grey-400); stroke-width: 1.2; stroke-dasharray: 3 4; transition: opacity var(--dur) var(--ease); }
+.c2-draad.is-dimmed { opacity: .22; }
+
+.c2-legenda { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; font-size: .76rem; color: var(--vmv-muted); }
+.c2-legenda span { display: inline-flex; align-items: center; gap: 7px; }
+.c2-legenda svg { flex: none; }
+
+.c2-overstap { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.c2-overstap__kaart {
+  text-align: left; cursor: pointer;
+  padding: 12px; border: 1px solid var(--vmv-grey-200);
+  border-top: 3px solid var(--c2-violet);
+  border-radius: var(--radius-m); background: var(--vmv-white);
+  display: grid; gap: 6px; align-content: start;
+  transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.c2-overstap__kaart:hover { box-shadow: var(--shadow-panel); }
+.c2-overstap__kaart[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--c2-violet) inset; }
+.c2-overstap__naam { display: block; font-size: .86rem; font-weight: 600; color: var(--vmv-purple); overflow-wrap: anywhere; }
+.c2-overstap__vraag { display: block; font-size: .77rem; color: var(--vmv-muted); overflow-wrap: anywhere; }
+.c2-sporen { display: flex; gap: 4px; }
+.c2-spoor { width: 15px; height: 4px; border-radius: 2px; display: inline-block; }
+
+.c2-panel__vraag {
+  display: block; padding-left: 10px; border-left: 3px solid var(--rol, var(--c2-violet));
+  font-size: .84rem; color: var(--vmv-purple); font-weight: 600;
+}
+.c2-volgende {
+  padding: var(--space-3); border-radius: var(--radius-m);
+  background: var(--vmv-purple-light); color: var(--vmv-purple-mid); font-size: .82rem;
+}
+
+/* ============================================================
    Responsive
    ============================================================ */
 @media (max-width: 1320px) {
@@ -836,6 +925,8 @@ input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
   .layout--3, .layout--2l, .layout--2r { grid-template-columns: minmax(0, 1fr); }
   .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .statstrip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .arch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .c2-overstap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .routecards { grid-template-columns: minmax(0, 1fr); }
   .result__grid { grid-template-columns: minmax(0, 1fr); }
   .hero { grid-template-columns: minmax(0, 1fr); }
@@ -852,6 +943,7 @@ input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
   .topbar, .archnav { position: static; }
   .arch-grid { grid-template-columns: minmax(0, 1fr); }
   .kpi-row, .statstrip, .explain-strip { grid-template-columns: minmax(0, 1fr); }
+  .c2-overstap { grid-template-columns: minmax(0, 1fr); }
   .viewhead__title { font-size: 1.45rem; }
   .hero { padding: var(--space-4); }
   .hero h1 { font-size: 1.55rem; }
@@ -959,6 +1051,7 @@ input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
     <button type="button" class="archnav__tab" role="tab" id="tab-archetype-a" data-view="archetype-a" aria-selected="false" aria-controls="view-archetype-a"><span class="archnav__letter" aria-hidden="true">A</span> Opgavekompas</button>
     <button type="button" class="archnav__tab" role="tab" id="tab-archetype-b" data-view="archetype-b" aria-selected="false" aria-controls="view-archetype-b"><span class="archnav__letter" aria-hidden="true">B</span> Instrumentenbibliotheek</button>
     <button type="button" class="archnav__tab" role="tab" id="tab-archetype-c" data-view="archetype-c" aria-selected="false" aria-controls="view-archetype-c"><span class="archnav__letter" aria-hidden="true">C</span> Routeplanner</button>
+    <button type="button" class="archnav__tab" role="tab" id="tab-archetype-c2" data-view="archetype-c2" aria-selected="false" aria-controls="view-archetype-c2"><span class="archnav__letter" aria-hidden="true">C2</span> Routeplanner door rollen</button>
     <button type="button" class="archnav__tab" role="tab" id="tab-archetype-d" data-view="archetype-d" aria-selected="false" aria-controls="view-archetype-d"><span class="archnav__letter" aria-hidden="true">D</span> Persoonlijke adviseur</button>
     <button type="button" class="archnav__tab" role="tab" id="tab-archetype-e" data-view="archetype-e" aria-selected="false" aria-controls="view-archetype-e"><span class="archnav__letter" aria-hidden="true">E</span> Financiële controlekamer</button>
   </div>
@@ -1323,6 +1416,97 @@ input::placeholder, textarea::placeholder { color: var(--vmv-grey-400); }
 </section>
 
 <!-- ============================================================
+     Archetype C2 – Routeplanner door rollen
+     ============================================================ -->
+<section class="view c2" id="view-archetype-c2" role="tabpanel" aria-labelledby="tab-archetype-c2" tabindex="-1" hidden>
+  <div class="viewhead">
+    <div class="viewhead__row">
+      <div>
+        <span class="viewhead__eyebrow">Archetype C2</span>
+        <h1 class="viewhead__title">Routeplanner door rollen</h1>
+        <p class="viewhead__sub">Iedere rol heeft een eigen route. Het kompas laat zien waar ze samenkomen.</p>
+      </div>
+      <p class="notice notice--purple small" style="flex:0 1 400px;margin:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="flex:none"><use href="#i-route"/></svg>
+        <span>Metafoor: een lijnennetkaart. Financiële besluitvorming ontstaat op de kruispunten tussen vastgoed, beleid, financiën, bestuur en gebruik.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="layout layout--3">
+    <!-- Linkerkolom: rolkeuze -->
+    <div class="stack">
+      <section class="card" aria-labelledby="c2-rollen-titel">
+        <div class="card__head">
+          <h2 id="c2-rollen-titel">Kies jouw rol</h2>
+          <span class="chip chip--demo" style="margin-left:auto">illustratief</span>
+        </div>
+        <div class="card__body">
+          <p class="small muted" style="margin-bottom:12px">De gekozen route licht op, de andere routes vervagen. Overstappunten blijven altijd zichtbaar.</p>
+          <div class="c2-rollen" id="c2-rollen"></div>
+          <button type="button" class="btn btn--block" style="margin-top:12px" data-action="c2-alle">Toon alle rollen</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="c2-uitleg-titel">
+        <div class="card__body">
+          <h2 id="c2-uitleg-titel" class="panel-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-info"/></svg>
+            Wat gebeurt hier?
+          </h2>
+          <p class="small muted">De lijnen tonen hoe verschillende rollen door besluitvorming bewegen. Overstappunten laten zien waar samenwerking nodig is en waar financiële informatie cruciaal wordt.</p>
+          <hr class="divider">
+          <p class="tiny muted">Proces, rol en beslismoment staan hier vóór het instrument. De kaart is bewust schematisch en niet uitputtend.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Midden: lijnennetkaart -->
+    <div class="stack">
+      <section class="card" aria-labelledby="c2-kaart-titel">
+        <div class="card__head">
+          <h2 id="c2-kaart-titel">Van opgave naar maatschappelijk en financieel besluit</h2>
+          <span class="chip chip--demo">conceptplaat</span>
+          <span class="small muted" style="margin-left:auto" id="c2-status" aria-live="polite"></span>
+        </div>
+        <div class="card__body">
+          <p class="small muted" style="margin-bottom:12px">Lijnen tonen rolroutes. Grote stations zijn gezamenlijke beslismomenten. Klik op een halte, een overstappunt of een instrumentkaartje.</p>
+          <div class="c2-map" id="c2-map"></div>
+          <div class="c2-legenda" style="margin-top:14px">
+            <span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5" fill="#fff" stroke="var(--vmv-grey-400)" stroke-width="2.5"/></svg> Gewone halte: rolspecifiek moment</span>
+            <span><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="#fff" stroke="var(--c2-violet)" stroke-width="3"/><circle cx="10" cy="10" r="2.5" fill="var(--c2-violet)"/></svg> Overstappunt: gezamenlijk beslismoment</span>
+            <span><svg width="22" height="14" viewBox="0 0 22 14" aria-hidden="true"><rect x="1" y="1" width="20" height="12" rx="3" fill="#fff" stroke="var(--vmv-grey-400)"/><rect x="1" y="1" width="3" height="12" rx="1.5" fill="var(--c2-violet)"/></svg> Instrumentkaartje: relevante financiële informatie</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="c2-overstap-titel">
+        <div class="card__head">
+          <h2 id="c2-overstap-titel">Overstappunten</h2>
+          <span class="small muted" style="margin-left:auto">Vijf gezamenlijke beslismomenten</span>
+        </div>
+        <div class="card__body">
+          <div class="c2-overstap" id="c2-overstap"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Rechterkolom -->
+    <div class="stack">
+      <section class="card" aria-labelledby="c2-panel-titel" aria-live="polite">
+        <div class="card__head"><h2 id="c2-panel-titel">Voor deze rol belangrijk</h2></div>
+        <div class="card__body" id="c2-panel"></div>
+      </section>
+
+      <section class="card detailpanel" aria-labelledby="c2-detail-titel" aria-live="polite">
+        <div class="card__head"><h2 id="c2-detail-titel">Geselecteerd punt</h2></div>
+        <div class="card__body" id="c2-detail"></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      Archetype D – Persoonlijke adviseur
      ============================================================ -->
 <section class="view" id="view-archetype-d" role="tabpanel" aria-labelledby="tab-archetype-d" tabindex="-1" hidden>
@@ -1667,6 +1851,25 @@ var archetypes = [
       '<path d="M24 46c30 34 66 30 96 22s40-6 58 0" stroke="var(--vmv-purple-mid)" stroke-width="3" fill="none" stroke-linecap="round"/>' +
       '<g fill="var(--vmv-white)"><circle cx="24" cy="46" r="9" stroke="var(--vmv-purple)" stroke-width="2"/><circle cx="178" cy="46" r="9" stroke="var(--vmv-teal-dark)" stroke-width="2"/>' +
       '<circle cx="86" cy="22" r="5" stroke="var(--vmv-teal)" stroke-width="1.8"/><circle cx="100" cy="46" r="5" stroke="var(--vmv-blue)" stroke-width="1.8"/><circle cx="94" cy="70" r="5" stroke="var(--vmv-purple-mid)" stroke-width="1.8"/></g></svg>'
+  },
+  {
+    id: "archetype-c2", letter: "C2", naam: "Routeplanner door rollen",
+    metafoor: "Lijnennetkaart",
+    vraag: "Welke route legt mijn rol af en waar kruisen we?",
+    body: "Toont per rol een eigen lijn door de besluitvorming, met overstappunten waar rollen elkaar nodig hebben en financiële informatie cruciaal wordt.",
+    accent: "#5760a6",
+    thumb: '<svg viewBox="0 0 200 92" fill="none" aria-hidden="true">' +
+      '<path d="M14 20h40l26 26h34" stroke="#0f6fa8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M14 46h66" stroke="#12a3a0" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="M14 72h40l26-26" stroke="#e2833c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M114 46h24l22 22h26" stroke="#3e9b62" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M114 46h10l22 22h40" stroke="#9462a6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>' +
+      '<g fill="var(--vmv-white)" stroke="var(--vmv-grey-400)" stroke-width="2">' +
+      '<circle cx="42" cy="20" r="4"/><circle cx="48" cy="46" r="4"/><circle cx="42" cy="72" r="4"/><circle cx="140" cy="68" r="4"/></g>' +
+      '<circle cx="97" cy="46" r="10" fill="var(--vmv-white)" stroke="#5760a6" stroke-width="3.5"/>' +
+      '<circle cx="97" cy="46" r="3.5" fill="#5760a6"/>' +
+      '<circle cx="182" cy="68" r="11" fill="var(--vmv-white)" stroke="#5760a6" stroke-width="3.5"/>' +
+      '<circle cx="182" cy="68" r="4" fill="#5760a6"/></svg>'
   },
   {
     id: "archetype-d", letter: "D", naam: "Persoonlijke adviseur",
@@ -2349,7 +2552,7 @@ document.addEventListener("keydown", function (e) {
 });
 
 /* --- Weergavenavigatie --- */
-var geldigeViews = ["overzicht", "archetype-a", "archetype-b", "archetype-c", "archetype-d", "archetype-e"];
+var geldigeViews = ["overzicht", "archetype-a", "archetype-b", "archetype-c", "archetype-c2", "archetype-d", "archetype-e"];
 var huidigeView = "overzicht";
 
 function toonView(naam, viaHash) {
@@ -3451,6 +3654,449 @@ document.addEventListener("click", function (e) {
 <script>
 "use strict";
 /* ============================================================
+   JavaScript data – archetype C2 (Routeplanner door rollen)
+   ============================================================ */
+var c2Rollen = [
+  {
+    id: "vastgoed", naam: "Vastgoedprofessional", kleur: "#0f6fa8",
+    vraag: "Hoe maken we de portefeuille toekomstbestendig?",
+    punten: [[100,100],[290,100],[440,250],[630,250],[700,320],[800,312],[880,390],[1160,390],[1160,560]],
+    haltes: [
+      { x:100, y:100, label:["Portefeuille-","analyse"], pos:"boven", info:"Omvang, conditie en kosten van de portefeuille als vertrekpunt." },
+      { x:200, y:100, label:["MJOP"], pos:"boven", info:"De meerjarenonderhoudsplanning laat zien wanneer ingrepen onvermijdelijk worden." },
+      { x:290, y:100, label:["Vastgoed-","strategie"], pos:"boven", info:"Per object de keuze tussen behouden, verduurzamen, afstoten of vervangen." },
+      { x:520, y:250, label:["TCO-analyse"], pos:"boven", info:"Investering, onderhoud, beheer en energie in samenhang over de levensduur." },
+      { x:630, y:250, label:["Scenario-","ontwikkeling"], pos:"boven", info:"Varianten naast elkaar zetten, inclusief de variant niets doen." },
+      { x:1020, y:390, label:["Investerings-","voorstel"], pos:"onder", info:"Het voorstel dat richting college en raad gaat, met onderbouwing en dekking." }
+    ],
+    overleg: ["Verduurzamingsopgave", "Businesscase", "Portefeuilleoverleg"],
+    themas: ["TCO en exploitatie", "Investering en restwaarde", "Meerjarenprogrammering"],
+    instrumenten: ["TCO-rekenmodel maatschappelijk vastgoed", "Subsidiewijzer maatschappelijk vastgoed", "Methodiek circulaire restwaarde"],
+    volgende: { knoop: "businesscase", tekst: "Open het overstappunt Businesscase" }
+  },
+  {
+    id: "beleid", naam: "Beleidsmedewerker", kleur: "#12a3a0",
+    vraag: "Waarom investeren we?",
+    punten: [[100,180],[320,180],[390,250],[440,250],[510,320],[700,320],[812,432],[980,432],[1016,468],[1082,468],[1160,560]],
+    haltes: [
+      { x:100, y:180, label:["Beleidsdoelen"], pos:"boven", info:"Wat wil de gemeente bereiken met sport, cultuur en welzijn?" },
+      { x:210, y:180, label:["Voorzieningen-","visie"], pos:"boven", info:"Welke voorzieningen horen waar, voor wie en op welke termijn?" },
+      { x:320, y:180, label:["Accommodatie-","beleid"], pos:"boven", info:"Accommodatiebeleid gaat over gebruik en spreiding en is niet hetzelfde als vastgoedbeleid." },
+      { x:560, y:320, label:["Sport, cultuur","en welzijn"], pos:"boven", info:"De inhoudelijke programma's die het gebouw moet kunnen dragen." },
+      { x:650, y:320, label:["Maatschappelijke","effecten"], pos:"onder", info:"Wat levert de investering op voor inwoners, verenigingen en gebruikers?" },
+      { x:900, y:432, label:["Beleids-","afweging"], pos:"onder", info:"Weegt het maatschappelijk belang op tegen de financiële consequenties?" }
+    ],
+    overleg: ["Verduurzamingsopgave", "Businesscase", "Collegebesluit"],
+    themas: ["Maatschappelijk rendement", "Subsidies", "Exploitatiebijdrage"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Subsidiewijzer maatschappelijk vastgoed", "Kader voorzieningenbeleid"],
+    volgende: { knoop: "college", tekst: "Open het overstappunt Collegebesluit" }
+  },
+  {
+    id: "gebruiker", naam: "Gebruiker / huurder", kleur: "#e2833c",
+    vraag: "Wat betekent dit voor ons gebruik?",
+    punten: [[100,370],[320,370],[440,250],[500,190],[750,190]],
+    haltes: [
+      { x:100, y:370, label:["Ontwikkelwens"], pos:"onder", info:"De gebruiker signaleert dat het gebouw niet meer past bij het gebruik." },
+      { x:215, y:370, label:["Gebruiks-","ervaring"], pos:"onder", info:"Wat werkt er nu wel en niet in het dagelijks gebruik?" },
+      { x:320, y:370, label:["Functionele","eisen"], pos:"onder", info:"Welke ruimtes, openingstijden en kwaliteit zijn nodig?" },
+      { x:550, y:190, label:["Betaalbaarheid"], pos:"boven", info:"Kan de huurder de huur na verduurzaming nog opbrengen?" },
+      { x:650, y:190, label:["Continuïteit"], pos:"boven", info:"Blijft het gebruik tijdens en na de ingreep mogelijk?" },
+      { x:750, y:190, label:["Tevredenheid"], pos:"boven", info:"Terugkoppeling uit het gebruik voedt de volgende ronde van de opgave." }
+    ],
+    overleg: ["Verduurzamingsopgave"],
+    themas: ["Betaalbaarheid en huur", "Exploitatielasten", "Continuïteit van gebruik"],
+    instrumenten: ["Kostprijsdekkende huur (KPD)", "Exploitatiemodel sportaccommodaties", "BTW-beslisboom vastgoed"],
+    volgende: { knoop: "opgave", tekst: "Open het overstappunt Verduurzamingsopgave" }
+  },
+  {
+    id: "bestuur", naam: "Wethouder / college / raad", kleur: "#9462a6",
+    vraag: "Is dit bestuurlijk verdedigbaar?",
+    punten: [[100,470],[810,470],[880,400],[960,410],[1040,490],[1082,490],[1160,560]],
+    haltes: [
+      { x:100, y:470, label:["Politieke kaders"], pos:"onder", info:"Coalitieakkoord en programmabegroting bepalen de speelruimte." },
+      { x:250, y:470, label:["Bestuurlijke","agenda"], pos:"onder", info:"Wanneer moet dit onderwerp bestuurlijk op tafel liggen?" },
+      { x:400, y:470, label:["Collegevoorstel"], pos:"onder", info:"Het ambtelijke voorstel wordt bestuurlijk geschikt gemaakt." },
+      { x:550, y:470, label:["Politieke","afweging"], pos:"onder", info:"Maatschappelijk belang, lastendruk en risico's tegen elkaar afwegen." },
+      { x:760, y:470, label:["Kredietkader"], pos:"onder", info:"Welk krediet en welke dekking worden aan de raad gevraagd?" }
+    ],
+    overleg: ["Portefeuilleoverleg", "Collegebesluit", "Raadsbesluit"],
+    themas: ["Kapitaallasten en dekking", "Maatschappelijk rendement", "Risico en beheersing"],
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Begrotingskader investeringen", "MIP-handreiking"],
+    volgende: { knoop: "raad", tekst: "Open het overstappunt Raadsbesluit" }
+  },
+  {
+    id: "finance", naam: "Finance & Control", kleur: "#3e9b62",
+    vraag: "Hoe past dit financieel?",
+    punten: [[100,580],[620,580],[700,500],[700,320],[800,328],[880,400],[960,400],[1040,480],[1082,480],[1160,560]],
+    haltes: [
+      { x:100, y:580, label:["Begroting"], pos:"onder", info:"Past de investering in de programmabegroting en het meerjarenbeeld?" },
+      { x:230, y:580, label:["P&C-cyclus"], pos:"onder", info:"Kadernota, begroting en jaarrekening bepalen het ritme van besluitvorming." },
+      { x:360, y:580, label:["MIP"], pos:"onder", info:"Het meerjareninvesteringsprogramma ordent en faseert investeringen." },
+      { x:480, y:580, label:["Reserves en","voorzieningen"], pos:"onder", info:"Welke dekking is beschikbaar en wat mag waaruit worden gedekt?" },
+      { x:600, y:580, label:["Fiscaliteit"], pos:"onder", info:"Btw-positie en fiscale gevolgen beïnvloeden het netto investeringsbedrag." }
+    ],
+    overleg: ["Businesscase", "Portefeuilleoverleg", "Collegebesluit", "Raadsbesluit"],
+    themas: ["Begroting en MIP", "Reserves en voorzieningen", "Fiscaliteit en btw"],
+    instrumenten: ["Begrotingskader investeringen", "MIP-handreiking", "TCO-rekenmodel maatschappelijk vastgoed"],
+    volgende: { knoop: "portefeuille", tekst: "Open het overstappunt Portefeuilleoverleg" }
+  }
+];
+
+var c2Knooppunten = [
+  {
+    id: "opgave", naam: "Verduurzamingsopgave", x: 440, y: 250, r: 22,
+    label: ["Verduurzamings-", "opgave"], pos: "onder",
+    vraag: "Wat willen we bereiken?",
+    rollen: ["vastgoed", "beleid", "gebruiker"],
+    info: "Hier komen ambitie, beleidsdoel en gebruikswens samen. Zonder gedeeld beeld van de opgave blijft elke businesscase een aanname.",
+    instrumenten: ["Subsidiewijzer maatschappelijk vastgoed", "Praktijkvoorbeeld verduurzaming sporthal"]
+  },
+  {
+    id: "businesscase", naam: "Businesscase", x: 700, y: 320, r: 22,
+    label: ["Businesscase"], pos: "boven",
+    vraag: "Is de opgave haalbaar en betaalbaar?",
+    rollen: ["vastgoed", "beleid", "finance"],
+    info: "Het moment waarop techniek, maatschappelijk doel en geld voor het eerst in één verhaal moeten passen. Hier wordt financiële informatie bepalend.",
+    instrumenten: ["TCO-rekenmodel maatschappelijk vastgoed", "MKBA-light maatschappelijk vastgoed", "Subsidiewijzer maatschappelijk vastgoed"]
+  },
+  {
+    id: "portefeuille", naam: "Portefeuilleoverleg", x: 880, y: 400, r: 22,
+    label: ["Portefeuilleoverleg"], pos: "boven",
+    vraag: "Welke projecten krijgen prioriteit?",
+    rollen: ["vastgoed", "finance", "bestuur"],
+    info: "Eén object concurreert hier met de hele portefeuille. De volgorde van investeren wordt bepaald door dekking én urgentie.",
+    instrumenten: ["MIP-handreiking", "Begrotingskader investeringen"]
+  },
+  {
+    id: "college", naam: "Collegebesluit", x: 1040, y: 480, r: 22,
+    label: ["Collegebesluit"], pos: "onder",
+    vraag: "Wat zijn de maatschappelijke en financiële gevolgen?",
+    rollen: ["beleid", "finance", "bestuur"],
+    info: "Het college weegt maatschappelijk rendement tegen lastendruk en risico. De onderbouwing moet in bestuurlijke taal kloppen.",
+    instrumenten: ["MKBA-light maatschappelijk vastgoed", "Begrotingskader investeringen"]
+  },
+  {
+    id: "raad", naam: "Raadsbesluit", x: 1160, y: 560, r: 30,
+    label: ["Raadsbesluit"], pos: "onder",
+    vraag: "Is dit maatschappelijk en financieel verantwoord?",
+    rollen: ["vastgoed", "beleid", "gebruiker", "bestuur", "finance"],
+    info: "Alle lijnen komen hier samen. De raad stelt het krediet en het kader vast; wat eerder niet is uitgezocht, komt hier alsnog boven tafel.",
+    instrumenten: ["Begrotingskader investeringen", "MIP-handreiking"]
+  }
+];
+
+var c2Kaartjes = [
+  {
+    id: "k-subsidie", naam: "Subsidiewijzer", sub: "opgave + businesscase", kleur: "#12a3a0",
+    x: 500, y: 60, draad: [[540, 114], [448, 236]],
+    instrument: "Subsidiewijzer maatschappelijk vastgoed",
+    rollen: ["vastgoed", "beleid", "gebruiker"]
+  },
+  {
+    id: "k-tco", naam: "TCO-model", sub: "businesscase + investering", kleur: "#0f6fa8",
+    x: 920, y: 120, draad: [[920, 158], [716, 306]],
+    instrument: "TCO-rekenmodel maatschappelijk vastgoed",
+    rollen: ["vastgoed", "finance"]
+  },
+  {
+    id: "k-mkba", naam: "MKBA-light", sub: "beleidsafweging + college", kleur: "#9462a6",
+    x: 770, y: 596, draad: [[960, 612], [1030, 498]],
+    instrument: "MKBA-light maatschappelijk vastgoed",
+    rollen: ["beleid", "bestuur"]
+  },
+  {
+    id: "k-mip", naam: "MIP", sub: "prioritering + begroting", kleur: "#3e9b62",
+    x: 270, y: 626, draad: [[365, 626], [362, 592]],
+    instrument: "MIP-handreiking",
+    rollen: ["finance", "vastgoed", "bestuur"]
+  },
+  {
+    id: "k-kader", naam: "Begrotingskader", sub: "dekking + raadsbesluit", kleur: "#5760a6",
+    x: 950, y: 650, draad: [[1140, 656], [1156, 592]],
+    instrument: "Begrotingskader investeringen",
+    rollen: ["finance", "bestuur"]
+  }
+];
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript interactions – archetype C2 (Routeplanner door rollen)
+   ============================================================ */
+var c2Rol = "vastgoed";   // gekozen rol, of null voor alle rollen
+var c2Punt = null;        // gekozen halte of overstappunt
+
+function c2Zoek(lijst, id) {
+  return lijst.filter(function (x) { return x.id === id; })[0] || null;
+}
+function c2RolNaam(id) {
+  var r = c2Zoek(c2Rollen, id);
+  return r ? r.naam : id;
+}
+function c2RolKleur(id) {
+  var r = c2Zoek(c2Rollen, id);
+  return r ? r.kleur : "var(--c2-violet)";
+}
+
+/* Polyline met afgeronde hoeken, in de stijl van een lijnennetkaart */
+function c2MetroPad(punten, straal) {
+  if (punten.length < 2) { return ""; }
+  var d = "M" + punten[0][0] + " " + punten[0][1];
+  for (var i = 1; i < punten.length - 1; i++) {
+    var p0 = punten[i - 1], p1 = punten[i], p2 = punten[i + 1];
+    var v1x = p1[0] - p0[0], v1y = p1[1] - p0[1];
+    var v2x = p2[0] - p1[0], v2y = p2[1] - p1[1];
+    var l1 = Math.sqrt(v1x * v1x + v1y * v1y) || 1;
+    var l2 = Math.sqrt(v2x * v2x + v2y * v2y) || 1;
+    var r = Math.min(straal, l1 / 2, l2 / 2);
+    var ax = p1[0] - v1x / l1 * r, ay = p1[1] - v1y / l1 * r;
+    var bx = p1[0] + v2x / l2 * r, by = p1[1] + v2y / l2 * r;
+    d += " L" + ax.toFixed(1) + " " + ay.toFixed(1) +
+      " Q" + p1[0] + " " + p1[1] + " " + bx.toFixed(1) + " " + by.toFixed(1);
+  }
+  var laatste = punten[punten.length - 1];
+  return d + " L" + laatste[0] + " " + laatste[1];
+}
+
+function renderC2Rollen() {
+  $("#c2-rollen").innerHTML = c2Rollen.map(function (r) {
+    return '<button type="button" class="c2-rol" data-c2rol="' + r.id + '" style="--rol:' + r.kleur + '" aria-pressed="' + (c2Rol === r.id) + '">' +
+      '<span class="c2-rol__dot" aria-hidden="true"></span>' +
+      '<span><span class="c2-rol__naam">' + esc(r.naam) + '</span>' +
+      '<span class="c2-rol__vraag">' + esc(r.vraag) + '</span></span></button>';
+  }).join("");
+  $$("#c2-rollen .c2-rol").forEach(function (b) {
+    b.addEventListener("click", function () { kiesC2Rol(b.dataset.c2rol); });
+  });
+}
+
+function renderC2Kaart() {
+  /* Volgorde: paden, dan haltes, dan instrumentkaartjes, dan overstappunten bovenop */
+  var paden = c2Rollen.map(function (r) {
+    return '<g class="c2-lijngroep" data-rol="' + r.id + '">' +
+      '<path class="c2-lijn" d="' + c2MetroPad(r.punten, 16) + '" stroke="' + r.kleur + '"/></g>';
+  }).join("");
+
+  var haltes = c2Rollen.map(function (r) {
+    var punten = r.haltes.map(function (h, i) {
+      var id = r.id + "-" + i;
+      var regels = h.label.map(function (t, j) {
+        var dy = h.pos === "boven"
+          ? -(20 + (h.label.length - 1 - j) * 13)
+          : (28 + j * 13);
+        return '<text x="' + h.x + '" y="' + (h.y + dy) + '">' + esc(t) + '</text>';
+      }).join("");
+      return '<g class="c2-halte" data-c2punt="' + id + '" role="button" tabindex="0" ' +
+        'aria-label="Halte ' + esc(h.label.join(" ")) + ' op de route van de ' + esc(r.naam) + '">' +
+        '<circle class="c2-halte__punt" cx="' + h.x + '" cy="' + h.y + '" r="7" stroke="' + r.kleur + '"/>' +
+        regels + '</g>';
+    }).join("");
+    return '<g class="c2-lijngroep" data-rol="' + r.id + '">' + punten + '</g>';
+  }).join("");
+
+  /* De stippellijnen staan los van de klikgroep, zodat het klikvlak het kaartje zelf is */
+  var draden = c2Kaartjes.map(function (k) {
+    return '<path class="c2-draad" data-draad="' + k.id + '" d="M' + k.draad[0][0] + ' ' + k.draad[0][1] +
+      ' L' + k.draad[1][0] + ' ' + k.draad[1][1] + '"/>';
+  }).join("");
+
+  var kaartjes = c2Kaartjes.map(function (k) {
+    return '<g class="c2-kaartje" data-c2kaartje="' + k.id + '" style="--kk:' + k.kleur + '" ' +
+      'role="button" tabindex="0" aria-label="Instrument ' + esc(k.naam) + ', relevant bij ' + esc(k.sub) + '">' +
+      '<rect class="c2-kaartje__vlak" x="' + k.x + '" y="' + k.y + '" width="190" height="54" rx="8"/>' +
+      '<rect x="' + k.x + '" y="' + k.y + '" width="4" height="54" rx="2" fill="' + k.kleur + '"/>' +
+      '<text class="c2-kaartje__titel" x="' + (k.x + 16) + '" y="' + (k.y + 24) + '">' + esc(k.naam) + '</text>' +
+      '<text class="c2-kaartje__sub" x="' + (k.x + 16) + '" y="' + (k.y + 41) + '">' + esc(k.sub) + '</text>' +
+      '</g>';
+  }).join("");
+
+  var knopen = c2Knooppunten.map(function (k) {
+    var regels = k.label.map(function (t, j) {
+      var dy = k.pos === "boven"
+        ? -(k.r + 13 + (k.label.length - 1 - j) * 16)
+        : (k.r + 24 + j * 16);
+      return '<text x="' + k.x + '" y="' + (k.y + dy) + '">' + esc(t) + '</text>';
+    }).join("");
+    return '<g class="c2-knoop" data-c2punt="' + k.id + '" role="button" tabindex="0" ' +
+      'aria-label="Overstappunt ' + esc(k.naam) + ': ' + esc(k.vraag) + '">' +
+      '<circle class="c2-knoop__ring" cx="' + k.x + '" cy="' + k.y + '" r="' + k.r + '"/>' +
+      '<circle class="c2-knoop__kern" cx="' + k.x + '" cy="' + k.y + '" r="' + (k.r > 25 ? 8 : 6) + '"/>' +
+      regels + '</g>';
+  }).join("");
+
+  $("#c2-map").innerHTML =
+    '<svg viewBox="0 0 1280 720" role="img" aria-label="Lijnennetkaart met vijf rolroutes die samenkomen in vijf gezamenlijke beslismomenten, van verduurzamingsopgave tot raadsbesluit">' +
+    paden + haltes + draden + kaartjes + knopen + '</svg>';
+
+  $$("#c2-map [data-c2punt]").forEach(function (g) {
+    g.addEventListener("click", function () { kiesC2Punt(g.dataset.c2punt); });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); kiesC2Punt(g.dataset.c2punt); }
+    });
+  });
+  $$("#c2-map [data-c2kaartje]").forEach(function (g) {
+    var k = c2Zoek(c2Kaartjes, g.dataset.c2kaartje);
+    g.addEventListener("click", function () { openInstrumentOpNaam(k.instrument); });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); openInstrumentOpNaam(k.instrument); }
+    });
+  });
+  markeerC2();
+}
+
+function markeerC2() {
+  $$("#c2-map .c2-lijngroep").forEach(function (g) {
+    g.classList.toggle("is-dimmed", c2Rol !== null && g.dataset.rol !== c2Rol);
+  });
+  $$("#c2-map .c2-kaartje").forEach(function (g) {
+    var k = c2Zoek(c2Kaartjes, g.dataset.c2kaartje);
+    var uit = c2Rol !== null && k.rollen.indexOf(c2Rol) === -1;
+    g.classList.toggle("is-dimmed", uit);
+    var draad = $('#c2-map [data-draad="' + k.id + '"]');
+    if (draad) { draad.classList.toggle("is-dimmed", uit); }
+  });
+  $$("#c2-map .c2-halte, #c2-map .c2-knoop").forEach(function (g) {
+    g.classList.toggle("is-selected", g.dataset.c2punt === c2Punt);
+  });
+  $$("#c2-overstap .c2-overstap__kaart").forEach(function (b) {
+    b.setAttribute("aria-pressed", b.dataset.c2punt === c2Punt ? "true" : "false");
+  });
+  $$("#c2-rollen .c2-rol").forEach(function (b) {
+    b.setAttribute("aria-pressed", b.dataset.c2rol === c2Rol ? "true" : "false");
+  });
+  $("#c2-status").textContent = c2Rol
+    ? "Route: " + c2RolNaam(c2Rol)
+    : "Alle vijf de routes zichtbaar";
+}
+
+function renderC2Panel() {
+  var host = $("#c2-panel");
+  if (!c2Rol) {
+    host.innerHTML = '<p class="small muted">Geen rol gekozen. Alle vijf de routes zijn zichtbaar, zodat je ziet waar ze elkaar kruisen.</p>' +
+      '<div class="chip-row" style="margin-top:12px">' + c2Rollen.map(function (r) {
+        return '<button type="button" class="chip" style="background:' + r.kleur + ';color:#fff" data-c2rol="' + r.id + '">' + esc(r.naam) + '</button>';
+      }).join("") + '</div>';
+    $$("#c2-panel [data-c2rol]").forEach(function (b) {
+      b.addEventListener("click", function () { kiesC2Rol(b.dataset.c2rol); });
+    });
+    return;
+  }
+  var r = c2Zoek(c2Rollen, c2Rol);
+  host.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">' +
+    '<span class="c2-rol__dot" style="background:' + r.kleur + '" aria-hidden="true"></span>' +
+    '<h3 style="font-size:1rem">' + esc(r.naam) + '</h3></div>' +
+    '<span class="c2-panel__vraag" style="--rol:' + r.kleur + '">' + esc(r.vraag) + '</span>' +
+    '<hr class="divider">' +
+    '<span class="label">Belangrijke overlegmomenten</span><ul class="small" style="margin:0 0 14px">' +
+    r.overleg.map(function (o) { return "<li>" + esc(o) + "</li>"; }).join("") + '</ul>' +
+    '<span class="label">Financiële thema&#39;s</span><ul class="small" style="margin:0 0 14px">' +
+    r.themas.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul>' +
+    '<span class="label">Relevante instrumenten</span><ul class="linklist" style="margin-bottom:14px">' +
+    r.instrumenten.map(function (i) {
+      return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(i) + '">' + esc(i) +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+    }).join("") + '</ul>' +
+    '<div class="c2-volgende"><strong style="display:block;margin-bottom:4px">Volgende stap</strong>' +
+    '<button type="button" class="btn btn--small" data-c2knoop="' + r.volgende.knoop + '">' + esc(r.volgende.tekst) + '</button></div>';
+
+  $$("#c2-panel [data-relatie]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+  });
+  $("#c2-panel [data-c2knoop]").addEventListener("click", function (e) {
+    kiesC2Punt(e.currentTarget.dataset.c2knoop);
+  });
+}
+
+function renderC2Overstap() {
+  $("#c2-overstap").innerHTML = c2Knooppunten.map(function (k) {
+    return '<button type="button" class="c2-overstap__kaart" data-c2punt="' + k.id + '" aria-pressed="' + (c2Punt === k.id) + '">' +
+      '<span class="c2-sporen" aria-hidden="true">' + k.rollen.map(function (id) {
+        return '<span class="c2-spoor" style="background:' + c2RolKleur(id) + '"></span>';
+      }).join("") + '</span>' +
+      '<span class="c2-overstap__naam">' + esc(k.naam) + '</span>' +
+      '<span class="c2-overstap__vraag">&bdquo;' + esc(k.vraag) + '&rdquo;</span>' +
+      '<span class="tiny muted">' + k.rollen.length + ' rollen komen hier samen</span>' +
+      '</button>';
+  }).join("");
+  $$("#c2-overstap .c2-overstap__kaart").forEach(function (b) {
+    b.addEventListener("click", function () { kiesC2Punt(b.dataset.c2punt); });
+  });
+}
+
+function renderC2Detail() {
+  var host = $("#c2-detail");
+  if (!c2Punt) {
+    host.innerHTML = '<p class="small muted">Nog geen punt gekozen. Klik op een halte voor een rolspecifiek moment, of op een groot station voor een gezamenlijk beslismoment.</p>';
+    return;
+  }
+
+  var knoop = c2Zoek(c2Knooppunten, c2Punt);
+  if (knoop) {
+    host.innerHTML =
+      '<span class="chip chip--purple" style="margin-bottom:8px">Overstappunt</span>' +
+      '<h3 style="font-size:1.02rem;color:var(--c2-violet);margin-bottom:8px">' + esc(knoop.naam) + '</h3>' +
+      '<span class="c2-panel__vraag" style="--rol:var(--c2-violet)">' + esc(knoop.vraag) + '</span>' +
+      '<p class="small muted" style="margin-top:12px">' + esc(knoop.info) + '</p>' +
+      '<span class="label">Wie komen hier samen?</span><div class="chip-row" style="margin-bottom:14px">' +
+      knoop.rollen.map(function (id) {
+        return '<button type="button" class="chip" style="background:' + c2RolKleur(id) + ';color:#fff" data-c2rol="' + id + '">' + esc(c2RolNaam(id)) + '</button>';
+      }).join("") + '</div>' +
+      '<span class="label">Relevante instrumenten</span><ul class="linklist">' +
+      knoop.instrumenten.map(function (i) {
+        return '<li><button type="button" class="linklist__btn" data-relatie="' + esc(i) + '">' + esc(i) +
+          '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + '</span></button></li>';
+      }).join("") + '</ul>';
+  } else {
+    var delen = c2Punt.split("-");
+    var rol = c2Zoek(c2Rollen, delen[0]);
+    var halte = rol ? rol.haltes[Number(delen[1])] : null;
+    if (!halte) {
+      host.innerHTML = '<p class="small muted">Dit punt is in het concept nog niet uitgewerkt.</p>';
+      return;
+    }
+    host.innerHTML =
+      '<span class="chip" style="margin-bottom:8px">Halte op één route</span>' +
+      '<h3 style="font-size:1.02rem;margin-bottom:8px">' + esc(halte.label.join("").replace(/-$/, "") || halte.label.join(" ")) + '</h3>' +
+      '<div class="chip-row" style="margin-bottom:12px">' +
+      '<button type="button" class="chip" style="background:' + rol.kleur + ';color:#fff" data-c2rol="' + rol.id + '">' + esc(rol.naam) + '</button></div>' +
+      '<p class="small">' + esc(halte.info) + '</p>' +
+      '<hr class="divider">' +
+      '<p class="tiny muted">Dit is een rolspecifiek moment. Het wordt pas een gezamenlijk beslismoment op een overstappunt.</p>';
+  }
+
+  $$("#c2-detail [data-relatie]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrumentOpNaam(b.dataset.relatie); });
+  });
+  $$("#c2-detail [data-c2rol]").forEach(function (b) {
+    b.addEventListener("click", function () { kiesC2Rol(b.dataset.c2rol); });
+  });
+}
+
+function kiesC2Rol(id) {
+  c2Rol = (c2Rol === id) ? null : id;
+  markeerC2();
+  renderC2Panel();
+}
+
+function kiesC2Punt(id) {
+  c2Punt = (c2Punt === id) ? null : id;
+  markeerC2();
+  renderC2Detail();
+}
+
+$('[data-action="c2-alle"]').addEventListener("click", function () {
+  c2Rol = null;
+  markeerC2();
+  renderC2Panel();
+  toast("Alle vijf de routes zijn weer zichtbaar.");
+});
+</script>
+
+<script>
+"use strict";
+/* ============================================================
    JavaScript interactions – reflectiepaneel
    ============================================================ */
 var REFLECTIE_KEY = "vmv-kompas-reflecties";
@@ -3568,6 +4214,13 @@ function init() {
   renderRouteDetail();
   renderCZijkolom();
   cStatusTekst();
+
+  /* Archetype C2 */
+  renderC2Rollen();
+  renderC2Kaart();
+  renderC2Overstap();
+  renderC2Panel();
+  renderC2Detail();
 
   /* Archetype D */
   renderAdviseur();
