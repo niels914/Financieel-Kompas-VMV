@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VMV Financieel Vastgoedkompas – drie navigatieconcepten</title>
+<meta name="description" content="Conceptprototype met drie navigatieconcepten voor het Financieel Vastgoedkompas: routeplanner, metrokaart door rollen en beslismomentenkaart.">
+<style>
+/* ============================================================
+   Ontwerptokens (VMV-familie, gelijk aan het archetypenprototype)
+   ============================================================ */
+:root {
+  --vmv-teal: #4bb3b8;
+  --vmv-teal-dark: #168b94;
+  --vmv-teal-light: #dff3f4;
+  --vmv-blue: #2478b8;
+  --vmv-blue-light: #e6f2f8;
+  --vmv-purple: #3b2943;
+  --vmv-purple-mid: #65506f;
+  --vmv-purple-light: #eee8f1;
+  --vmv-grey-50: #fafbfb;
+  --vmv-grey-100: #f2f4f4;
+  --vmv-grey-200: #dce1e2;
+  --vmv-grey-400: #9aa4a6;
+  --vmv-text: #303638;
+  --vmv-muted: #667174;
+  --vmv-white: #ffffff;
+  --vmv-warning: #d99a35;
+  --vmv-critical: #c75b59;
+  --vmv-success: #429876;
+  --vmv-mint: #ecf7f4;
+  --vmv-warning-light: #faf1e2;
+  --vmv-critical-light: #f8ebeb;
+  --vmv-success-light: #e8f4ee;
+
+  --besluit: #5760a6;
+  --besluit-light: #eceef7;
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --shadow-soft: 0 1px 2px rgba(48, 54, 56, .05), 0 2px 8px rgba(48, 54, 56, .04);
+  --shadow-panel: 0 2px 6px rgba(48, 54, 56, .06), 0 12px 32px rgba(48, 54, 56, .10);
+
+  --dur: 200ms;
+  --ease: cubic-bezier(.2, .6, .3, 1);
+  --font: Aptos, "Segoe UI", Arial, Helvetica, sans-serif;
+  --shell-max: 1560px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--font); font-size: 15px; line-height: 1.5;
+  color: var(--vmv-text); background: var(--vmv-grey-50); overflow-x: hidden;
+}
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -.01em; color: var(--vmv-purple); }
+h1 { font-size: 1.6rem; line-height: 1.18; }
+h2 { font-size: 1.1rem; }
+h3 { font-size: .96rem; }
+p { margin: 0 0 var(--space-3); max-width: 68ch; }
+p:last-child { margin-bottom: 0; }
+ul, ol { margin: 0; padding-left: 1.15em; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--vmv-blue); outline-offset: 2px; border-radius: var(--radius-s); }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.muted { color: var(--vmv-muted); }
+.small { font-size: .84rem; }
+.tiny { font-size: .75rem; }
+
+/* ============================================================
+   Bovenbalk en conceptmelding
+   ============================================================ */
+.topbar { position: sticky; top: 0; z-index: 40; background: var(--vmv-white); border-bottom: 1px solid var(--vmv-grey-200); }
+.topbar__inner {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-5);
+}
+.brand { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+.brand__mark { flex: none; color: var(--vmv-teal-dark); }
+.brand__name { font-weight: 600; font-size: 1rem; color: var(--vmv-purple); line-height: 1.15; }
+.brand__name span { display: block; font-weight: 400; font-size: .78rem; color: var(--vmv-muted); }
+.topbar__context {
+  margin-left: auto; display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 5px 12px; background: var(--vmv-teal-light); color: var(--vmv-teal-dark);
+  border-radius: var(--radius-pill); font-size: .78rem; font-weight: 600;
+}
+.topbar__actions { display: flex; gap: var(--space-2); }
+
+.conceptbar {
+  background: var(--vmv-purple-light); color: var(--vmv-purple-mid);
+  font-size: .78rem; border-bottom: 1px solid var(--vmv-grey-200);
+}
+.conceptbar__inner {
+  max-width: var(--shell-max); margin: 0 auto; width: 100%;
+  display: flex; align-items: center; gap: var(--space-2); padding: 8px var(--space-5);
+}
+
+/* ============================================================
+   Knoppen, chips en kaarten
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 38px; padding: 7px 14px;
+  border: 1px solid var(--vmv-grey-200); background: var(--vmv-white); color: var(--vmv-purple);
+  border-radius: var(--radius-s); font-size: .85rem; font-weight: 600; cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.btn:hover { background: var(--vmv-grey-100); border-color: var(--vmv-grey-400); }
+.btn--primary { background: var(--vmv-purple); border-color: var(--vmv-purple); color: var(--vmv-white); }
+.btn--primary:hover { background: var(--vmv-purple-mid); border-color: var(--vmv-purple-mid); }
+.btn--teal { background: var(--vmv-teal-dark); border-color: var(--vmv-teal-dark); color: var(--vmv-white); }
+.btn--teal:hover { background: var(--vmv-teal); border-color: var(--vmv-teal); }
+.btn--ghost { border-color: transparent; background: transparent; color: var(--vmv-blue); }
+.btn--ghost:hover { background: var(--vmv-blue-light); }
+.btn--small { min-height: 32px; padding: 4px 10px; font-size: .78rem; }
+.btn--block { width: 100%; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px;
+  border: 1px solid transparent; border-radius: var(--radius-pill);
+  background: var(--vmv-grey-100); color: var(--vmv-purple-mid);
+  font-size: .74rem; font-weight: 600; white-space: nowrap;
+}
+button.chip { cursor: pointer; font-family: inherit; }
+button.chip:hover { filter: brightness(.97); }
+.chip--teal { background: var(--vmv-teal-light); color: var(--vmv-teal-dark); }
+.chip--blue { background: var(--vmv-blue-light); color: var(--vmv-blue); }
+.chip--purple { background: var(--vmv-purple-light); color: var(--vmv-purple-mid); }
+.chip--besluit { background: var(--besluit-light); color: var(--besluit); }
+.chip--demo { background: var(--vmv-grey-100); color: var(--vmv-muted); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; font-size: .66rem; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.card { background: var(--vmv-white); border: 1px solid var(--vmv-grey-200); border-radius: var(--radius-l); box-shadow: var(--shadow-soft); }
+.card__head {
+  display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;
+  padding: var(--space-4) var(--space-4) var(--space-3); border-bottom: 1px solid var(--vmv-grey-100);
+}
+.card__head h2 { font-size: .98rem; }
+.card__body { padding: var(--space-4); }
+
+.label { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--vmv-muted); margin-bottom: 5px; }
+.divider { height: 1px; background: var(--vmv-grey-200); border: 0; margin: var(--space-4) 0; }
+.panel-title { display: flex; align-items: center; gap: var(--space-2); font-size: .92rem; color: var(--vmv-purple); font-weight: 600; margin-bottom: var(--space-3); }
+
+.notice { display: flex; gap: var(--space-2); padding: var(--space-3); background: var(--vmv-teal-light); border-radius: var(--radius-m); font-size: .82rem; color: var(--vmv-teal-dark); }
+.notice--purple { background: var(--vmv-purple-light); color: var(--vmv-purple-mid); }
+.notice--neutral { background: var(--vmv-grey-100); color: var(--vmv-muted); }
+.notice svg { flex: none; }
+
+.linklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+.linklist__btn {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--space-2);
+  width: 100%; text-align: left; padding: 9px 10px; min-height: 40px;
+  border: 1px solid transparent; border-radius: var(--radius-s); background: transparent; cursor: pointer;
+  font-size: .86rem; font-weight: 500; color: var(--vmv-text);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.linklist__btn:hover { background: var(--vmv-grey-100); border-color: var(--vmv-grey-200); }
+.linklist__btn .arrow { color: var(--vmv-grey-400); grid-column: 2; grid-row: 1; justify-self: end; }
+.linklist__meta { grid-column: 1 / -1; display: block; font-size: .74rem; color: var(--vmv-muted); font-weight: 400; }
+
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); align-content: start; }
+.layout { display: grid; gap: var(--space-4); align-items: start; }
+.layout > *, .stack > * { min-width: 0; }
+
+/* ============================================================
+   Navigatielaag: drie ingangen
+   ============================================================ */
+.ingangen { background: var(--vmv-white); border-bottom: 1px solid var(--vmv-grey-200); }
+.ingangen__inner {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: var(--space-4); align-items: end; padding: var(--space-4) var(--space-5);
+}
+.ingang { display: grid; gap: 6px; }
+.ingang__label { display: flex; align-items: center; gap: 7px; font-size: .8rem; font-weight: 600; color: var(--vmv-purple); }
+.ingang__label svg { flex: none; color: var(--vmv-teal-dark); }
+.ingang select {
+  font: inherit; font-size: .88rem; color: var(--vmv-text); width: 100%;
+  padding: 9px 34px 9px 12px; border: 1px solid var(--vmv-grey-200); border-radius: var(--radius-s);
+  background-color: var(--vmv-white); cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667174' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.ingang select:hover { border-color: var(--vmv-grey-400); }
+.ingang.is-gevuld select { border-color: var(--vmv-teal-dark); background-color: var(--vmv-teal-light); font-weight: 600; }
+
+.adviseur {
+  background: linear-gradient(90deg, var(--vmv-teal-light), var(--vmv-white) 70%);
+  border-bottom: 1px solid var(--vmv-grey-200);
+}
+.adviseur__inner {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: flex; align-items: center; gap: var(--space-3); padding: 11px var(--space-5);
+  font-size: .88rem; color: var(--vmv-purple);
+}
+.adviseur__icoon {
+  width: 28px; height: 28px; border-radius: 50%; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--vmv-white); color: var(--vmv-teal-dark); border: 1px solid var(--vmv-teal);
+}
+
+/* ============================================================
+   Conceptnavigatie met diagonale vormtaal
+   ============================================================ */
+.conceptnav { background: var(--vmv-grey-50); }
+.conceptnav__inner {
+  max-width: var(--shell-max); margin: 0 auto;
+  display: flex; gap: var(--space-2); padding: var(--space-4) var(--space-5) 0;
+  overflow-x: auto; scrollbar-width: thin;
+}
+.conceptnav__tab {
+  flex: 1 1 0; min-width: 210px; text-align: left;
+  display: grid; gap: 2px; padding: 13px 26px 13px 16px;
+  border: 1px solid var(--vmv-grey-200); border-bottom: 0; background: var(--vmv-white);
+  cursor: pointer; color: var(--vmv-muted);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 100%, 0 100%);
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.conceptnav__tab:hover { background: var(--vmv-grey-100); color: var(--vmv-purple); }
+.conceptnav__tab[aria-selected="true"] { background: var(--vmv-purple); color: var(--vmv-white); border-color: var(--vmv-purple); }
+.conceptnav__letter { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
+.conceptnav__naam { font-size: .98rem; font-weight: 600; color: inherit; }
+.conceptnav__sub { font-size: .76rem; opacity: .85; }
+
+.shell { max-width: var(--shell-max); margin: 0 auto; padding: 0 var(--space-5) var(--space-7); }
+.concept[hidden] { display: none !important; }
+.concept { animation: fade var(--dur) var(--ease) both; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.conceptkop {
+  background: var(--vmv-white); border: 1px solid var(--vmv-grey-200); border-top: 0;
+  border-radius: 0 var(--radius-l) var(--radius-l) var(--radius-l);
+  padding: var(--space-5); margin-bottom: var(--space-4);
+  display: flex; gap: var(--space-5); align-items: flex-start; flex-wrap: wrap;
+}
+.conceptkop__tekst { flex: 1 1 420px; }
+.conceptkop h1 { color: var(--vmv-teal-dark); }
+.conceptkop__sub { margin-top: 6px; font-size: 1rem; color: var(--vmv-purple-mid); }
+.conceptkop__uitleg { flex: 0 1 360px; }
+
+.toasts {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 90;
+  display: grid; gap: var(--space-2); width: min(460px, calc(100vw - 32px)); pointer-events: none;
+}
+.toast {
+  display: flex; align-items: flex-start; gap: var(--space-2); padding: 11px 14px;
+  background: var(--vmv-purple); color: var(--vmv-white); border-radius: var(--radius-m);
+  box-shadow: var(--shadow-panel); font-size: .85rem;
+  animation: toastin var(--dur) var(--ease) both;
+}
+@keyframes toastin { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.toast--leaving { animation: toastout var(--dur) var(--ease) both; }
+@keyframes toastout { to { opacity: 0; transform: translateY(6px); } }
+
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 80; background: rgba(59, 41, 67, .35);
+  display: flex; align-items: center; justify-content: center; padding: var(--space-5);
+  animation: fadein var(--dur) var(--ease) both;
+}
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.modal-backdrop[hidden] { display: none; }
+.modal {
+  background: var(--vmv-white); border-radius: var(--radius-l); box-shadow: var(--shadow-panel);
+  width: min(720px, 100%); max-height: min(84vh, 780px); display: flex; flex-direction: column;
+  animation: modalin var(--dur) var(--ease) both;
+}
+@keyframes modalin { from { opacity: 0; transform: translateY(12px) scale(.99); } to { opacity: 1; transform: none; } }
+.modal__head { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-5) var(--space-5) var(--space-3); border-bottom: 1px solid var(--vmv-grey-100); }
+.modal__body { padding: var(--space-5); overflow-y: auto; }
+.modal__foot { display: flex; gap: var(--space-2); justify-content: flex-end; padding: var(--space-3) var(--space-5) var(--space-5); }
+.iconbtn {
+  flex: none; margin-left: auto; width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--vmv-grey-200); background: var(--vmv-white);
+  border-radius: var(--radius-s); cursor: pointer; color: var(--vmv-muted);
+}
+.iconbtn:hover { background: var(--vmv-grey-100); color: var(--vmv-purple); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important; scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Concept A – Routeplanner (cyclus als kringloop)
+   ============================================================ */
+.a-layout { grid-template-columns: minmax(0, 1fr) 360px; }
+.a-ring > svg { display: block; width: 100%; height: auto; }
+.a-ring text { font-family: var(--font); paint-order: stroke; stroke: var(--vmv-white); stroke-width: 3.5px; stroke-linejoin: round; }
+
+.a-boog { fill: none; stroke: var(--vmv-grey-200); stroke-width: 10; stroke-linecap: round; transition: stroke var(--dur) var(--ease); }
+.a-boog.is-actief { stroke: var(--vmv-teal); }
+.a-terug { fill: none; stroke: var(--vmv-grey-400); stroke-width: 1.6; stroke-dasharray: 5 6; }
+.a-terug-label { font-size: 11px; fill: var(--vmv-muted); text-anchor: middle; font-weight: 600; }
+
+.a-fase { cursor: pointer; }
+.a-fase__cirkel { fill: var(--vmv-white); stroke: var(--vmv-grey-400); stroke-width: 2.5; transition: stroke var(--dur) var(--ease), fill var(--dur) var(--ease), stroke-width var(--dur) var(--ease); }
+.a-fase:hover .a-fase__cirkel { stroke: var(--vmv-teal-dark); }
+.a-fase.is-context .a-fase__cirkel { stroke: var(--vmv-teal-dark); stroke-width: 3.5; fill: var(--vmv-teal-light); }
+.a-fase.is-buur .a-fase__cirkel { stroke: var(--vmv-teal); }
+.a-fase.is-selected .a-fase__cirkel { stroke: var(--vmv-purple); stroke-width: 5; fill: var(--vmv-purple-light); }
+.a-fase__nr { font-size: 17px; font-weight: 700; fill: var(--vmv-purple); text-anchor: middle; }
+.a-fase__naam { font-size: 13px; font-weight: 600; fill: var(--vmv-purple); }
+.a-fase__vraag { font-size: 10.5px; fill: var(--vmv-muted); }
+.a-fase__telbadge { fill: var(--besluit); }
+.a-ring .a-fase__teltekst { font-size: 10px; font-weight: 700; fill: #fff; text-anchor: middle; stroke: none; paint-order: normal; }
+.a-fase:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 4px; }
+.a-fase.is-gedimd { opacity: .5; }
+
+.a-midden { text-anchor: middle; }
+.a-midden__titel { font-size: 15px; font-weight: 700; fill: var(--vmv-purple); }
+.a-midden__sub { font-size: 11.5px; fill: var(--vmv-muted); }
+
+.a-detail__vraag {
+  display: block; padding-left: 11px; border-left: 3px solid var(--vmv-teal);
+  font-size: .92rem; font-weight: 600; color: var(--vmv-purple);
+}
+.risicolijst { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; }
+.risicolijst li { display: flex; gap: var(--space-2); font-size: .84rem; align-items: flex-start; }
+.risicolijst .vlag { flex: none; color: var(--vmv-warning); margin-top: 2px; }
+
+/* ============================================================
+   Concept B – Metrokaart door rollen
+   ============================================================ */
+.b-map { overflow-x: auto; }
+.b-map > svg { display: block; width: 100%; min-width: 900px; height: auto; }
+.b-map text { font-family: var(--font); }
+.b-band { fill: var(--vmv-grey-50); }
+.b-band--om { fill: var(--vmv-white); }
+.b-bandkop { font-size: 12px; font-weight: 700; fill: var(--vmv-purple); text-anchor: middle; }
+.b-bandnr { font-size: 10px; font-weight: 700; fill: var(--vmv-grey-400); text-anchor: middle; }
+.b-band__vak { cursor: pointer; }
+.b-band__vak:hover .b-band { fill: var(--vmv-teal-light); }
+.b-band__vak.is-context .b-band { fill: var(--vmv-teal-light); }
+.b-band__vak:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: -2px; }
+
+.b-rolnaam { font-size: 12.5px; font-weight: 600; fill: var(--vmv-purple); }
+.b-rolvraag { font-size: 10px; fill: var(--vmv-muted); }
+.b-rollijn { fill: none; stroke-width: 5; stroke-linecap: round; }
+.b-rolgroep { transition: opacity var(--dur) var(--ease); cursor: pointer; }
+.b-rolgroep.is-gedimd { opacity: .15; }
+.b-rolgroep.is-primair .b-rollijn { stroke-width: 6.5; }
+.b-station { cursor: pointer; }
+.b-station__punt { fill: var(--vmv-white); stroke-width: 3; transition: stroke-width var(--dur) var(--ease); }
+.b-station:hover .b-station__punt { stroke-width: 5; }
+.b-station.is-selected .b-station__punt { fill: var(--vmv-purple); stroke: var(--vmv-purple); }
+.b-station:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 3px; }
+
+.b-besluit { cursor: pointer; }
+.b-besluit__lijn { stroke: var(--besluit); stroke-width: 2; stroke-dasharray: 4 3; }
+.b-besluit__ruit { fill: var(--vmv-white); stroke: var(--besluit); stroke-width: 3; transition: fill var(--dur) var(--ease); }
+.b-besluit:hover .b-besluit__ruit { fill: var(--besluit-light); }
+.b-besluit.is-selected .b-besluit__ruit { fill: var(--besluit); }
+.b-besluit__stip { fill: var(--besluit); }
+.b-besluit:focus-visible { outline: 2px solid var(--vmv-blue); outline-offset: 3px; }
+
+.b-legenda { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; font-size: .76rem; color: var(--vmv-muted); }
+.b-legenda span { display: inline-flex; align-items: center; gap: 7px; }
+
+.b-onder { grid-template-columns: 320px minmax(0, 1fr); }
+.b-rollijst { display: grid; gap: 8px; }
+.b-rolknop {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center;
+  width: 100%; text-align: left; padding: 10px 12px; min-height: 44px;
+  border: 1px solid var(--vmv-grey-200); border-radius: var(--radius-m);
+  background: var(--vmv-white); cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.b-rolknop:hover { border-color: var(--rol); background: var(--vmv-grey-50); }
+.b-rolknop[aria-pressed="true"] { border-color: var(--rol); box-shadow: 0 0 0 1px var(--rol) inset; background: var(--vmv-grey-50); }
+.b-rolknop__spoor { width: 22px; height: 5px; border-radius: 3px; background: var(--rol); }
+.b-rolknop__naam { display: block; font-size: .88rem; font-weight: 600; color: var(--vmv-purple); }
+.b-rolknop__vraag { display: block; font-size: .76rem; color: var(--vmv-muted); }
+
+/* ============================================================
+   Concept C – Beslismomentenkaart
+   ============================================================ */
+.c-layout { grid-template-columns: minmax(0, 1fr) 380px; }
+.c-baan { border-top: 1px solid var(--vmv-grey-200); padding-top: var(--space-4); margin-top: var(--space-4); }
+.c-baan:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.c-baan__kop { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-3); flex-wrap: wrap; }
+.c-baan__naam {
+  font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--vmv-purple);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.c-baan__streep { width: 26px; height: 4px; border-radius: 2px; background: var(--vmv-teal); display: inline-block; }
+.c-baan__fasen { font-size: .76rem; color: var(--vmv-muted); }
+.c-kaarten { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: var(--space-3); }
+
+.c-besluit {
+  display: grid; gap: 9px; align-content: start; text-align: left; cursor: pointer;
+  padding: var(--space-4); background: var(--vmv-white);
+  border: 1px solid var(--vmv-grey-200); border-left: 4px solid var(--besluit);
+  border-radius: var(--radius-m);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.c-besluit:hover { transform: translateY(-2px); box-shadow: var(--shadow-panel); }
+.c-besluit[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--besluit) inset; }
+.c-besluit__vraag { display: block; font-size: .96rem; font-weight: 600; color: var(--vmv-purple); line-height: 1.35; overflow-wrap: anywhere; }
+.c-besluit__rollen { display: flex; gap: 4px; align-items: center; }
+.c-besluit__spoor { width: 14px; height: 4px; border-radius: 2px; display: inline-block; }
+.c-besluit__voet { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font-size: .74rem; color: var(--vmv-muted); }
+
+.c-blad__vraag { font-size: 1.08rem; font-weight: 600; color: var(--vmv-purple); line-height: 1.3; }
+.c-rolregel { display: flex; align-items: center; gap: 8px; font-size: .85rem; padding: 5px 0; }
+.c-rolregel__spoor { width: 16px; height: 4px; border-radius: 2px; flex: none; }
+.c-waarschuwing { display: flex; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-m); background: var(--vmv-warning-light); color: #8c6318; font-size: .82rem; }
+.c-waarschuwing svg { flex: none; }
+
+.c-filters { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+.c-leeg { padding: var(--space-6); text-align: center; color: var(--vmv-muted); border: 1px dashed var(--vmv-grey-200); border-radius: var(--radius-l); background: var(--vmv-white); }
+
+/* ============================================================
+   Responsive – desktop en tablet voorop, mobiel blijft bruikbaar
+   ============================================================ */
+@media (max-width: 1280px) {
+  .a-layout, .c-layout { grid-template-columns: minmax(0, 1fr) 320px; }
+  .b-onder { grid-template-columns: 280px minmax(0, 1fr); }
+}
+@media (max-width: 1080px) {
+  .a-layout, .c-layout, .b-onder { grid-template-columns: minmax(0, 1fr); }
+  .ingangen__inner { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .conceptnav__tab { min-width: 178px; }
+}
+@media (max-width: 760px) {
+  .topbar, .conceptnav { position: static; }
+  .topbar__inner { padding: var(--space-3); flex-wrap: wrap; }
+  .topbar__context { order: 3; margin-left: 0; }
+  .conceptbar__inner, .ingangen__inner, .adviseur__inner, .conceptnav__inner { padding-left: var(--space-3); padding-right: var(--space-3); }
+  .shell { padding: 0 var(--space-3) var(--space-6); }
+  .ingangen__inner { grid-template-columns: minmax(0, 1fr); }
+  .conceptkop { padding: var(--space-4); }
+  .conceptkop h1 { font-size: 1.35rem; }
+  .modal-backdrop { padding: 0; align-items: flex-end; }
+  .modal { max-height: 92vh; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     Icoonsprite
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-compass"><circle cx="12" cy="12" r="9"/><path d="M15.6 8.4 13.8 13.8 8.4 15.6l1.8-5.4z"/></g>
+    <g id="i-info"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></g>
+    <g id="i-close"><path d="M6 6l12 12M18 6 6 18"/></g>
+    <g id="i-arrow-right"><path d="M4 12h15M13 6l6 6-6 6"/></g>
+    <g id="i-check"><path d="m5 12.5 4.5 4.5L19 7"/></g>
+    <g id="i-users"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6M17.5 19a5.6 5.6 0 0 0-2-4"/></g>
+    <g id="i-euro"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5a4 4 0 0 0-6.2 1.2 5 5 0 0 0 0 4.6 4 4 0 0 0 6.2 1.2M7.5 11h5M7.5 13.5h5"/></g>
+    <g id="i-alert"><path d="M12 4.5 21 19.5H3z"/><path d="M12 10v4M12 16.8h.01"/></g>
+    <g id="i-flag"><path d="M6 21V4M6 4h11l-2 3.5L17 11H6"/></g>
+    <g id="i-target"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></g>
+    <g id="i-layers"><path d="M12 4 3.5 8.5 12 13l8.5-4.5z"/><path d="m3.5 13.5 8.5 4.5 8.5-4.5"/></g>
+    <g id="i-doc"><path d="M6 3.5h7L18.5 9v11.5h-13z"/><path d="M13 3.5V9h5.5M8.5 13h7M8.5 16.5h5"/></g>
+    <g id="i-chart"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></g>
+    <g id="i-building"><path d="M4 20V7l7-3 7 3v13"/><path d="M2 20h20M9 20v-4h4v4M8 9h.01M12 9h.01M16 9h.01M8 12.5h.01M12 12.5h.01M16 12.5h.01"/></g>
+    <g id="i-route"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H14a3.5 3.5 0 0 1 0 7h-4a3.5 3.5 0 0 0 0 5h5.5"/></g>
+    <g id="i-scale"><path d="M12 4v16M7 20h10M5 8h14M5 8l-2.5 5h5zM19 8l2.5 5h-5z"/><circle cx="12" cy="4.5" r="1"/></g>
+    <g id="i-bulb"><path d="M9 17h6M10 20h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V15h7v-1.1A6 6 0 0 0 12 3z"/></g>
+    <g id="i-refresh"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/></g>
+    <g id="i-grid"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></g>
+    <g id="i-pin"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></g>
+    <g id="i-split"><path d="M12 20V9"/><path d="M12 9 5 4M12 9l7-5"/><circle cx="12" cy="20" r="1.6"/></g>
+  </defs>
+</svg>
+
+<!-- ============================================================
+     App shell
+     ============================================================ -->
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="#concept-a">
+      <svg class="brand__mark" width="34" height="34" viewBox="0 0 40 40" role="img" aria-label="Abstract kompasicoon">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M20 4v4M20 32v4M4 20h4M32 20h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M27 13 22.4 22.4 13 27l4.6-9.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="20" cy="20" r="2" fill="currentColor"/>
+      </svg>
+      <span class="brand__name">VMV Financieel Vastgoedkompas
+        <span>Verduurzaming Maatschappelijk Vastgoed</span>
+      </span>
+    </a>
+    <p class="topbar__context">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-layers"/></svg>
+      Drie navigatieconcepten
+    </p>
+    <div class="topbar__actions">
+      <button type="button" class="btn" data-action="open-about">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-info"/></svg>
+        Over dit prototype
+      </button>
+      <button type="button" class="btn btn--teal" data-action="open-vergelijk">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-split"/></svg>
+        Concepten vergelijken
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="conceptbar">
+  <div class="conceptbar__inner">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-info"/></svg>
+    <strong style="font-weight:600">Conceptprototype</strong>
+    <span>– bedoeld voor dialoog over navigatielogica, niet voor besluitvorming. Alle inhoud is fictief en illustratief.</span>
+  </div>
+</div>
+
+<!-- Navigatielaag: drie ingangen -->
+<section class="ingangen" aria-label="Kies je ingang">
+  <div class="ingangen__inner">
+    <div class="ingang" id="ingang-fase">
+      <label class="ingang__label" for="kies-fase">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-pin"/></svg>
+        Ik zit in deze fase
+      </label>
+      <select id="kies-fase"></select>
+    </div>
+    <div class="ingang" id="ingang-rol">
+      <label class="ingang__label" for="kies-rol">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-users"/></svg>
+        Ik heb deze rol
+      </label>
+      <select id="kies-rol"></select>
+    </div>
+    <div class="ingang" id="ingang-besluit">
+      <label class="ingang__label" for="kies-besluit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-split"/></svg>
+        Ik moet deze keuze maken
+      </label>
+      <select id="kies-besluit"></select>
+    </div>
+    <button type="button" class="btn" data-action="wis-context">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-refresh"/></svg>
+      Wis context
+    </button>
+  </div>
+</section>
+
+<div class="adviseur">
+  <div class="adviseur__inner">
+    <span class="adviseur__icoon" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#i-compass"/></svg>
+    </span>
+    <p id="adviseur-tekst" aria-live="polite" style="margin:0;max-width:none"></p>
+  </div>
+</div>
+
+<nav class="conceptnav" aria-label="Navigatieconcepten">
+  <div class="conceptnav__inner" role="tablist" aria-label="Kies een navigatieconcept">
+    <button type="button" class="conceptnav__tab" role="tab" id="tab-concept-a" data-concept="concept-a" aria-selected="true" aria-controls="concept-a">
+      <span class="conceptnav__letter">Concept A</span>
+      <span class="conceptnav__naam">Routeplanner</span>
+      <span class="conceptnav__sub">Navigeren vanuit de fase</span>
+    </button>
+    <button type="button" class="conceptnav__tab" role="tab" id="tab-concept-b" data-concept="concept-b" aria-selected="false" aria-controls="concept-b">
+      <span class="conceptnav__letter">Concept B</span>
+      <span class="conceptnav__naam">Metrokaart door rollen</span>
+      <span class="conceptnav__sub">Navigeren vanuit je rol</span>
+    </button>
+    <button type="button" class="conceptnav__tab" role="tab" id="tab-concept-c" data-concept="concept-c" aria-selected="false" aria-controls="concept-c">
+      <span class="conceptnav__letter">Concept C</span>
+      <span class="conceptnav__naam">Beslismomentenkaart</span>
+      <span class="conceptnav__sub">Navigeren vanuit de keuze</span>
+    </button>
+  </div>
+</nav>
+
+<main class="shell" id="hoofdinhoud">
+
+<!-- ============================================================
+     Concept A – Routeplanner
+     ============================================================ -->
+<section class="concept" id="concept-a" role="tabpanel" aria-labelledby="tab-concept-a" tabindex="-1">
+  <div class="conceptkop">
+    <div class="conceptkop__tekst">
+      <span class="label">Concept A</span>
+      <h1>Routeplanner</h1>
+      <p class="conceptkop__sub">Ik zit in deze fase. Welke keuze ligt hier voor en wat heb ik nodig?</p>
+    </div>
+    <div class="conceptkop__uitleg">
+      <p class="notice small">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-route"/></svg>
+        <span>De vastgoedcyclus als kringloop, niet als tijdlijn. Beheer voedt de volgende ronde. Klik op een fase om te zien wat daar speelt.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="layout a-layout">
+    <section class="card" aria-labelledby="a-kaart-titel">
+      <div class="card__head">
+        <h2 id="a-kaart-titel">De vastgoed- en besluitvormingscyclus</h2>
+        <span class="chip chip--demo">conceptplaat</span>
+        <span class="small muted" style="margin-left:auto" id="a-status" aria-live="polite"></span>
+      </div>
+      <div class="card__body">
+        <div class="a-ring" id="a-ring"></div>
+        <div class="b-legenda" style="margin-top:12px">
+          <span><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="6.5" fill="#fff" stroke="var(--vmv-grey-400)" stroke-width="2.5"/></svg> Fase in de cyclus</span>
+          <span><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="6.5" fill="var(--besluit)"/><text x="9" y="12.5" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="Aptos, Segoe UI, Arial, sans-serif">2</text></svg> Aantal beslismomenten in die fase</span>
+          <span><svg width="28" height="10" viewBox="0 0 28 10" aria-hidden="true"><path d="M1 5h26" stroke="var(--vmv-grey-400)" stroke-width="1.6" stroke-dasharray="5 6" fill="none"/></svg> Terugkoppeling naar een eerdere fase</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="card" aria-labelledby="a-detail-titel" aria-live="polite">
+        <div class="card__head"><h2 id="a-detail-titel">Fase in beeld</h2></div>
+        <div class="card__body" id="a-detail"></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Concept B – Metrokaart door rollen
+     ============================================================ -->
+<section class="concept" id="concept-b" role="tabpanel" aria-labelledby="tab-concept-b" tabindex="-1" hidden>
+  <div class="conceptkop">
+    <div class="conceptkop__tekst">
+      <span class="label">Concept B</span>
+      <h1>Metrokaart door rollen</h1>
+      <p class="conceptkop__sub">Ik heb deze rol. Waar loopt mijn lijn en waar kom ik anderen tegen?</p>
+    </div>
+    <div class="conceptkop__uitleg">
+      <p class="notice small">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-users"/></svg>
+        <span>Iedere rol heeft een eigen lijn door de negen fasen. Waar lijnen elkaar raken staat een beslismoment: daar is samenwerking nodig.</span>
+      </p>
+    </div>
+  </div>
+
+  <section class="card" aria-labelledby="b-kaart-titel" style="margin-bottom:16px">
+    <div class="card__head">
+      <h2 id="b-kaart-titel">Rollen door de vastgoedcyclus</h2>
+      <span class="chip chip--demo">conceptplaat</span>
+      <span class="small muted" style="margin-left:auto" id="b-status" aria-live="polite"></span>
+    </div>
+    <div class="card__body">
+      <div class="b-map" id="b-map"></div>
+      <div class="b-legenda" style="margin-top:12px">
+        <span><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="5" fill="#fff" stroke="var(--vmv-grey-400)" stroke-width="2.5"/></svg> Station: wat die rol in die fase doet</span>
+        <span><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5 16.5 10 10 16.5 3.5 10z" fill="#fff" stroke="var(--besluit)" stroke-width="2.5"/></svg> Beslismoment: hier komen rollen samen</span>
+        <span><svg width="26" height="10" viewBox="0 0 26 10" aria-hidden="true"><path d="M2 5h22" stroke="var(--vmv-teal-dark)" stroke-width="6" stroke-linecap="round"/></svg> Dikke lijn: primaire doelgroep van versie 1</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="layout b-onder">
+    <section class="card" aria-labelledby="b-rollen-titel">
+      <div class="card__head">
+        <h2 id="b-rollen-titel">Kies jouw rol</h2>
+        <button type="button" class="btn btn--ghost btn--small" style="margin-left:auto" data-action="b-alle">Toon alle rollen</button>
+      </div>
+      <div class="card__body">
+        <div class="b-rollijst" id="b-rollen"></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="b-detail-titel" aria-live="polite">
+      <div class="card__head"><h2 id="b-detail-titel">Geselecteerd punt</h2></div>
+      <div class="card__body" id="b-detail"></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============================================================
+     Concept C – Beslismomentenkaart
+     ============================================================ -->
+<section class="concept" id="concept-c" role="tabpanel" aria-labelledby="tab-concept-c" tabindex="-1" hidden>
+  <div class="conceptkop">
+    <div class="conceptkop__tekst">
+      <span class="label">Concept C</span>
+      <h1>Beslismomentenkaart</h1>
+      <p class="conceptkop__sub">Ik moet deze keuze maken. Wie beslist, wat weeg ik af en wat heb ik nodig?</p>
+    </div>
+    <div class="conceptkop__uitleg">
+      <p class="notice small">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><use href="#i-split"/></svg>
+        <span>Niet het proces en niet de rol, maar de keuze staat vooraan. Elke kaart opent een beslisblad met de informatie die op dat moment telt.</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="layout c-layout">
+    <section class="card" aria-labelledby="c-kaart-titel">
+      <div class="card__head">
+        <h2 id="c-kaart-titel">Keuzes in de cyclus</h2>
+        <span class="small muted" style="margin-left:auto" id="c-aantal" aria-live="polite"></span>
+      </div>
+      <div class="card__body">
+        <div class="c-filters" style="margin-bottom:16px">
+          <span class="label" style="margin:0">Filter</span>
+          <button type="button" class="chip" data-c-filter="alle" aria-pressed="true">Alle keuzes</button>
+          <button type="button" class="chip" data-c-filter="rol" aria-pressed="false">Alleen mijn rol</button>
+          <button type="button" class="chip" data-c-filter="fase" aria-pressed="false">Alleen mijn fase</button>
+        </div>
+        <div id="c-banen"></div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="card" aria-labelledby="c-blad-titel" aria-live="polite">
+        <div class="card__head"><h2 id="c-blad-titel">Beslisblad</h2></div>
+        <div class="card__body" id="c-blad"></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     Dialogen en meldingen
+     ============================================================ -->
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titel" id="modal" tabindex="-1">
+    <div class="modal__head">
+      <div>
+        <span class="label" id="modal-eyebrow"></span>
+        <h2 id="modal-titel"></h2>
+      </div>
+      <button type="button" class="iconbtn" data-action="close-modal" aria-label="Sluit venster">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+    <div class="modal__body" id="modal-body"></div>
+    <div class="modal__foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript data – één model, drie projecties
+   ============================================================ */
+
+var instrumenten = [
+  {
+    id: "subsidiewijzer", naam: "Subsidiewijzer", type: "Overzicht",
+    waarvoor: "Verkennen welke landelijke, provinciale en fondsgebonden regelingen passen bij het object en de maatregelen.",
+    nodig: "Objectgegevens, energielabel, globale maatregelenlijst en het beoogde investeringsjaar.",
+    let_op: "Aanvraagtermijnen bepalen vaak het projectritme. Een subsidie is nooit een garantie."
+  },
+  {
+    id: "tco", naam: "TCO-model", type: "Rekenmodel",
+    waarvoor: "Investering, onderhoud, beheer en energie in samenhang doorrekenen over de levensduur.",
+    nodig: "Meerjarenonderhoudsplan, energieverbruik en een indicatie van het investeringsbedrag per variant.",
+    let_op: "Een lagere investering kan later tot hogere exploitatielasten leiden. Dat wordt hier zichtbaar."
+  },
+  {
+    id: "mkba", naam: "MKBA-light", type: "Afwegingsinstrument",
+    waarvoor: "Maatschappelijke effecten naast de financiële uitkomsten zetten, zodat beide meewegen in het besluit.",
+    nodig: "Doelgroepen, gebruiksgegevens, beleidsdoelen en minimaal twee varianten om te vergelijken.",
+    let_op: "Bedoeld om het gesprek te structureren, niet om één uitkomst als de juiste te presenteren."
+  },
+  {
+    id: "kpd", naam: "KPD-model", type: "Rekenmodel",
+    waarvoor: "De kostprijsdekkende huur bepalen en zichtbaar maken welk deel feitelijk subsidie is.",
+    nodig: "Kapitaallasten, onderhouds- en beheerlasten en de huidige huurafspraken.",
+    let_op: "Een kostprijsdekkende huur is vaak politiek gevoelig zodra de huurder die niet kan opbrengen."
+  },
+  {
+    id: "businesscase", naam: "Businesscase-template", type: "Format",
+    waarvoor: "Techniek, maatschappelijk doel en geld in één verhaal samenbrengen voor besluitvorming.",
+    nodig: "Uitkomsten uit TCO, subsidieverkenning en een beeld van de exploitatie na de ingreep.",
+    let_op: "Een businesscase zonder exploitatieparagraaf valt bij de controller altijd door de mand."
+  },
+  {
+    id: "mipkader", naam: "MIP-afwegingskader", type: "Kader",
+    waarvoor: "Investeringen over meerdere jaren ordenen, prioriteren en faseren binnen de beschikbare ruimte.",
+    nodig: "Objectenlijst met conditiescores, vervangings- en verduurzamingsopgave en afschrijvingstermijnen.",
+    let_op: "Prioriteren betekent hier ook expliciet maken wat níét doorgaat."
+  }
+];
+
+var financieleVragen = [
+  { id: "kosten", vraag: "Wat kost dit?", waarom: "Zonder bandbreedte op de investering is elke vervolgstap een aanname.", instrumenten: ["tco", "businesscase"] },
+  { id: "financiering", vraag: "Hoe financieren we dit?", waarom: "Krediet, reserve, subsidie of huurverhoging leiden tot heel verschillende besluitvorming.", instrumenten: ["mipkader", "subsidiewijzer"] },
+  { id: "exploitatie", vraag: "Wat betekent dit voor de exploitatie?", waarom: "De investering is eenmalig, de exploitatielast blijft dertig jaar staan.", instrumenten: ["tco", "kpd"] },
+  { id: "subsidie", vraag: "Welke subsidie past?", waarom: "Voorwaarden en termijnen van een regeling bepalen mede het projectritme.", instrumenten: ["subsidiewijzer"] },
+  { id: "mip", vraag: "Wat betekent dit voor het MIP?", waarom: "Eén object concurreert altijd met de rest van de portefeuille.", instrumenten: ["mipkader"] },
+  { id: "risico", vraag: "Wat zijn de risico's?", waarom: "Onzekerheid over prijzen, subsidie en gebruik hoort expliciet op tafel te liggen.", instrumenten: ["businesscase", "mkba"] }
+];
+
+var rollen = [
+  {
+    id: "vastgoedmanager", naam: "Vastgoedmanager", kort: "Vastgoedmanager", kleur: "#1f6fb2", primair: true,
+    kernvraag: "Houd ik de portefeuille technisch en financieel op orde?",
+    informatiebehoefte: ["Conditie en kosten per object", "Levensduurkosten van varianten", "Ruimte in het investeringsprogramma"],
+    instrumenten: ["tco", "mipkader", "businesscase"],
+    route: [
+      { fase: "orientatie", wat: "Portefeuilleanalyse: conditie, kosten en energielabels op een rij." },
+      { fase: "strategie", wat: "Vertaalt de koers naar een vastgoedstrategie per objectgroep." },
+      { fase: "portefeuillekeuze", wat: "Brengt in welke objecten technisch en financieel urgent zijn." },
+      { fase: "initiatief", wat: "Werkt scenario's uit: renoveren, verduurzamen of vervangen." },
+      { fase: "definitie", wat: "Stelt het investeringsvoorstel op met onderbouwing en dekking." },
+      { fase: "ontwerp", wat: "Toetst of het ontwerp binnen het financiële kader blijft." },
+      { fase: "realisatie", wat: "Voert opdrachtgeverschap en bewaakt scope en budget." },
+      { fase: "beheer", wat: "Stelt het MJOP bij op basis van wat er werkelijk is gebouwd." }
+    ]
+  },
+  {
+    id: "portefeuillemanager", naam: "Portefeuillemanager", kort: "Portefeuillemanager", kleur: "#168b94", primair: true,
+    kernvraag: "Past dit object in de koers van de hele portefeuille?",
+    informatiebehoefte: ["Beleidsdoelen per voorziening", "Meerjarige investeringsruimte", "Spreiding en toekomstwaarde"],
+    instrumenten: ["mipkader", "mkba", "tco"],
+    route: [
+      { fase: "ambitie", wat: "Vertaalt bestuurlijke ambities naar consequenties voor de portefeuille." },
+      { fase: "orientatie", wat: "Legt de portefeuille naast de maatschappelijke vraag." },
+      { fase: "strategie", wat: "Bepaalt de koers: behouden, verduurzamen, afstoten of vervangen." },
+      { fase: "portefeuillekeuze", wat: "Stelt de volgorde vast van wat wanneer wordt aangepakt." },
+      { fase: "initiatief", wat: "Bewaakt of het project bij de portefeuillekoers blijft passen." },
+      { fase: "beheer", wat: "Evalueert of de portefeuille zich ontwikkelt zoals bedoeld." }
+    ]
+  },
+  {
+    id: "assetmanager", naam: "Assetmanager", kort: "Assetmanager", kleur: "#57b6a4", primair: true,
+    kernvraag: "Wat is over de levensduur de verstandigste ingreep per object?",
+    informatiebehoefte: ["Levensduur en restwaarde", "Onderhoudshistorie", "Gebruiksintensiteit"],
+    instrumenten: ["tco", "mipkader"],
+    route: [
+      { fase: "orientatie", wat: "Brengt conditie, restlevensduur en risico per object in beeld." },
+      { fase: "portefeuillekeuze", wat: "Adviseert over het natuurlijke moment van ingrijpen." },
+      { fase: "initiatief", wat: "Rekent varianten door op levensduurkosten." },
+      { fase: "definitie", wat: "Bewaakt de aannames achter onderhoud en vervanging." },
+      { fase: "beheer", wat: "Meet of verbruik en onderhoudslast doen wat was voorspeld." }
+    ]
+  },
+  {
+    id: "projectleider", naam: "Projectleider", kort: "Projectleider", kleur: "#d98f2f", primair: true,
+    kernvraag: "Krijg ik dit project binnen scope, tijd en budget gerealiseerd?",
+    informatiebehoefte: ["Vastgesteld budget en scope", "Subsidievoorwaarden", "Risico's en marge"],
+    instrumenten: ["businesscase", "subsidiewijzer"],
+    route: [
+      { fase: "initiatief", wat: "Maakt de opgave projectmatig hanteerbaar." },
+      { fase: "definitie", wat: "Werkt programma van eisen en raming uit." },
+      { fase: "ontwerp", wat: "Stuurt op de balans tussen ambitie, ontwerp en raming." },
+      { fase: "realisatie", wat: "Bewaakt uitvoering, meerwerk en subsidieverplichtingen." }
+    ]
+  },
+  {
+    id: "controller", naam: "Controller", kort: "Controller", kleur: "#3e9b62", primair: false,
+    kernvraag: "Is dit financieel houdbaar binnen de meerjarenbegroting?",
+    informatiebehoefte: ["Kapitaallasten en dekking", "Effect op het meerjarenbeeld", "Fiscale positie"],
+    instrumenten: ["mipkader", "tco", "kpd"],
+    route: [
+      { fase: "strategie", wat: "Toetst de koers aan het financiële meerjarenbeeld." },
+      { fase: "portefeuillekeuze", wat: "Bewaakt de investeringsruimte in het MIP." },
+      { fase: "definitie", wat: "Toetst dekking, kapitaallasten en fiscaliteit." },
+      { fase: "ontwerp", wat: "Bewaakt dat het ontwerp binnen het krediet blijft." },
+      { fase: "realisatie", wat: "Volgt uitputting van het krediet en het meerwerk." },
+      { fase: "beheer", wat: "Verwerkt de werkelijke lasten in de begroting." }
+    ]
+  },
+  {
+    id: "financieeladviseur", naam: "Financieel adviseur", kort: "Financieel adviseur", kleur: "#5a6fb8", primair: false,
+    kernvraag: "Klopt de financiële onderbouwing en zijn de aannames uitlegbaar?",
+    informatiebehoefte: ["Aannames achter de businesscase", "Subsidiekansen en voorwaarden", "Gevoeligheid van de uitkomst"],
+    instrumenten: ["businesscase", "tco", "subsidiewijzer"],
+    route: [
+      { fase: "strategie", wat: "Vertaalt koerskeuzes naar financiële consequenties." },
+      { fase: "initiatief", wat: "Bouwt de eerste businesscase met bandbreedtes." },
+      { fase: "definitie", wat: "Maakt de onderbouwing besluitrijp." },
+      { fase: "ontwerp", wat: "Actualiseert de raming bij ontwerpwijzigingen." },
+      { fase: "beheer", wat: "Vergelijkt de realisatie met de businesscase." }
+    ]
+  },
+  {
+    id: "beleidsadviseur", naam: "Beleidsadviseur", kort: "Beleidsadviseur", kleur: "#9462a6", primair: false,
+    kernvraag: "Draagt deze investering bij aan wat we maatschappelijk willen bereiken?",
+    informatiebehoefte: ["Beleidsdoelen en doelgroepen", "Gebruik en bezetting", "Maatschappelijke effecten"],
+    instrumenten: ["mkba", "subsidiewijzer"],
+    route: [
+      { fase: "ambitie", wat: "Formuleert wat de gemeente maatschappelijk wil bereiken." },
+      { fase: "orientatie", wat: "Legt de maatschappelijke vraag naast het aanbod." },
+      { fase: "strategie", wat: "Bewaakt dat accommodatiebeleid en vastgoedbeleid niet uit elkaar lopen." },
+      { fase: "initiatief", wat: "Brengt maatschappelijke effecten in de afweging." },
+      { fase: "beheer", wat: "Toetst of het gebruik oplevert wat was beoogd." }
+    ]
+  },
+  {
+    id: "wethouder", naam: "Wethouder", kort: "Wethouder", kleur: "#b0566a", primair: false,
+    kernvraag: "Is dit bestuurlijk en maatschappelijk verdedigbaar?",
+    informatiebehoefte: ["Maatschappelijk rendement", "Lastendruk en dekking", "Politieke risico's"],
+    instrumenten: ["mkba", "mipkader"],
+    route: [
+      { fase: "ambitie", wat: "Stelt de bestuurlijke ambitie en het kader vast." },
+      { fase: "strategie", wat: "Kiest de koers en verdedigt die politiek." },
+      { fase: "portefeuillekeuze", wat: "Stelt prioriteiten vast in het portefeuilleoverleg." },
+      { fase: "definitie", wat: "Draagt het kredietvoorstel richting raad." },
+      { fase: "realisatie", wat: "Is aanspreekbaar op voortgang en tegenvallers." }
+    ]
+  }
+];
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript data – de vastgoed- en besluitvormingscyclus
+   ============================================================ */
+var fases = [
+  {
+    id: "ambitie", nr: 1, naam: "Ambitie", zone: "richting",
+    kernvraag: "Wat willen we als gemeente bereiken?",
+    beschrijving: "De bestuurlijke ambitie wordt vastgelegd: verduurzaming, voorzieningenniveau en betaalbaarheid. Nog geen object, wel een kader waar alles later aan wordt getoetst.",
+    vragen: ["kosten", "risico"],
+    risicos: ["Ambitie wordt vastgelegd zonder beeld van de financiële consequenties.", "Verduurzamingsdoel en voorzieningenbeleid worden los van elkaar geformuleerd."],
+    instrumenten: ["mkba"],
+    vervolg: "Leg de ambitie naast de bestaande portefeuille in de oriëntatiefase."
+  },
+  {
+    id: "orientatie", nr: 2, naam: "Oriëntatie", zone: "richting",
+    kernvraag: "Wat hebben we en wat komt er op ons af?",
+    beschrijving: "De portefeuille wordt in beeld gebracht: conditie, kosten, energielabels, gebruik en de maatschappelijke vraag. De feitenbasis onder alle latere keuzes.",
+    vragen: ["kosten", "exploitatie"],
+    risicos: ["Gegevens over conditie en verbruik zijn verouderd of incompleet.", "Gebruik en bezetting worden niet meegenomen, alleen techniek."],
+    instrumenten: ["tco", "mipkader"],
+    vervolg: "Vertaal het beeld naar een koers in de strategiefase."
+  },
+  {
+    id: "strategie", nr: 3, naam: "Strategie", zone: "richting",
+    kernvraag: "Welke koers kiezen we voor de portefeuille?",
+    beschrijving: "Per objectgroep wordt een richting gekozen: behouden, verduurzamen, afstoten of vervangen. Hier ontstaat het onderscheid tussen accommodatiebeleid en vastgoedbeleid.",
+    vragen: ["financiering", "exploitatie", "risico"],
+    risicos: ["De koers is financieel niet doorgerekend en blijft daarmee vrijblijvend.", "Beleid en vastgoed hanteren verschillende aannames over hetzelfde gebouw."],
+    instrumenten: ["mkba", "tco"],
+    vervolg: "Zet de koers om in een volgorde in de portefeuillekeuze."
+  },
+  {
+    id: "portefeuillekeuze", nr: 4, naam: "Portefeuillekeuze", zone: "richting",
+    kernvraag: "Welke objecten pakken we wanneer aan?",
+    beschrijving: "Van koers naar programma. Objecten concurreren onderling om dezelfde investeringsruimte; prioriteren betekent ook expliciet maken wat niet doorgaat.",
+    vragen: ["mip", "financiering"],
+    risicos: ["Urgentie wordt bepaald door wie het hardst roept in plaats van door criteria.", "Het programma is optimistischer dan de meerjarenbegroting toelaat."],
+    instrumenten: ["mipkader", "tco"],
+    vervolg: "Werk het eerste object uit in de initiatieffase."
+  },
+  {
+    id: "initiatief", nr: 5, naam: "Initiatief", zone: "uitwerking",
+    kernvraag: "Is dit project de moeite waard om uit te werken?",
+    beschrijving: "Voor één object worden scenario's naast elkaar gezet, inclusief niets doen. De eerste businesscase met bandbreedtes ontstaat hier.",
+    vragen: ["kosten", "subsidie", "exploitatie", "risico"],
+    risicos: ["De variant niets doen ontbreekt, waardoor er geen vergelijking is.", "Subsidiekansen worden pas verkend als het ontwerp al vastligt."],
+    instrumenten: ["tco", "subsidiewijzer", "mkba", "businesscase"],
+    vervolg: "Maak de gekozen variant besluitrijp in de definitiefase."
+  },
+  {
+    id: "definitie", nr: 6, naam: "Definitie", zone: "uitwerking",
+    kernvraag: "Wat gaan we precies maken en wat mag het kosten?",
+    beschrijving: "Programma van eisen, raming en dekking worden vastgelegd. Dit is het moment waarop krediet wordt gevraagd en de exploitatieafspraken worden gemaakt.",
+    vragen: ["kosten", "financiering", "exploitatie", "mip"],
+    risicos: ["Het krediet wordt gevraagd zonder afspraak over de hogere exploitatielast.", "Subsidievoorwaarden botsen met de gekozen aanbestedingsvorm."],
+    instrumenten: ["businesscase", "kpd", "mipkader"],
+    vervolg: "Werk het besluit uit in de ontwerpfase."
+  },
+  {
+    id: "ontwerp", nr: 7, naam: "Ontwerp", zone: "uitwerking",
+    kernvraag: "Past het ontwerp binnen het financiële kader?",
+    beschrijving: "Het ontwerp wordt uitgewerkt en herhaaldelijk getoetst aan de raming. Hier komt de spanning tussen ambitie en budget als eerste boven tafel.",
+    vragen: ["kosten", "risico"],
+    risicos: ["Ambitie groeit tijdens het ontwerp zonder dat het krediet meegroeit.", "De exploitatieparagraaf wordt niet geactualiseerd bij ontwerpwijzigingen."],
+    instrumenten: ["tco", "businesscase"],
+    vervolg: "Ga naar realisatie zodra ontwerp en kader op elkaar aansluiten."
+  },
+  {
+    id: "realisatie", nr: 8, naam: "Realisatie", zone: "uitvoering",
+    kernvraag: "Houden we grip tijdens de uitvoering?",
+    beschrijving: "Uitvoering, meerwerk en subsidieverplichtingen worden bewaakt. Financiële informatie is hier vooral sturingsinformatie, geen onderbouwing meer.",
+    vragen: ["kosten", "risico", "subsidie"],
+    risicos: ["Meerwerk wordt gemeld als het al is gemaakt.", "Subsidieverplichtingen over oplevering en verantwoording worden onderschat."],
+    instrumenten: ["businesscase", "subsidiewijzer"],
+    vervolg: "Draag over aan beheer en leg de werkelijke lasten vast."
+  },
+  {
+    id: "beheer", nr: 9, naam: "Beheer", zone: "uitvoering",
+    kernvraag: "Doet het gebouw wat we ervan verwachtten?",
+    beschrijving: "Verbruik, onderhoudslast en gebruik worden gemeten en vergeleken met de businesscase. De uitkomst voedt de volgende ronde van de cyclus.",
+    vragen: ["exploitatie", "kosten"],
+    risicos: ["De besparing wordt nooit gemeten, waardoor de volgende businesscase op dezelfde aannames blijft steunen.", "De hogere huur is niet opbrengbaar voor de gebruiker."],
+    instrumenten: ["kpd", "tco"],
+    vervolg: "Voed de oriëntatie en de ambitie met wat je hier leert."
+  }
+];
+
+var zones = [
+  { id: "richting", naam: "Richting bepalen", fasen: ["ambitie", "orientatie", "strategie", "portefeuillekeuze"], kleur: "var(--vmv-teal)" },
+  { id: "uitwerking", naam: "Uitwerken en besluiten", fasen: ["initiatief", "definitie", "ontwerp"], kleur: "var(--besluit)" },
+  { id: "uitvoering", naam: "Uitvoeren en leren", fasen: ["realisatie", "beheer"], kleur: "var(--vmv-purple-mid)" }
+];
+
+var beslismomenten = [
+  {
+    id: "koers", fase: "strategie", vraag: "Welke verduurzamingsambitie leggen we per objectgroep vast?",
+    besluitnemer: "wethouder", adviseurs: ["portefeuillemanager", "beleidsadviseur", "controller"],
+    vragen: ["financiering", "exploitatie"], instrumenten: ["mkba", "tco"],
+    nodig: ["Portefeuillebeeld met labels en conditie", "Doorrekening van twee ambitieniveaus", "Effect op het meerjarenbeeld"],
+    risico: "Een ambitie zonder doorrekening wordt later stilzwijgend bijgesteld.",
+    alsNiets: "Projecten kiezen ieder hun eigen ambitieniveau en de portefeuille loopt uit de pas."
+  },
+  {
+    id: "behouden", fase: "portefeuillekeuze", vraag: "Behouden of afstoten?",
+    besluitnemer: "portefeuillemanager", adviseurs: ["beleidsadviseur", "vastgoedmanager", "wethouder"],
+    vragen: ["exploitatie", "mip"], instrumenten: ["mkba", "tco", "mipkader"],
+    nodig: ["Maatschappelijke functie en gebruik", "Levensduurkosten bij behoud", "Opbrengstpotentie bij afstoten"],
+    risico: "Afstoten lijkt financieel aantrekkelijk tot de maatschappelijke functie elders moet worden opgevangen.",
+    alsNiets: "Er wordt onderhoud gepleegd aan een gebouw waarvan de toekomst onduidelijk is."
+  },
+  {
+    id: "volgorde", fase: "portefeuillekeuze", vraag: "Welk object pakken we het eerst aan?",
+    besluitnemer: "portefeuillemanager", adviseurs: ["vastgoedmanager", "assetmanager", "controller"],
+    vragen: ["mip", "financiering"], instrumenten: ["mipkader"],
+    nodig: ["Criteria voor urgentie", "Beschikbare investeringsruimte per jaar", "Natuurlijke onderhoudsmomenten"],
+    risico: "Zonder expliciete criteria wordt de volgorde een kwestie van aandacht in plaats van afweging.",
+    alsNiets: "Alles wordt tegelijk opgestart en niets komt af binnen de beschikbare ruimte."
+  },
+  {
+    id: "moment", fase: "initiatief", vraag: "Verduurzamen we nu of bij het eerstvolgende onderhoudsmoment?",
+    besluitnemer: "vastgoedmanager", adviseurs: ["assetmanager", "financieeladviseur", "controller"],
+    vragen: ["kosten", "subsidie", "exploitatie"], instrumenten: ["tco", "subsidiewijzer"],
+    nodig: ["Meerjarenonderhoudsplan", "Openstaande subsidietermijnen", "Energielasten van de afgelopen jaren"],
+    risico: "Wachten op een natuurlijk moment kan betekenen dat het subsidievenster sluit.",
+    alsNiets: "De energielasten lopen door terwijl het investeringsmoment steeds opschuift."
+  },
+  {
+    id: "renoveren", fase: "initiatief", vraag: "Renoveren of vervangen?",
+    besluitnemer: "vastgoedmanager", adviseurs: ["assetmanager", "beleidsadviseur", "financieeladviseur"],
+    vragen: ["kosten", "exploitatie", "risico"], instrumenten: ["tco", "mkba", "businesscase"],
+    nodig: ["Restlevensduur en restwaarde", "Levensduurkosten van beide varianten", "Gevolgen voor het gebruik tijdens de ingreep"],
+    risico: "Renovatie oogt goedkoper, maar levert soms een gebouw op dat over vijftien jaar opnieuw aan de beurt is.",
+    alsNiets: "Het onderhoud loopt door zonder dat de structurele vraag wordt beantwoord."
+  },
+  {
+    id: "subsidie", fase: "definitie", vraag: "Zetten we een subsidie in en accepteren we de voorwaarden?",
+    besluitnemer: "projectleider", adviseurs: ["financieeladviseur", "controller", "vastgoedmanager"],
+    vragen: ["subsidie", "risico"], instrumenten: ["subsidiewijzer", "businesscase"],
+    nodig: ["Voorwaarden en termijnen van de regeling", "Effect op planning en aanbesteding", "Verantwoordingsverplichtingen"],
+    risico: "Subsidievoorwaarden kunnen de aanbestedingsvorm en de planning vastzetten.",
+    alsNiets: "Externe dekking blijft liggen en het beroep op eigen middelen wordt groter."
+  },
+  {
+    id: "krediet", fase: "definitie", vraag: "Vragen we krediet aan bij de raad?",
+    besluitnemer: "wethouder", adviseurs: ["controller", "financieeladviseur", "vastgoedmanager"],
+    vragen: ["financiering", "exploitatie", "mip"], instrumenten: ["businesscase", "mipkader", "kpd"],
+    nodig: ["Investeringsbedrag met bandbreedte", "Kapitaallasten en dekking", "Afspraak over de exploitatielast"],
+    risico: "Krediet zonder exploitatieafspraak verschuift het probleem naar de beheerfase.",
+    alsNiets: "Het project blijft in voorbereiding hangen en de raming veroudert."
+  },
+  {
+    id: "scope", fase: "ontwerp", vraag: "Houden we vast aan de scope of passen we het ambitieniveau aan?",
+    besluitnemer: "vastgoedmanager", adviseurs: ["projectleider", "controller", "financieeladviseur"],
+    vragen: ["kosten", "risico"], instrumenten: ["tco", "businesscase"],
+    nodig: ["Actuele raming tegenover het krediet", "Wat de ambitieverlaging kost in exploitatie", "Ruimte in de post onvoorzien"],
+    risico: "Schrappen in isolatie of installaties verlaagt de investering en verhoogt de exploitatielast.",
+    alsNiets: "De overschrijding komt pas bij aanbesteding aan het licht."
+  },
+  {
+    id: "meerwerk", fase: "realisatie", vraag: "Accepteren we het meerwerk of schrappen we onderdelen?",
+    besluitnemer: "projectleider", adviseurs: ["vastgoedmanager", "controller", "wethouder"],
+    vragen: ["kosten", "risico"], instrumenten: ["businesscase"],
+    nodig: ["Onderbouwing van het meerwerk", "Resterende ruimte in het krediet", "Gevolgen voor subsidieverplichtingen"],
+    risico: "Schrappen onder tijdsdruk raakt vaak juist de onderdelen met het langste effect.",
+    alsNiets: "De overschrijding wordt pas bij de jaarrekening zichtbaar."
+  },
+  {
+    id: "huur", fase: "beheer", vraag: "Wie draagt de hogere exploitatielast: huurder of gemeente?",
+    besluitnemer: "wethouder", adviseurs: ["vastgoedmanager", "controller", "beleidsadviseur"],
+    vragen: ["exploitatie", "financiering"], instrumenten: ["kpd", "mkba"],
+    nodig: ["Kostprijsdekkende huur na de ingreep", "Draagkracht van de huurder", "Beleidsdoel achter de voorziening"],
+    risico: "Een kostprijsdekkende huur die de huurder niet kan opbrengen leidt alsnog tot een subsidievraag.",
+    alsNiets: "De hogere last landt ongemerkt in de gemeentebegroting."
+  }
+];
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript – schil, context en hulpfuncties
+   ============================================================ */
+var $ = function (sel, root) { return (root || document).querySelector(sel); };
+var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+function esc(str) {
+  return String(str).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function icon(naam, maat, dikte) {
+  var s = maat || 16;
+  return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="' + (dikte || 1.7) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#' + naam + '"/></svg>';
+}
+function zoek(lijst, id) { return lijst.filter(function (x) { return x.id === id; })[0] || null; }
+function fase(id) { return zoek(fases, id); }
+function rol(id) { return zoek(rollen, id); }
+function besluit(id) { return zoek(beslismomenten, id); }
+function vraag(id) { return zoek(financieleVragen, id); }
+function instrument(id) { return zoek(instrumenten, id); }
+function faseIndex(id) { for (var i = 0; i < fases.length; i++) { if (fases[i].id === id) { return i; } } return -1; }
+
+/* Rollen die in een fase actief zijn, afgeleid uit hun route */
+function rollenInFase(faseId) {
+  return rollen.filter(function (r) {
+    return r.route.some(function (stap) { return stap.fase === faseId; });
+  });
+}
+function besluitenInFase(faseId) {
+  return beslismomenten.filter(function (b) { return b.fase === faseId; });
+}
+function besluitenVanRol(rolId) {
+  return beslismomenten.filter(function (b) {
+    return b.besluitnemer === rolId || b.adviseurs.indexOf(rolId) !== -1;
+  });
+}
+function rollenBijBesluit(b) { return [b.besluitnemer].concat(b.adviseurs); }
+
+/* --- Meldingen --- */
+var toastHost = $("#toasts");
+function toast(bericht) {
+  var t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = icon("i-info", 16) + "<span>" + esc(bericht) + "</span>";
+  toastHost.appendChild(t);
+  window.setTimeout(function () {
+    t.classList.add("toast--leaving");
+    window.setTimeout(function () { if (t.parentNode) { t.parentNode.removeChild(t); } }, 220);
+  }, 3600);
+}
+
+/* --- Venster --- */
+var modalBackdrop = $("#modal-backdrop");
+var laatsteFocus = null;
+function openModal(opts) {
+  laatsteFocus = document.activeElement;
+  $("#modal-eyebrow").textContent = opts.eyebrow || "";
+  $("#modal-titel").textContent = opts.titel || "";
+  $("#modal-body").innerHTML = opts.body || "";
+  $("#modal-foot").innerHTML = opts.foot || '<button type="button" class="btn" data-action="close-modal">Sluiten</button>';
+  modalBackdrop.hidden = false;
+  document.body.style.overflow = "hidden";
+  $("#modal-body").scrollTop = 0;
+  ($("#modal-body button, #modal-foot button") || $("#modal")).focus();
+}
+function closeModal() {
+  modalBackdrop.hidden = true;
+  document.body.style.overflow = "";
+  if (laatsteFocus && laatsteFocus.focus) { laatsteFocus.focus(); }
+  laatsteFocus = null;
+}
+modalBackdrop.addEventListener("mousedown", function (e) { if (e.target === modalBackdrop) { closeModal(); } });
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") { if (!modalBackdrop.hidden) { closeModal(); } return; }
+  if (e.key !== "Tab" || modalBackdrop.hidden) { return; }
+  var focusbaar = $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', $("#modal"))
+    .filter(function (el) { return el.offsetParent !== null; });
+  if (!focusbaar.length) { return; }
+  var eerste = focusbaar[0], laatste = focusbaar[focusbaar.length - 1];
+  if (e.shiftKey && document.activeElement === eerste) { e.preventDefault(); laatste.focus(); }
+  else if (!e.shiftKey && document.activeElement === laatste) { e.preventDefault(); eerste.focus(); }
+});
+
+function openInstrument(id) {
+  var i = instrument(id);
+  if (!i) { toast("Dit instrument is in het concept nog niet uitgewerkt."); return; }
+  openModal({
+    eyebrow: i.type,
+    titel: i.naam,
+    body: '<p>' + esc(i.waarvoor) + '</p>' +
+      '<h3 style="margin:18px 0 6px">Wat heb je nodig?</h3><p class="small">' + esc(i.nodig) + '</p>' +
+      '<h3 style="margin:18px 0 6px">Let op</h3><p class="small">' + esc(i.let_op) + '</p>' +
+      '<hr class="divider"><span class="label">Waar in de cyclus komt dit terug?</span>' +
+      '<div class="chip-row">' + fases.filter(function (f) { return f.instrumenten.indexOf(id) !== -1; })
+        .map(function (f) { return '<button type="button" class="chip chip--teal" data-naar-fase="' + f.id + '">' + esc(f.naam) + '</button>'; }).join("") + '</div>' +
+      '<p class="tiny muted" style="margin-top:14px">Instrumentbeschrijving is illustratief en niet volledig uitgewerkt.</p>',
+    foot: '<button type="button" class="btn" data-action="close-modal">Sluiten</button>' +
+      '<button type="button" class="btn btn--primary" data-melding="Het openen van het instrument is in dit concept nog niet uitgewerkt.">Open instrument</button>'
+  });
+  $$("#modal-body [data-naar-fase]").forEach(function (b) {
+    b.addEventListener("click", function () { closeModal(); zetContext({ fase: b.dataset.naarFase }); toonConcept("concept-a"); });
+  });
+}
+
+/* ============================================================
+   JavaScript – gedeelde context over de drie concepten heen
+   ============================================================ */
+var context = { fase: null, rol: null, besluit: null };
+var huidigConcept = "concept-a";
+
+function vulIngangen() {
+  $("#kies-fase").innerHTML = '<option value="">Nog geen fase gekozen</option>' +
+    fases.map(function (f) { return '<option value="' + f.id + '">' + f.nr + ". " + esc(f.naam) + "</option>"; }).join("");
+  $("#kies-rol").innerHTML = '<option value="">Nog geen rol gekozen</option>' +
+    rollen.map(function (r) { return '<option value="' + r.id + '">' + esc(r.naam) + (r.primair ? " (versie 1)" : "") + "</option>"; }).join("");
+  $("#kies-besluit").innerHTML = '<option value="">Nog geen keuze gekozen</option>' +
+    beslismomenten.map(function (b) { return '<option value="' + b.id + '">' + esc(b.vraag) + "</option>"; }).join("");
+}
+
+function zetContext(wijziging) {
+  if (Object.prototype.hasOwnProperty.call(wijziging, "besluit")) {
+    context.besluit = wijziging.besluit || null;
+    if (context.besluit) { context.fase = besluit(context.besluit).fase; }
+  }
+  if (Object.prototype.hasOwnProperty.call(wijziging, "fase")) {
+    context.fase = wijziging.fase || null;
+    if (context.besluit && besluit(context.besluit).fase !== context.fase) { context.besluit = null; }
+  }
+  if (Object.prototype.hasOwnProperty.call(wijziging, "rol")) {
+    context.rol = wijziging.rol || null;
+  }
+  tekenAlles();
+}
+
+function tekenAlles() {
+  $("#kies-fase").value = context.fase || "";
+  $("#kies-rol").value = context.rol || "";
+  $("#kies-besluit").value = context.besluit || "";
+  $("#ingang-fase").classList.toggle("is-gevuld", !!context.fase);
+  $("#ingang-rol").classList.toggle("is-gevuld", !!context.rol);
+  $("#ingang-besluit").classList.toggle("is-gevuld", !!context.besluit);
+  renderAdviseur();
+  renderA();
+  renderB();
+  renderC();
+}
+
+function renderAdviseur() {
+  var delen = [];
+  if (context.rol) { delen.push("Je bent <strong>" + esc(rol(context.rol).naam.toLowerCase()) + "</strong>"); }
+  if (context.fase) {
+    var f = fase(context.fase);
+    delen.push((delen.length ? "in de fase " : "Je zit in de fase ") + "<strong>" + esc(f.naam) + "</strong>");
+  }
+  var zin;
+  if (!delen.length && !context.besluit) {
+    zin = "Kies hierboven een fase, een rol of een keuze. Het kompas laat daarna zien welke financiële informatie op dat moment telt.";
+  } else {
+    zin = delen.join(" ") + ".";
+    if (context.besluit) {
+      zin += " De keuze die nu voorligt: <strong>" + esc(besluit(context.besluit).vraag) + "</strong>";
+    } else if (context.fase) {
+      var n = besluitenInFase(context.fase).length;
+      zin += n
+        ? " Hier " + (n === 1 ? "ligt één keuze" : "liggen " + n + " keuzes") + " voor."
+        : " In deze fase wordt nog geen formele keuze vastgelegd.";
+    }
+  }
+  $("#adviseur-tekst").innerHTML = zin;
+}
+
+/* --- Conceptnavigatie --- */
+var geldigeConcepten = ["concept-a", "concept-b", "concept-c"];
+function toonConcept(naam, viaHash) {
+  if (geldigeConcepten.indexOf(naam) === -1) { naam = "concept-a"; }
+  huidigConcept = naam;
+  geldigeConcepten.forEach(function (c) {
+    var sectie = document.getElementById(c);
+    var tab = document.getElementById("tab-" + c);
+    var actief = c === naam;
+    if (sectie) { sectie.hidden = !actief; }
+    if (tab) { tab.setAttribute("aria-selected", actief ? "true" : "false"); tab.tabIndex = actief ? 0 : -1; }
+  });
+  if (!viaHash && window.location.hash !== "#" + naam) { window.location.hash = naam; }
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+$$(".conceptnav__tab").forEach(function (tab) {
+  tab.addEventListener("click", function () { toonConcept(tab.dataset.concept); tab.focus(); });
+});
+$(".conceptnav__inner").addEventListener("keydown", function (e) {
+  var tabs = $$(".conceptnav__tab");
+  var i = tabs.indexOf(document.activeElement);
+  if (i === -1) { return; }
+  var n = null;
+  if (e.key === "ArrowRight") { n = (i + 1) % tabs.length; }
+  if (e.key === "ArrowLeft") { n = (i - 1 + tabs.length) % tabs.length; }
+  if (e.key === "Home") { n = 0; }
+  if (e.key === "End") { n = tabs.length - 1; }
+  if (n === null) { return; }
+  e.preventDefault();
+  toonConcept(tabs[n].dataset.concept);
+  tabs[n].focus();
+});
+window.addEventListener("hashchange", function () {
+  toonConcept(window.location.hash.replace("#", ""), true);
+});
+
+$("#kies-fase").addEventListener("change", function (e) { zetContext({ fase: e.target.value }); });
+$("#kies-rol").addEventListener("change", function (e) { zetContext({ rol: e.target.value }); });
+$("#kies-besluit").addEventListener("change", function (e) { zetContext({ besluit: e.target.value }); });
+
+document.addEventListener("click", function (e) {
+  var melding = e.target.closest("[data-melding]");
+  if (melding) { toast(melding.dataset.melding); return; }
+  var el = e.target.closest("[data-action]");
+  if (!el) { return; }
+  var actie = el.dataset.action;
+  if (actie === "close-modal") { closeModal(); }
+  else if (actie === "wis-context") { context = { fase: null, rol: null, besluit: null }; tekenAlles(); toast("De context is gewist."); }
+  else if (actie === "open-about") { toonOver(); }
+  else if (actie === "open-vergelijk") { toonVergelijk(); }
+  else if (actie === "b-alle") { zetContext({ rol: "" }); }
+});
+
+function toonOver() {
+  openModal({
+    eyebrow: "Conceptprototype",
+    titel: "Over dit prototype",
+    body:
+      "<p>Dit prototype maakt drie manieren van navigeren door het Financieel Vastgoedkompas vergelijkbaar. Het doel is niet de inhoud te toetsen, maar de <strong>navigatielogica</strong>.</p>" +
+      "<h3 style=\"margin:18px 0 8px\">Het ontwerpprincipe</h3>" +
+      "<p class=\"small\">Welke informatie heeft welke rol nodig om op een bepaald moment een goede financiële keuze te maken? Proces gaat vóór instrument, beslismoment vóór financieel thema, handelingsperspectief vóór volledigheid.</p>" +
+      "<h3 style=\"margin:18px 0 8px\">Wat het niet is</h3>" +
+      "<ul class=\"small\" style=\"margin-bottom:14px\"><li>Geen kennisbank of documentbibliotheek</li><li>Geen subsidieoverzicht of linkverzameling</li><li>Geen rekensysteem en geen formeel advies</li></ul>" +
+      "<h3 style=\"margin:18px 0 8px\">Eén context, drie concepten</h3>" +
+      "<p class=\"small\">De gekozen fase, rol en keuze blijven staan als je van concept wisselt. Zo zie je dezelfde situatie vanuit drie navigatielogica's.</p>" +
+      "<p class=\"tiny muted\" style=\"margin-top:14px\">Alle rollen, keuzes en instrumenten zijn illustratief en niet uitputtend.</p>"
+  });
+}
+
+function toonVergelijk() {
+  openModal({
+    eyebrow: "Werksessie",
+    titel: "De drie concepten naast elkaar",
+    body:
+      '<table style="width:100%;border-collapse:collapse;font-size:.86rem">' +
+      '<caption class="visually-hidden">Vergelijking van de drie navigatieconcepten</caption>' +
+      '<thead><tr>' +
+      '<th scope="col" style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--vmv-grey-200);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--vmv-muted)">Concept</th>' +
+      '<th scope="col" style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--vmv-grey-200);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--vmv-muted)">Vertrekpunt</th>' +
+      '<th scope="col" style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--vmv-grey-200);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--vmv-muted)">Sterk als</th>' +
+      '<th scope="col" style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--vmv-grey-200);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--vmv-muted)">Risico</th>' +
+      '</tr></thead><tbody>' +
+      [["A – Routeplanner", "Waar zit ik in het proces?", "je weet in welke fase je zit", "je weet dat nog niet, of je werkt aan meerdere objecten tegelijk"],
+       ["B – Metrokaart door rollen", "Wat is mijn rol?", "samenwerking en overdracht het knelpunt zijn", "de kaart als geheel te complex oogt voor een incidentele gebruiker"],
+       ["C – Beslismomentenkaart", "Welke keuze ligt voor?", "er een concrete knoop moet worden doorgehakt", "de keuze nog niet scherp is en de context ontbreekt"]]
+        .map(function (r) {
+          return "<tr>" + r.map(function (c, i) {
+            return '<td style="padding:10px;border-bottom:1px solid var(--vmv-grey-100);' + (i === 0 ? "font-weight:600;color:var(--vmv-purple)" : "") + '">' + esc(c) + "</td>";
+          }).join("") + "</tr>";
+        }).join("") +
+      "</tbody></table>" +
+      '<p class="small muted" style="margin-top:16px">Waarschijnlijk ligt de uiteindelijke oplossing in een combinatie: een ingang per situatie, met één onderliggende structuur van fasen, rollen en beslismomenten.</p>'
+  });
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript – Concept A: routeplanner door de cyclus
+   ============================================================ */
+var A = { cx: 470, cy: 322, rx: 338, ry: 236, r: 34 };
+
+function aPositie(i, schaalX, schaalY) {
+  var t = (-90 + i * 40) * Math.PI / 180;
+  return {
+    t: t,
+    x: A.cx + (schaalX || A.rx) * Math.cos(t),
+    y: A.cy + (schaalY || A.ry) * Math.sin(t),
+    cos: Math.cos(t), sin: Math.sin(t)
+  };
+}
+
+function aBoog(i) {
+  var marge = 7 * Math.PI / 180;
+  var t1 = (-90 + i * 40) * Math.PI / 180 + marge;
+  var t2 = (-90 + (i + 1) * 40) * Math.PI / 180 - marge;
+  var p1 = { x: A.cx + A.rx * Math.cos(t1), y: A.cy + A.ry * Math.sin(t1) };
+  var p2 = { x: A.cx + A.rx * Math.cos(t2), y: A.cy + A.ry * Math.sin(t2) };
+  return "M" + p1.x.toFixed(1) + " " + p1.y.toFixed(1) +
+    " A" + A.rx + " " + A.ry + " 0 0 1 " + p2.x.toFixed(1) + " " + p2.y.toFixed(1);
+}
+
+function aPijl(i) {
+  var t = (-90 + i * 40 + 20) * Math.PI / 180;
+  var x = A.cx + A.rx * Math.cos(t), y = A.cy + A.ry * Math.sin(t);
+  var dx = -A.rx * Math.sin(t), dy = A.ry * Math.cos(t);
+  var len = Math.sqrt(dx * dx + dy * dy) || 1;
+  dx /= len; dy /= len;
+  var px = -dy, py = dx;
+  return (x + dx * 8).toFixed(1) + "," + (y + dy * 8).toFixed(1) + " " +
+    (x - dx * 4 + px * 5.5).toFixed(1) + "," + (y - dy * 4 + py * 5.5).toFixed(1) + " " +
+    (x - dx * 4 - px * 5.5).toFixed(1) + "," + (y - dy * 4 - py * 5.5).toFixed(1);
+}
+
+function renderARing() {
+  var actiefIndex = context.fase ? faseIndex(context.fase) : -1;
+
+  var bogen = fases.map(function (f, i) {
+    var raakt = actiefIndex !== -1 && (i === actiefIndex || (i + 1) % fases.length === actiefIndex);
+    return '<path class="a-boog' + (raakt ? " is-actief" : "") + '" d="' + aBoog(i) + '"/>' +
+      '<polygon points="' + aPijl(i) + '" fill="' + (raakt ? "var(--vmv-teal-dark)" : "var(--vmv-grey-400)") + '"/>';
+  }).join("");
+
+  var p8 = aPositie(8), p1 = aPositie(1), p7 = aPositie(7), p3 = aPositie(3);
+  var terug =
+    '<path class="a-terug" d="M' + p8.x.toFixed(0) + ' ' + p8.y.toFixed(0) + ' Q470 250 ' + p1.x.toFixed(0) + ' ' + p1.y.toFixed(0) + '"/>' +
+    '<text class="a-terug-label" x="470" y="188">wat je leert, voedt de volgende ronde</text>' +
+    '<path class="a-terug" d="M' + p7.x.toFixed(0) + ' ' + p7.y.toFixed(0) + ' Q470 400 ' + p3.x.toFixed(0) + ' ' + p3.y.toFixed(0) + '"/>' +
+    '<text class="a-terug-label" x="462" y="386">ervaring uit uitvoering stuurt het programma</text>';
+
+  var knopen = fases.map(function (f, i) {
+    var p = aPositie(i);
+    var aantal = besluitenInFase(f.id).length;
+    var isContext = context.fase === f.id;
+    var isBuur = actiefIndex !== -1 && !isContext &&
+      (i === (actiefIndex + 1) % fases.length || i === (actiefIndex - 1 + fases.length) % fases.length);
+    var gedimd = actiefIndex !== -1 && !isContext && !isBuur;
+
+    var lx = A.cx + (A.rx + 54) * p.cos;
+    var ly = A.cy + (A.ry + 46) * p.sin;
+    var anchor = p.cos > 0.5 ? "start" : (p.cos < -0.5 ? "end" : "middle");
+
+    return '<g class="a-fase' + (isContext ? " is-selected" : "") + (isBuur ? " is-buur" : "") + (gedimd ? " is-gedimd" : "") + '" ' +
+      'data-fase="' + f.id + '" role="button" tabindex="0" ' +
+      'aria-label="Fase ' + f.nr + ", " + esc(f.naam) + ": " + esc(f.kernvraag) + '">' +
+      '<circle class="a-fase__cirkel" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + A.r + '"/>' +
+      '<text class="a-fase__nr" x="' + p.x.toFixed(1) + '" y="' + (p.y + 6).toFixed(1) + '">' + f.nr + '</text>' +
+      (aantal ? '<circle class="a-fase__telbadge" cx="' + (p.x + 25).toFixed(1) + '" cy="' + (p.y - 25).toFixed(1) + '" r="11"/>' +
+        '<text class="a-fase__teltekst" x="' + (p.x + 25).toFixed(1) + '" y="' + (p.y - 21).toFixed(1) + '">' + aantal + '</text>' : "") +
+      '<text class="a-fase__naam" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '">' + esc(f.naam) + '</text>' +
+      '</g>';
+  }).join("");
+
+  $("#a-ring").innerHTML =
+    '<svg viewBox="0 0 940 660" role="img" aria-label="De vastgoed- en besluitvormingscyclus als kringloop van negen fasen, met twee terugkoppelingen naar eerdere fasen">' +
+    bogen + terug +
+    '<g class="a-midden"><text class="a-midden__titel" x="470" y="302">Financieel Vastgoedkompas</text>' +
+    '<text class="a-midden__sub" x="470" y="322">proces · rol · beslismoment</text></g>' +
+    knopen + '</svg>';
+
+  $$("#a-ring .a-fase").forEach(function (g) {
+    g.addEventListener("click", function () {
+      zetContext({ fase: context.fase === g.dataset.fase ? "" : g.dataset.fase });
+    });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        zetContext({ fase: context.fase === g.dataset.fase ? "" : g.dataset.fase });
+      }
+    });
+  });
+
+  $("#a-status").textContent = context.fase
+    ? "Fase " + fase(context.fase).nr + " van 9 · " + fase(context.fase).naam
+    : "Nog geen fase gekozen";
+}
+
+function renderADetail() {
+  var host = $("#a-detail");
+  if (!context.fase) {
+    host.innerHTML = '<p class="small muted">Nog geen fase gekozen. Klik in de kringloop op een fase, of kies er hierboven een.</p>' +
+      '<div class="chip-row" style="margin-top:12px">' + fases.map(function (f) {
+        return '<button type="button" class="chip chip--teal" data-naar-fase="' + f.id + '">' + f.nr + ". " + esc(f.naam) + "</button>";
+      }).join("") + "</div>";
+    $$("#a-detail [data-naar-fase]").forEach(function (b) {
+      b.addEventListener("click", function () { zetContext({ fase: b.dataset.naarFase }); });
+    });
+    return;
+  }
+
+  var f = fase(context.fase);
+  var rollenHier = rollenInFase(f.id);
+  var besluitenHier = besluitenInFase(f.id);
+
+  host.innerHTML =
+    '<span class="chip chip--teal" style="margin-bottom:8px">Fase ' + f.nr + " van 9</span>" +
+    '<h3 style="font-size:1.1rem;color:var(--vmv-teal-dark);margin-bottom:10px">' + esc(f.naam) + "</h3>" +
+    '<span class="a-detail__vraag">' + esc(f.kernvraag) + "</span>" +
+    '<p class="small muted" style="margin-top:12px">' + esc(f.beschrijving) + "</p>" +
+    '<hr class="divider">' +
+    '<span class="label">Wie is hier betrokken?</span><div class="chip-row" style="margin-bottom:16px">' +
+    rollenHier.map(function (r) {
+      return '<button type="button" class="chip" style="background:' + r.kleur + ';color:#fff" data-naar-rol="' + r.id + '">' + esc(r.naam) + "</button>";
+    }).join("") + "</div>" +
+    '<span class="label">Financiële vragen die hier spelen</span><ul class="linklist" style="margin-bottom:16px">' +
+    f.vragen.map(function (vid) {
+      var v = vraag(vid);
+      return '<li><button type="button" class="linklist__btn" data-vraag="' + v.id + '">' + esc(v.vraag) +
+        '<span class="linklist__meta">' + esc(v.waarom) + "</span>" +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+    }).join("") + "</ul>" +
+    '<span class="label">Wat hier misgaat</span><ul class="risicolijst" style="margin-bottom:16px">' +
+    f.risicos.map(function (r) {
+      return '<li><span class="vlag">' + icon("i-alert", 14) + "</span><span>" + esc(r) + "</span></li>";
+    }).join("") + "</ul>" +
+    '<span class="label">Keuzes in deze fase</span>' +
+    (besluitenHier.length
+      ? '<ul class="linklist" style="margin-bottom:16px">' + besluitenHier.map(function (b) {
+          return '<li><button type="button" class="linklist__btn" data-naar-besluit="' + b.id + '">' + esc(b.vraag) +
+            '<span class="linklist__meta">Besluit: ' + esc(rol(b.besluitnemer).naam) + "</span>" +
+            '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+        }).join("") + "</ul>"
+      : '<p class="small muted" style="margin-bottom:16px">In deze fase wordt nog geen formele keuze vastgelegd. De voorbereiding bepaalt wel hoe scherp de latere keuzes worden.</p>') +
+    '<span class="label">Instrumenten die hier helpen</span><div class="chip-row" style="margin-bottom:16px">' +
+    f.instrumenten.map(function (iid) {
+      return '<button type="button" class="chip chip--purple" data-instrument="' + iid + '">' + esc(instrument(iid).naam) + "</button>";
+    }).join("") + "</div>" +
+    '<div class="notice notice--purple small"><span>' + icon("i-arrow-right", 16) + "</span><span><strong>Vervolgstap.</strong> " + esc(f.vervolg) + "</span></div>";
+
+  $$("#a-detail [data-naar-rol]").forEach(function (b) {
+    b.addEventListener("click", function () { zetContext({ rol: b.dataset.naarRol }); });
+  });
+  $$("#a-detail [data-naar-besluit]").forEach(function (b) {
+    b.addEventListener("click", function () { zetContext({ besluit: b.dataset.naarBesluit }); toonConcept("concept-c"); });
+  });
+  $$("#a-detail [data-instrument]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrument(b.dataset.instrument); });
+  });
+  $$("#a-detail [data-vraag]").forEach(function (b) {
+    b.addEventListener("click", function () { toonVraag(b.dataset.vraag); });
+  });
+}
+
+function toonVraag(id) {
+  var v = vraag(id);
+  openModal({
+    eyebrow: "Financiële vraag",
+    titel: v.vraag,
+    body: "<p>" + esc(v.waarom) + "</p>" +
+      '<h3 style="margin:18px 0 8px">Instrumenten die deze vraag helpen beantwoorden</h3>' +
+      '<ul class="linklist">' + v.instrumenten.map(function (iid) {
+        var i = instrument(iid);
+        return '<li><button type="button" class="linklist__btn" data-instrument="' + i.id + '">' + esc(i.naam) +
+          '<span class="linklist__meta">' + esc(i.type) + "</span>" +
+          '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+      }).join("") + "</ul>" +
+      '<hr class="divider"><span class="label">Fasen waarin deze vraag speelt</span><div class="chip-row">' +
+      fases.filter(function (f) { return f.vragen.indexOf(id) !== -1; })
+        .map(function (f) { return '<span class="chip chip--teal">' + esc(f.naam) + "</span>"; }).join("") + "</div>"
+  });
+  $$("#modal-body [data-instrument]").forEach(function (b) {
+    b.addEventListener("click", function () { openInstrument(b.dataset.instrument); });
+  });
+}
+
+function renderA() {
+  renderARing();
+  renderADetail();
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript – Concept B: metrokaart door rollen
+   ============================================================ */
+var B = { gutter: 200, x0: 210, breedte: 131, kopHoogte: 62, rij0: 104, rijStap: 58, onder: 570 };
+
+function bBandX(i) { return B.x0 + i * B.breedte; }
+function bBandMidden(i) { return B.x0 + i * B.breedte + B.breedte / 2; }
+function bRijY(i) { return B.rij0 + i * B.rijStap; }
+function bRolRij(rolId) { for (var i = 0; i < rollen.length; i++) { if (rollen[i].id === rolId) { return i; } } return -1; }
+
+function renderBKaart() {
+  var banden = fases.map(function (f, i) {
+    var x = bBandX(i);
+    var isContext = context.fase === f.id;
+    return '<g class="b-band__vak' + (isContext ? " is-context" : "") + '" data-fase="' + f.id + '" role="button" tabindex="0" ' +
+      'aria-label="Fase ' + f.nr + ", " + esc(f.naam) + '">' +
+      '<rect class="b-band' + (i % 2 ? " b-band--om" : "") + '" x="' + x + '" y="' + B.kopHoogte + '" width="' + B.breedte + '" height="' + (B.onder - B.kopHoogte) + '"/>' +
+      '<text class="b-bandnr" x="' + bBandMidden(i) + '" y="24">FASE ' + f.nr + '</text>' +
+      '<text class="b-bandkop" x="' + bBandMidden(i) + '" y="44">' + esc(f.naam) + '</text>' +
+      '</g>';
+  }).join("");
+
+  var rolnamen = rollen.map(function (r, i) {
+    return '<text class="b-rolnaam" x="186" y="' + (bRijY(i) + 5) + '" text-anchor="end">' + esc(r.kort) + '</text>' +
+      (r.primair ? '<circle cx="' + 196 + '" cy="' + (bRijY(i)) + '" r="0" fill="none"/>' : "");
+  }).join("");
+
+  var lijnen = rollen.map(function (r, ri) {
+    var indices = r.route.map(function (stap) { return faseIndex(stap.fase); }).filter(function (n) { return n >= 0; });
+    if (!indices.length) { return ""; }
+    var y = bRijY(ri);
+    var x1 = bBandMidden(Math.min.apply(null, indices));
+    var x2 = bBandMidden(Math.max.apply(null, indices));
+    var gedimd = context.rol && context.rol !== r.id;
+
+    var stations = r.route.map(function (stap) {
+      var bi = faseIndex(stap.fase);
+      if (bi < 0) { return ""; }
+      var isSel = context.rol === r.id && context.fase === stap.fase;
+      return '<g class="b-station' + (isSel ? " is-selected" : "") + '" data-rol="' + r.id + '" data-fase="' + stap.fase + '" ' +
+        'role="button" tabindex="' + (gedimd ? "-1" : "0") + '" ' +
+        'aria-label="' + esc(r.naam) + " in de fase " + esc(fase(stap.fase).naam) + ": " + esc(stap.wat) + '">' +
+        '<circle class="b-station__punt" cx="' + bBandMidden(bi) + '" cy="' + y + '" r="7" stroke="' + r.kleur + '"/></g>';
+    }).join("");
+
+    return '<g class="b-rolgroep' + (r.primair ? " is-primair" : "") + (gedimd ? " is-gedimd" : "") + '" data-rolgroep="' + r.id + '">' +
+      '<path class="b-rollijn" d="M' + x1 + " " + y + " L" + x2 + " " + y + '" stroke="' + r.kleur + '"/>' +
+      stations + "</g>";
+  }).join("");
+
+  var besluiten = fases.map(function (f, bi) {
+    var lijst = besluitenInFase(f.id);
+    return lijst.map(function (b, k) {
+      var offset = lijst.length === 1 ? 32 : (k === 0 ? -32 : 32);
+      var x = bBandMidden(bi) + offset;
+      var rijen = rollenBijBesluit(b).map(bRolRij).filter(function (n) { return n >= 0; });
+      var yTop = bRijY(Math.min.apply(null, rijen));
+      var yBot = bRijY(Math.max.apply(null, rijen));
+      var yMid = (yTop + yBot) / 2;
+      var isSel = context.besluit === b.id;
+      var stippen = rijen.map(function (n) {
+        return '<circle class="b-besluit__stip" cx="' + x + '" cy="' + bRijY(n) + '" r="3.5"/>';
+      }).join("");
+      return '<g class="b-besluit' + (isSel ? " is-selected" : "") + '" data-besluit="' + b.id + '" role="button" tabindex="0" ' +
+        'aria-label="Beslismoment in de fase ' + esc(f.naam) + ": " + esc(b.vraag) + '">' +
+        '<path class="b-besluit__lijn" d="M' + x + " " + yTop + " L" + x + " " + yBot + '"/>' + stippen +
+        '<path class="b-besluit__ruit" d="M' + x + " " + (yMid - 13) + " L" + (x + 13) + " " + yMid + " L" + x + " " + (yMid + 13) + " L" + (x - 13) + " " + yMid + ' Z"/>' +
+        "</g>";
+    }).join("");
+  }).join("");
+
+  $("#b-map").innerHTML =
+    '<svg viewBox="0 0 1400 600" role="img" aria-label="Metrokaart met acht rollijnen door negen fasen van de vastgoedcyclus, met beslismomenten waar rollen samenkomen">' +
+    banden + rolnamen + lijnen + besluiten + "</svg>";
+
+  $$("#b-map [data-rolgroep]").forEach(function (g) {
+    g.addEventListener("click", function (e) {
+      if (e.target.closest(".b-station")) { return; }
+      zetContext({ rol: context.rol === g.dataset.rolgroep ? "" : g.dataset.rolgroep });
+    });
+  });
+  $$("#b-map .b-station").forEach(function (g) {
+    g.addEventListener("click", function (e) {
+      e.stopPropagation();
+      zetContext({ rol: g.dataset.rol, fase: g.dataset.fase });
+    });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault(); e.stopPropagation();
+        zetContext({ rol: g.dataset.rol, fase: g.dataset.fase });
+      }
+    });
+  });
+  $$("#b-map .b-band__vak").forEach(function (g) {
+    g.addEventListener("click", function () {
+      zetContext({ fase: context.fase === g.dataset.fase ? "" : g.dataset.fase });
+    });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        zetContext({ fase: context.fase === g.dataset.fase ? "" : g.dataset.fase });
+      }
+    });
+  });
+  $$("#b-map .b-besluit").forEach(function (g) {
+    g.addEventListener("click", function () {
+      zetContext({ besluit: context.besluit === g.dataset.besluit ? "" : g.dataset.besluit });
+    });
+    g.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        zetContext({ besluit: context.besluit === g.dataset.besluit ? "" : g.dataset.besluit });
+      }
+    });
+  });
+
+  $("#b-status").textContent = context.rol ? "Lijn: " + rol(context.rol).naam : "Alle acht de rollen zichtbaar";
+}
+
+function renderBRollen() {
+  $("#b-rollen").innerHTML = rollen.map(function (r) {
+    return '<button type="button" class="b-rolknop" data-rol="' + r.id + '" style="--rol:' + r.kleur + '" aria-pressed="' + (context.rol === r.id) + '">' +
+      '<span class="b-rolknop__spoor" aria-hidden="true"></span>' +
+      '<span><span class="b-rolknop__naam">' + esc(r.naam) + "</span>" +
+      '<span class="b-rolknop__vraag">' + esc(r.kernvraag) + "</span></span>" +
+      '<span class="chip ' + (r.primair ? "chip--teal" : "chip--demo") + '">' + (r.primair ? "versie 1" : "context") + "</span>" +
+      "</button>";
+  }).join("");
+  $$("#b-rollen .b-rolknop").forEach(function (b) {
+    b.addEventListener("click", function () {
+      zetContext({ rol: context.rol === b.dataset.rol ? "" : b.dataset.rol });
+    });
+  });
+}
+
+function renderBDetail() {
+  var host = $("#b-detail");
+
+  if (context.besluit) { host.innerHTML = besluitBlad(besluit(context.besluit), "b"); koppelBladKnoppen(host); return; }
+
+  if (context.rol && context.fase) {
+    var r = rol(context.rol);
+    var stap = r.route.filter(function (s) { return s.fase === context.fase; })[0];
+    var f = fase(context.fase);
+    if (!stap) {
+      host.innerHTML = '<span class="chip" style="background:' + r.kleur + ';color:#fff;margin-bottom:8px">' + esc(r.naam) + "</span>" +
+        '<h3 style="margin-bottom:8px">Geen station in ' + esc(f.naam) + "</h3>" +
+        '<p class="small muted">Deze rol heeft in deze fase geen eigen station. Dat betekent niet dat de rol niet meekijkt, maar wel dat het zwaartepunt elders ligt.</p>' +
+        '<hr class="divider"><span class="label">Wie hier wel actief zijn</span><div class="chip-row">' +
+        rollenInFase(f.id).map(function (x) {
+          return '<button type="button" class="chip" style="background:' + x.kleur + ';color:#fff" data-naar-rol="' + x.id + '">' + esc(x.naam) + "</button>";
+        }).join("") + "</div>";
+      koppelBladKnoppen(host);
+      return;
+    }
+    host.innerHTML =
+      '<div class="chip-row" style="margin-bottom:10px">' +
+      '<span class="chip" style="background:' + r.kleur + ';color:#fff">' + esc(r.naam) + "</span>" +
+      '<span class="chip chip--teal">Fase ' + f.nr + ": " + esc(f.naam) + "</span></div>" +
+      '<h3 style="margin-bottom:8px">Wat doe je hier?</h3>' +
+      '<p class="small">' + esc(stap.wat) + "</p>" +
+      '<hr class="divider">' +
+      '<span class="label">Financiële vragen in deze fase</span><ul class="small" style="margin:0 0 14px">' +
+      f.vragen.map(function (vid) { return "<li>" + esc(vraag(vid).vraag) + "</li>"; }).join("") + "</ul>" +
+      '<span class="label">Keuzes waar jij bij betrokken bent</span>' + keuzeLijst(besluitenInFase(f.id).filter(function (b) {
+        return rollenBijBesluit(b).indexOf(r.id) !== -1;
+      }), "Geen formele keuze waarbij deze rol aan tafel zit.") +
+      '<span class="label" style="margin-top:14px">Jouw instrumenten</span><div class="chip-row">' +
+      r.instrumenten.map(function (iid) {
+        return '<button type="button" class="chip chip--purple" data-instrument="' + iid + '">' + esc(instrument(iid).naam) + "</button>";
+      }).join("") + "</div>";
+    koppelBladKnoppen(host);
+    return;
+  }
+
+  if (context.rol) {
+    var r2 = rol(context.rol);
+    host.innerHTML =
+      '<span class="chip" style="background:' + r2.kleur + ';color:#fff;margin-bottom:10px">' + esc(r2.naam) + "</span>" +
+      '<h3 style="margin-bottom:8px">' + esc(r2.kernvraag) + "</h3>" +
+      '<span class="label" style="margin-top:14px">Wat heb jij nodig?</span><ul class="small" style="margin:0 0 14px">' +
+      r2.informatiebehoefte.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" +
+      '<span class="label">Jouw route door de cyclus</span><ul class="linklist" style="margin-bottom:14px">' +
+      r2.route.map(function (s) {
+        var f2 = fase(s.fase);
+        return '<li><button type="button" class="linklist__btn" data-naar-fase="' + s.fase + '">' + f2.nr + ". " + esc(f2.naam) +
+          '<span class="linklist__meta">' + esc(s.wat) + "</span>" +
+          '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+      }).join("") + "</ul>" +
+      '<span class="label">Keuzes waar jij aan tafel zit</span>' + keuzeLijst(besluitenVanRol(r2.id), "Deze rol zit bij geen van de uitgewerkte keuzes aan tafel.");
+    koppelBladKnoppen(host);
+    return;
+  }
+
+  if (context.fase) {
+    var f3 = fase(context.fase);
+    host.innerHTML =
+      '<span class="chip chip--teal" style="margin-bottom:10px">Fase ' + f3.nr + " van 9</span>" +
+      '<h3 style="margin-bottom:8px">' + esc(f3.naam) + "</h3>" +
+      '<p class="small muted">' + esc(f3.beschrijving) + "</p>" +
+      '<hr class="divider"><span class="label">Wie hier actief zijn</span><div class="chip-row">' +
+      rollenInFase(f3.id).map(function (x) {
+        return '<button type="button" class="chip" style="background:' + x.kleur + ';color:#fff" data-naar-rol="' + x.id + '">' + esc(x.naam) + "</button>";
+      }).join("") + "</div>";
+    koppelBladKnoppen(host);
+    return;
+  }
+
+  host.innerHTML = '<p class="small muted">Kies links een rol, of klik in de kaart op een lijn, een station, een fasekolom of een ruit. De ruiten zijn de momenten waarop rollen elkaar nodig hebben.</p>';
+}
+
+function keuzeLijst(lijst, leegTekst) {
+  if (!lijst.length) { return '<p class="small muted" style="margin:0">' + esc(leegTekst) + "</p>"; }
+  return '<ul class="linklist">' + lijst.map(function (b) {
+    return '<li><button type="button" class="linklist__btn" data-naar-besluit="' + b.id + '">' + esc(b.vraag) +
+      '<span class="linklist__meta">Fase ' + esc(fase(b.fase).naam) + " · besluit: " + esc(rol(b.besluitnemer).naam) + "</span>" +
+      '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+  }).join("") + "</ul>";
+}
+
+function koppelBladKnoppen(host) {
+  $$("[data-naar-rol]", host).forEach(function (b) {
+    b.addEventListener("click", function () { zetContext({ rol: b.dataset.naarRol }); });
+  });
+  $$("[data-naar-fase]", host).forEach(function (b) {
+    b.addEventListener("click", function () { zetContext({ fase: b.dataset.naarFase }); });
+  });
+  $$("[data-naar-besluit]", host).forEach(function (b) {
+    b.addEventListener("click", function () { zetContext({ besluit: b.dataset.naarBesluit }); });
+  });
+  $$("[data-instrument]", host).forEach(function (b) {
+    b.addEventListener("click", function () { openInstrument(b.dataset.instrument); });
+  });
+  $$("[data-vraag]", host).forEach(function (b) {
+    b.addEventListener("click", function () { toonVraag(b.dataset.vraag); });
+  });
+}
+
+function renderB() {
+  renderBKaart();
+  renderBRollen();
+  renderBDetail();
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   JavaScript – Concept C: beslismomentenkaart
+   ============================================================ */
+var cFilter = "alle";
+
+function cZichtbaar() {
+  return beslismomenten.filter(function (b) {
+    if (cFilter === "rol") { return context.rol && rollenBijBesluit(b).indexOf(context.rol) !== -1; }
+    if (cFilter === "fase") { return context.fase && b.fase === context.fase; }
+    return true;
+  });
+}
+
+function renderCBanen() {
+  var lijst = cZichtbaar();
+  $("#c-aantal").textContent = lijst.length + (lijst.length === 1 ? " keuze in beeld" : " keuzes in beeld");
+
+  if (!lijst.length) {
+    var reden = cFilter === "rol"
+      ? "Kies eerst een rol, of zet het filter terug op alle keuzes."
+      : "Kies eerst een fase, of zet het filter terug op alle keuzes.";
+    $("#c-banen").innerHTML = '<div class="c-leeg"><p><strong>Geen keuzes binnen dit filter.</strong></p><p class="small">' + esc(reden) + "</p>" +
+      '<button type="button" class="btn" data-c-reset>Toon alle keuzes</button></div>';
+    $("#c-banen [data-c-reset]").addEventListener("click", function () { zetCFilter("alle"); });
+    return;
+  }
+
+  $("#c-banen").innerHTML = zones.map(function (z) {
+    var inZone = lijst.filter(function (b) { return z.fasen.indexOf(b.fase) !== -1; });
+    if (!inZone.length) { return ""; }
+    return '<div class="c-baan">' +
+      '<div class="c-baan__kop">' +
+      '<span class="c-baan__naam"><span class="c-baan__streep" style="background:' + z.kleur + '" aria-hidden="true"></span>' + esc(z.naam) + "</span>" +
+      '<span class="c-baan__fasen">' + z.fasen.map(function (fid) { return esc(fase(fid).naam); }).join(" · ") + "</span>" +
+      "</div>" +
+      '<div class="c-kaarten">' + inZone.map(function (b) {
+        var rl = rollenBijBesluit(b);
+        return '<button type="button" class="c-besluit" data-besluit="' + b.id + '" aria-pressed="' + (context.besluit === b.id) + '">' +
+          '<span class="chip chip--teal">Fase ' + fase(b.fase).nr + ": " + esc(fase(b.fase).naam) + "</span>" +
+          '<span class="c-besluit__vraag">' + esc(b.vraag) + "</span>" +
+          '<span class="c-besluit__rollen" aria-hidden="true">' + rl.map(function (id) {
+            return '<span class="c-besluit__spoor" style="background:' + rol(id).kleur + '"></span>';
+          }).join("") + "</span>" +
+          '<span class="c-besluit__voet"><span>' + icon("i-users", 13) + " Besluit: " + esc(rol(b.besluitnemer).naam) +
+          "</span><span>" + rl.length + " rollen betrokken</span></span>" +
+          "</button>";
+      }).join("") + "</div></div>";
+  }).join("");
+
+  $$("#c-banen .c-besluit").forEach(function (b) {
+    b.addEventListener("click", function () {
+      zetContext({ besluit: context.besluit === b.dataset.besluit ? "" : b.dataset.besluit });
+    });
+  });
+}
+
+function besluitBlad(b, bron) {
+  var f = fase(b.fase);
+  return '<div class="chip-row" style="margin-bottom:10px">' +
+    '<span class="chip chip--besluit">Beslismoment</span>' +
+    '<button type="button" class="chip chip--teal" data-naar-fase="' + f.id + '">Fase ' + f.nr + ": " + esc(f.naam) + "</button></div>" +
+    '<p class="c-blad__vraag" style="margin-bottom:14px">' + esc(b.vraag) + "</p>" +
+    '<span class="label">Wie beslist en wie adviseert</span>' +
+    '<div style="margin-bottom:14px">' +
+    '<div class="c-rolregel"><span class="c-rolregel__spoor" style="background:' + rol(b.besluitnemer).kleur + '" aria-hidden="true"></span>' +
+    '<button type="button" class="btn btn--ghost btn--small" style="padding-left:0" data-naar-rol="' + b.besluitnemer + '">' + esc(rol(b.besluitnemer).naam) + "</button>" +
+    '<span class="chip chip--besluit" style="margin-left:auto">besluit</span></div>' +
+    b.adviseurs.map(function (id) {
+      return '<div class="c-rolregel"><span class="c-rolregel__spoor" style="background:' + rol(id).kleur + '" aria-hidden="true"></span>' +
+        '<button type="button" class="btn btn--ghost btn--small" style="padding-left:0" data-naar-rol="' + id + '">' + esc(rol(id).naam) + "</button>" +
+        '<span class="chip" style="margin-left:auto">adviseert</span></div>';
+    }).join("") + "</div>" +
+    '<span class="label">Financiële vragen die hier beantwoord moeten zijn</span><ul class="linklist" style="margin-bottom:14px">' +
+    b.vragen.map(function (vid) {
+      var v = vraag(vid);
+      return '<li><button type="button" class="linklist__btn" data-vraag="' + v.id + '">' + esc(v.vraag) +
+        '<span class="linklist__meta">' + esc(v.waarom) + "</span>" +
+        '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+    }).join("") + "</ul>" +
+    '<span class="label">Wat heb je nodig om te kunnen kiezen?</span><ul class="small" style="margin:0 0 14px">' +
+    b.nodig.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" +
+    '<span class="label">Instrumenten die hier helpen</span><div class="chip-row" style="margin-bottom:14px">' +
+    b.instrumenten.map(function (iid) {
+      return '<button type="button" class="chip chip--purple" data-instrument="' + iid + '">' + esc(instrument(iid).naam) + "</button>";
+    }).join("") + "</div>" +
+    '<div class="c-waarschuwing" style="margin-bottom:10px">' + icon("i-alert", 16) +
+    "<span><strong>Waar het misgaat.</strong> " + esc(b.risico) + "</span></div>" +
+    '<div class="notice notice--neutral small">' + icon("i-info", 16) +
+    "<span><strong>Als de keuze uitblijft.</strong> " + esc(b.alsNiets) + "</span></div>" +
+    (bron === "b" ? "" : '<p class="tiny muted" style="margin-top:12px">Dit beslisblad is een conceptueel voorbeeld en geen formeel advies.</p>');
+}
+
+function renderCBlad() {
+  var host = $("#c-blad");
+  if (!context.besluit) {
+    host.innerHTML = '<p class="small muted">Nog geen keuze gekozen. Klik links op een kaart om te zien wie beslist, wat er wordt afgewogen en welke informatie daarvoor nodig is.</p>' +
+      '<hr class="divider"><span class="label">Veelgekozen startpunten</span><ul class="linklist">' +
+      ["renoveren", "krediet", "behouden"].map(function (id) {
+        var b = besluit(id);
+        return '<li><button type="button" class="linklist__btn" data-naar-besluit="' + b.id + '">' + esc(b.vraag) +
+          '<span class="linklist__meta">Fase ' + esc(fase(b.fase).naam) + "</span>" +
+          '<span class="arrow">' + icon("i-arrow-right", 16, 1.8) + "</span></button></li>";
+      }).join("") + "</ul>";
+    koppelBladKnoppen(host);
+    return;
+  }
+  host.innerHTML = besluitBlad(besluit(context.besluit), "c");
+  koppelBladKnoppen(host);
+}
+
+function zetCFilter(waarde) {
+  cFilter = waarde;
+  $$("#concept-c [data-c-filter]").forEach(function (b) {
+    b.setAttribute("aria-pressed", b.dataset.cFilter === waarde ? "true" : "false");
+    b.classList.toggle("chip--teal", b.dataset.cFilter === waarde);
+  });
+  renderCBanen();
+}
+
+$$("#concept-c [data-c-filter]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    if (b.dataset.cFilter === "rol" && !context.rol) { toast("Kies eerst een rol bij de ingang “Ik heb deze rol”."); return; }
+    if (b.dataset.cFilter === "fase" && !context.fase) { toast("Kies eerst een fase bij de ingang “Ik zit in deze fase”."); return; }
+    zetCFilter(b.dataset.cFilter);
+  });
+});
+
+function renderC() {
+  renderCBanen();
+  renderCBlad();
+}
+
+/* ============================================================
+   Initialisatie
+   ============================================================ */
+function init() {
+  vulIngangen();
+  zetCFilter("alle");
+  tekenAlles();
+  var start = window.location.hash.replace("#", "");
+  toonConcept(geldigeConcepten.indexOf(start) !== -1 ? start : "concept-a", true);
+}
+
+init();
+</script>
+</body>
+</html>
