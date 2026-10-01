@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="Kompasroos met vier ingangen: opgave, rol, moment en instrument, omringd door de negen fasen van de vastgoedcyclus">
+  <title>Kompasroos met vier ingangen: opgave, rol, moment en instrument, omringd door de negen fasen van de vastgoedcyclus</title>
+  <rect width="1920" height="1080" fill="#fafbfb"/>
+  <circle cx="1340" cy="540" r="490" fill="#ecf7f4" opacity="0.5"/>
+  <circle cx="1340" cy="540" r="490" fill="none" stroke="#4bb3b8" stroke-width="1.5" stroke-dasharray="2 10" opacity="0.45"/>
+  <polygon points="236,856 300.09,893 300.09,967 236,1004 171.91,967 171.91,893" fill="none" stroke="#dce1e2" stroke-width="2" opacity="0.4"/>
+  <polygon points="1770,102 1809.84,125 1809.84,171 1770,194 1730.16,171 1730.16,125" fill="none" stroke="#4bb3b8" stroke-width="2" opacity="0.3"/>
+  <polygon points="150,162 179.44,179 179.44,213 150,230 120.56,213 120.56,179" fill="none" stroke="#dce1e2" stroke-width="2" opacity="0.45"/>
+  <path d="M1365.67 172.9 A368 368 0 0 1 1556.3 242.28" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1595.63 275.28 A368 368 0 0 1 1697.07 450.97" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1705.98 501.53 A368 368 0 0 1 1670.76 701.32" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1645.09 745.78 A368 368 0 0 1 1489.68 876.18" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1441.43 893.74 A368 368 0 0 1 1238.57 893.74" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1190.32 876.18 A368 368 0 0 1 1034.91 745.78" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1009.24 701.32 A368 368 0 0 1 974.02 501.53" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M982.93 450.97 A368 368 0 0 1 1084.37 275.28" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <path d="M1123.7 242.28 A368 368 0 0 1 1314.33 172.9" fill="none" stroke="#dce1e2" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="1340" cy="172" r="4" fill="#9aa4a6"/>
+  <circle cx="1576.55" cy="258.1" r="4" fill="#9aa4a6"/>
+  <circle cx="1702.41" cy="476.1" r="4" fill="#9aa4a6"/>
+  <circle cx="1658.7" cy="724" r="4" fill="#9aa4a6"/>
+  <circle cx="1465.86" cy="885.81" r="4" fill="#9aa4a6"/>
+  <circle cx="1214.14" cy="885.81" r="4" fill="#9aa4a6"/>
+  <circle cx="1021.3" cy="724" r="4" fill="#9aa4a6"/>
+  <circle cx="977.59" cy="476.1" r="4" fill="#9aa4a6"/>
+  <circle cx="1103.45" cy="258.1" r="4" fill="#9aa4a6"/>
+  <path d="M1292.07 268.19 A276 276 0 0 1 1599.36 634.4" fill="none" stroke="#0f6fa8" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="1292.07" cy="268.19" r="6.5" fill="#0f6fa8"/>
+  <path d="M1588.55 396.5 A287 287 0 0 1 1340 827" fill="none" stroke="#12a3a0" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="1588.55" cy="396.5" r="6.5" fill="#12a3a0"/>
+  <path d="M1568.28 731.55 A298 298 0 0 1 1059.97 641.92" fill="none" stroke="#e2833c" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="1568.28" cy="731.55" r="6.5" fill="#e2833c"/>
+  <path d="M1234.32 830.37 A309 309 0 0 1 1141.38 303.29" fill="none" stroke="#9462a6" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="1234.32" cy="830.37" r="6.5" fill="#9462a6"/>
+  <path d="M1020 540 A320 320 0 0 1 1500 262.87" fill="none" stroke="#3e9b62" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="1020" cy="540" r="6.5" fill="#3e9b62"/>
+  <path d="M1444.65 435.35 L1396.57 531.51 L1340 540 Z" fill="#168b94"/><path d="M1444.65 435.35 L1340 540 L1348.49 483.43 Z" fill="#4bb3b8"/>
+  <path d="M1444.65 644.65 L1348.49 596.57 L1340 540 Z" fill="#168b94"/><path d="M1444.65 644.65 L1340 540 L1396.57 548.49 Z" fill="#4bb3b8"/>
+  <path d="M1235.35 644.65 L1283.43 548.49 L1340 540 Z" fill="#168b94"/><path d="M1235.35 644.65 L1340 540 L1331.51 596.57 Z" fill="#4bb3b8"/>
+  <path d="M1235.35 435.35 L1331.51 483.43 L1340 540 Z" fill="#168b94"/><path d="M1235.35 435.35 L1340 540 L1283.43 531.51 Z" fill="#4bb3b8"/>
+  <path d="M1340 296 L1386 484 L1340 540 Z" fill="#3b2943"/><path d="M1340 296 L1340 540 L1294 484 Z" fill="#65506f"/>
+  <path d="M1584 540 L1396 586 L1340 540 Z" fill="#3b2943"/><path d="M1584 540 L1340 540 L1396 494 Z" fill="#65506f"/>
+  <path d="M1340 784 L1294 596 L1340 540 Z" fill="#3b2943"/><path d="M1340 784 L1340 540 L1386 596 Z" fill="#65506f"/>
+  <path d="M1096 540 L1284 494 L1340 540 Z" fill="#3b2943"/><path d="M1096 540 L1340 540 L1284 586 Z" fill="#65506f"/>
+  <circle cx="1340" cy="540" r="60" fill="#ffffff" stroke="#168b94" stroke-width="4"/>
+  <g transform="translate(1340 542)" fill="none" stroke="#168b94" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"><path d="M-24 8 L-24 -3 L-9 -14 L6 -3 L6 8"/><path d="M9 8 L9 -2 L23 -2 L23 8"/><path d="M-29 8 H28"/></g>
+  <rect x="1259.54" y="134" width="160.92" height="76" rx="38" fill="#ffffff" stroke="#dce1e2" stroke-width="2"/>
+  <text x="1340" y="170" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="27" font-weight="600" fill="#3b2943">Opgave</text>
+  <text x="1340" y="194" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="17" fill="#9aa4a6">wat speelt er</text>
+  <rect x="1636.38" y="502" width="143.24" height="76" rx="38" fill="#ffffff" stroke="#dce1e2" stroke-width="2"/>
+  <text x="1708" y="538" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="27" font-weight="600" fill="#3b2943">Rol</text>
+  <text x="1708" y="562" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="17" fill="#9aa4a6">wie ben jij</text>
+  <rect x="1237.44" y="870" width="205.12" height="76" rx="38" fill="#ffffff" stroke="#dce1e2" stroke-width="2"/>
+  <text x="1340" y="906" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="27" font-weight="600" fill="#3b2943">Moment</text>
+  <text x="1340" y="930" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="17" fill="#9aa4a6">waar in het proces</text>
+  <rect x="870.7" y="502" width="202.6" height="76" rx="38" fill="#ffffff" stroke="#dce1e2" stroke-width="2"/>
+  <text x="972" y="538" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="27" font-weight="600" fill="#3b2943">Instrument</text>
+  <text x="972" y="562" text-anchor="middle" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="17" fill="#9aa4a6">wat helpt</text>
+  <text x="140" y="378" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="21" font-weight="700" letter-spacing="3.2" fill="#168b94">VERDUURZAMING MAATSCHAPPELIJK VASTGOED</text>
+  <text x="140" y="468" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="80" font-weight="600" fill="#3b2943">Financieel</text>
+  <text x="140" y="556" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="80" font-weight="600" fill="#3b2943">Vastgoedkompas</text>
+  <path d="M140 604 H224" stroke="#4bb3b8" stroke-width="4" stroke-linecap="round"/>
+  <text x="140" y="668" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="28" fill="#65506f">Welke informatie heeft welke rol nodig om</text>
+  <text x="140" y="706" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="28" fill="#65506f">op het juiste moment een goede financiële</text>
+  <text x="140" y="744" font-family="Aptos, &quot;Segoe UI&quot;, Arial, Helvetica, sans-serif" font-size="28" fill="#65506f">keuze te maken?</text>
+</svg>
